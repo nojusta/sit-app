@@ -3,8 +3,6 @@ import { Redirect, Tabs } from "expo-router";
 import { Image, Text, View } from "react-native";
 
 import { icons } from "../../constants";
-//import { Loader } from "../../components";
-//import { useGlobalContext } from "../../context/GlobalProvider";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -26,21 +24,21 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabLayout = () => {
-  //const { loading, isLogged } = useGlobalContext();
+  const { loading, isLogged } = useGlobalContext();
 
-  //if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+  if (!loading && !isLogged) return <Redirect href="/sign-in" />;
 
   return (
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#4A4A4A", // Dark gray for active tab
-          tabBarInactiveTintColor: "#A9A9A9", // Light gray for inactive tab
+          tabBarActiveTintColor: "#FFA001",
+          tabBarInactiveTintColor: "#CDCDE0",
           tabBarShowLabel: false,
           tabBarStyle: {
-            backgroundColor: "#D3D3D3", // Light gray background
+            backgroundColor: "#161622",
             borderTopWidth: 1,
-            borderTopColor: "#BEBEBE", // Medium gray border
+            borderTopColor: "#232533",
             height: 84,
           },
         }}
@@ -60,7 +58,37 @@ const TabLayout = () => {
             ),
           }}
         />
-        
+        <Tabs.Screen
+          name="bookmark"
+          options={{
+            title: "Bookmark",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.bookmark}
+                color={color}
+                name="Bookmark"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: "Create",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.plus}
+                color={color}
+                name="Create"
+                focused={focused}
+              />
+            ),
+          }}
+        />
         <Tabs.Screen
           name="profile"
           options={{
@@ -76,26 +104,10 @@ const TabLayout = () => {
             ),
           }}
         />
-
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: "Settings",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.settings}
-                color={color}
-                name="Settings"
-                focused={focused}
-              />
-            ),
-          }}
-        />
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
-      <StatusBar backgroundColor="#D3D3D3" style="dark" />
+      <Loader isLoading={loading} />
+      <StatusBar backgroundColor="#161622" style="light" />
     </>
   );
 };
