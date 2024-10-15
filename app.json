@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "sit-app",
+    "name": "Sit",
     "slug": "sit-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "sit-app",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
