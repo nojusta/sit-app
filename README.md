@@ -11,7 +11,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```
 2. Install additional packages for this specific project
    ```bash
-   npm expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
+   npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
    ```
    
 
