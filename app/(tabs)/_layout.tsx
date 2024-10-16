@@ -1,12 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
-import { Image, Text, View } from "react-native";
+import { Image, Text, View, ImageSourcePropType } from "react-native";
 
 import { icons } from "../../constants";
-//import { Loader } from "../../components";
-//import { useGlobalContext } from "../../context/GlobalProvider";
+import { Loader } from "../../components";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+interface TabIconProps {
+  icon: ImageSourcePropType;
+  color: string;
+  name: string;
+  focused: boolean;
+}
+
+const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
   return (
     <View className="flex items-center justify-center gap-2">
       <Image
@@ -25,8 +32,8 @@ const TabIcon = ({ icon, color, name, focused }) => {
   );
 };
 
-const TabLayout = () => {
-  //const { loading, isLogged } = useGlobalContext();
+const TabLayout: React.FC = () => {
+  //const { loading, isLogged } = useGlobalContext(); dapiso situs tvarkyt, veliau bus
 
   //if (!loading && !isLogged) return <Redirect href="/sign-in" />;
 
@@ -84,7 +91,7 @@ const TabLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.settings}
+                icon={icons.settings} 
                 color={color}
                 name="Settings"
                 focused={focused}
