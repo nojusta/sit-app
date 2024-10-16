@@ -1,3 +1,4 @@
+import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
 import { Image, Text, View, ImageSourcePropType } from "react-native";
@@ -67,7 +68,7 @@ const TabLayout: React.FC = () => {
             ),
           }}
         />
-        
+
         <Tabs.Screen
           name="profile"
           options={{
@@ -91,7 +92,7 @@ const TabLayout: React.FC = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.settings} 
+                icon={icons.settings}
                 color={color}
                 name="Settings"
                 focused={focused}
@@ -99,6 +100,7 @@ const TabLayout: React.FC = () => {
             ),
           }}
         />
+
       </Tabs>
 
       {/* <Loader isLoading={loading} /> */}
