@@ -2,6 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import { Link, Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
 
 import { images } from "../constants";
 import Loader from "../components/Loader"; 
@@ -11,7 +13,14 @@ interface AppProps {}
 
 const App: React.FC<AppProps> = () => {
   const loading: boolean = false; // Replace with actual loading state (bus)
+  const navigation = useNavigation();
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+  
   return (
     <SafeAreaView style={{ backgroundColor: "#161622", height: "100%" }}>
       <Loader isLoading={loading} />
