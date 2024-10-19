@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Link, Redirect, router } from "expo-router";
+import { Link, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -48,11 +48,6 @@ const App: React.FC<AppProps> = () => {
             />
           </View>
 
-          {/* <Text style={{ fontSize: 14, fontFamily: "PRegular", color: "#D3D3D3", marginTop: 28, textAlign: "center" }}>
-            Where Creativity Meets Innovation: Embark on a Journey of Limitless
-            Exploration with Aora
-          </Text> */}
-
           <Link href="/home">
             <Text style={{ fontSize: 14, fontFamily: "PRegular", color: "#A0A0A0", marginTop: 28, textAlign: "center" }}> {/* Medium gray text */}
               Go to Home
@@ -62,8 +57,8 @@ const App: React.FC<AppProps> = () => {
           <CustomButton
             title="Continue with Email"
             handlePress={() => router.push("/sign-in")}
-            containerStyles="w-full mt-7" // Use NativeWind class names
-            isLoading={loading} // Added isLoading prop
+            containerStyles="w-full mt-7" 
+            isLoading={loading} 
           />
         </View>
       </ScrollView>

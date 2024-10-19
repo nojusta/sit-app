@@ -23,7 +23,6 @@ const SignIn: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // Replace with your sign-in logic
       // await signIn(form.email, form.password);
       // const result = await getCurrentUser();
       // setUser(result);
@@ -50,7 +49,7 @@ const SignIn: React.FC = () => {
           <Image
             source={images.logo}
             resizeMode="contain"
-            className="w-[130px] h-[84px] mb-4" // Adjusted size and added margin-bottom
+            className="w-[130px] h-[84px] mb-4"
           />
 
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
@@ -87,7 +86,7 @@ const SignIn: React.FC = () => {
             </Text>
             <Link
               href="/sign-up"
-              className="text-lg font-psemibold text-secondary"
+              className="text-lg font-psemibold text-secondary-100"
             >
               Sign up
             </Link>
