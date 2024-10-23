@@ -1,3 +1,4 @@
+// components/CustomMarker.tsx
 import React from "react";
 import { Marker } from "react-native-maps";
 import { Image, ImageSourcePropType } from "react-native";
@@ -10,15 +11,17 @@ interface CustomMarkerProps {
   title?: string;
   description?: string;
   image?: ImageSourcePropType;
-  zoomLevel: number; 
+  zoomLevel: number;
+  onPress?: () => void;
 }
 
 const CustomMarker: React.FC<CustomMarkerProps> = ({
   coordinate,
   title,
   description,
-  image = require("../assets/images/custom-marker.png"), 
+  image = require("../assets/images/custom-marker.png"),
   zoomLevel,
+  onPress,
 }) => {
   // Adjust size based on zoom level
   const size = Math.max(20, Math.min(80, (zoomLevel - 10) * 5));
@@ -26,6 +29,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
   return (
     <Marker
       coordinate={coordinate}
+      onPress={onPress}
       title={title}
       description={description}
     >
