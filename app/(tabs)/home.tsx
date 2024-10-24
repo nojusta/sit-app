@@ -1,22 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, PanResponder, Animated, Dimensions, Easing } from "react-native";
+import { View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
 import MapView, { UrlTile, Region } from "react-native-maps";
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import CustomMarker from "../../components/CustomMarker";
+import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
 const App: React.FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(10); // State to track the zoom level
   const [selectedMarker, setSelectedMarker] = useState<any>(null); // State to track the selected marker
-  const [infoWindowHeight] = useState(new Animated.Value(0)); // Animated value for the info window height
-  const [contentMarginTop] = useState(new Animated.Value(10)); // Animated value for the content margin top
-  const [isExpanded, setIsExpanded] = useState(false); // State to track if the info window is expanded
   const [lastRegion, setLastRegion] = useState<Region | null>(null); // State to store the last region before zooming into a marker
   const mapRef = useRef<MapView>(null); // Reference to the MapView
-
-  const screenHeight = Dimensions.get('window').height; // Get the screen height
-  const insets = useSafeAreaInsets(); // Get the safe area insets
 
   // Define the initial region for the map
   const initialRegion = {
@@ -34,6 +29,7 @@ const App: React.FC = () => {
 
   // Handle marker press event
   const handleMarkerPress = (marker: any) => {
+    console.log("Marker pressed:", marker); // Debugging log
     if (mapRef.current) {
       mapRef.current.getMapBoundaries().then((boundaries) => {
         const currentRegion = {
@@ -47,12 +43,6 @@ const App: React.FC = () => {
     }
 
     setSelectedMarker(marker);
-    Animated.timing(infoWindowHeight, {
-      toValue: INITIAL_INFO_WINDOW_HEIGHT,
-      duration: 400,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
     mapRef.current?.animateToRegion({
       ...marker.coordinate,
       latitudeDelta: 0.002,
@@ -63,77 +53,12 @@ const App: React.FC = () => {
   // Handle map press event
   const handleMapPress = () => {
     if (selectedMarker) {
-      Animated.timing(infoWindowHeight, {
-        toValue: 0,
-        duration: 400,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: false,
-      }).start(() => {
-        setSelectedMarker(null);
-        infoWindowHeight.setValue(0);
-      });
-
+      setSelectedMarker(null);
       if (lastRegion) {
         mapRef.current?.animateToRegion(lastRegion, 800);
       }
     }
   };
-
-  // Effect to handle deselecting the marker
-  useEffect(() => {
-    if (selectedMarker === null) {
-      Animated.timing(infoWindowHeight, {
-        toValue: 0,
-        duration: 400,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: false,
-      }).start(() => {
-        infoWindowHeight.setValue(0);
-      });
-    }
-  }, [selectedMarker]);
-
-  // Pan responder to handle swipe gestures for expanding and minimizing the info window
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dy) > 100; // Increase the threshold for detecting the swipe gesture
-    },
-    onPanResponderMove: (_, gestureState) => {
-      if (gestureState.dy < 0 && !isExpanded) {
-        // Swipe up to expand
-        Animated.parallel([
-          Animated.timing(infoWindowHeight, {
-            toValue: screenHeight - insets.top - 20,
-            duration: 480,
-            easing: Easing.out(Easing.ease),
-            useNativeDriver: false,
-          }),
-          Animated.timing(contentMarginTop, {
-            toValue: 20,
-            duration: 480,
-            easing: Easing.out(Easing.ease),
-            useNativeDriver: false,
-          }),
-        ]).start(() => setIsExpanded(true));
-      } else if (gestureState.dy > 0 && isExpanded) {
-        // Swipe down to minimize
-        Animated.parallel([
-          Animated.timing(infoWindowHeight, {
-            toValue: INITIAL_INFO_WINDOW_HEIGHT,
-            duration: 480,
-            easing: Easing.in(Easing.ease),
-            useNativeDriver: false,
-          }),
-          Animated.timing(contentMarginTop, {
-            toValue: 10,
-            duration: 480,
-            easing: Easing.in(Easing.ease),
-            useNativeDriver: false,
-          }),
-        ]).start(() => setIsExpanded(false));
-      }
-    },
-  });
 
   // Marker data
   const markers = [
@@ -189,18 +114,13 @@ const App: React.FC = () => {
           ))}
         </MapView>
         {selectedMarker && (
-          <Animated.View
-            style={[
-              styles.infoWindow,
-              { height: infoWindowHeight, paddingTop: isExpanded ? insets.top : 10 },
-            ]}
-            {...panResponder.panHandlers}
-          >
-            <Animated.View style={[styles.infoContent, { marginTop: contentMarginTop }]}>
-              <Text style={styles.infoTitle}>{selectedMarker.title}</Text>
-              <Text style={styles.infoDescription}>{selectedMarker.description}</Text>
-            </Animated.View>
-          </Animated.View>
+          <InfoWindow
+            selectedMarker={selectedMarker}
+            setSelectedMarker={setSelectedMarker}
+            lastRegion={lastRegion}
+            mapRef={mapRef}
+            initialHeight={INITIAL_INFO_WINDOW_HEIGHT} // Pass initialHeight prop
+          />
         )}
       </View>
     </SafeAreaProvider>
@@ -213,28 +133,6 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
-  },
-  infoWindow: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    alignItems: 'center',
-  },
-  infoContent: {
-    flex: 1,
-    width: '100%',
-    alignItems: 'center',
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  infoDescription: {
-    marginTop: 10,
-    fontSize: 16,
   },
 });
 
