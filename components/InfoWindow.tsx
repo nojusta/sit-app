@@ -14,32 +14,41 @@ interface InfoWindowProps {
 
 const InfoWindow: React.FC<InfoWindowProps> = ({ selectedMarker, setSelectedMarker, lastRegion, mapRef, initialHeight }) => {
   const [infoWindowHeight] = useState(new Animated.Value(0)); // Animated value for the info window height
+  const [infoWindowBottom] = useState(new Animated.Value(-initialHeight)); // Animated value for the info window bottom position
   const [isExpanded, setIsExpanded] = useState(false); // State to track if the info window is expanded
   const [overlayOpacity] = useState(new Animated.Value(0)); // Animated value for the overlay opacity
+  const [visibleMarker, setVisibleMarker] = useState(selectedMarker); // State to control the visibility of the marker
 
   const screenHeight = Dimensions.get('window').height; // Get the screen height
   const insets = useSafeAreaInsets(); // Get the safe area insets
 
-  // Effect to handle deselecting the marker
+  // Effect to handle marker visibility
   useEffect(() => {
     if (selectedMarker === null) {
-      Animated.timing(infoWindowHeight, {
-        toValue: 0,
-        duration: 400,
+      Animated.timing(infoWindowBottom, {
+        toValue: -initialHeight, // Move the info window downwards
+        duration: 1000, // Slower closing animation
         easing: Easing.in(Easing.ease),
         useNativeDriver: false,
       }).start(() => {
-        infoWindowHeight.setValue(0);
+        setVisibleMarker(null); // Update the marker visibility after the animation
         Animated.timing(overlayOpacity, {
           toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
+          duration: 1000, // Slower closing animation
+          useNativeDriver: false, // Set to false for opacity animation
         }).start();
       });
     } else {
+      setVisibleMarker(selectedMarker); // Update the marker visibility immediately
       // Animate to initial height when a marker is selected
       Animated.timing(infoWindowHeight, {
         toValue: initialHeight,
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: false,
+      }).start();
+      Animated.timing(infoWindowBottom, {
+        toValue: 0,
         duration: 400,
         easing: Easing.out(Easing.ease),
         useNativeDriver: false,
@@ -64,8 +73,8 @@ const InfoWindow: React.FC<InfoWindowProps> = ({ selectedMarker, setSelectedMark
           setIsExpanded(true);
           Animated.timing(overlayOpacity, {
             toValue: 1,
-            duration: 400,
-            useNativeDriver: true,
+            duration: 400, // Adjust this value to change the speed of the blur animation
+            useNativeDriver: false, // Set to false for opacity animation
           }).start();
         });
       } else if (gestureState.dy > 0 && isExpanded) {
@@ -79,8 +88,8 @@ const InfoWindow: React.FC<InfoWindowProps> = ({ selectedMarker, setSelectedMark
           setIsExpanded(false);
           Animated.timing(overlayOpacity, {
             toValue: 0,
-            duration: 400,
-            useNativeDriver: true,
+            duration: 400, // Adjust this value to change the speed of the blur animation
+            useNativeDriver: false, // Set to false for opacity animation
           }).start();
         });
       }
@@ -93,17 +102,17 @@ const InfoWindow: React.FC<InfoWindowProps> = ({ selectedMarker, setSelectedMark
         style={[styles.overlay, { opacity: overlayOpacity }]}
         pointerEvents={isExpanded ? 'auto' : 'none'} // Disable pointer events when overlay is not visible
       />
-      {selectedMarker && (
+      {visibleMarker && (
         <Animated.View
           style={[
             styles.infoWindow,
-            { height: infoWindowHeight },
+            { height: infoWindowHeight, bottom: infoWindowBottom },
           ]}
           {...panResponder.panHandlers}
         >
           <View style={styles.infoContent}>
-            <Text style={styles.infoTitle}>{selectedMarker.title}</Text>
-            <Text style={styles.infoDescription}>{selectedMarker.description}</Text>
+            <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
+            <Text style={styles.infoDescription}>{visibleMarker.description}</Text>
           </View>
         </Animated.View>
       )}
@@ -123,7 +132,6 @@ const styles = StyleSheet.create({
   },
   infoWindow: {
     position: 'absolute',
-    bottom: 0,
     width: '100%',
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
