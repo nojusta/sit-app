@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
-import MapView, { UrlTile, Region } from "react-native-maps";
+import { View, StyleSheet, Image } from "react-native";
+import MapView, { UrlTile, Region, Marker } from "react-native-maps";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import CustomMarker from "../../components/CustomMarker";
+import ClusteredMapView from 'react-native-map-clustering';
 import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
@@ -63,41 +63,67 @@ const App: React.FC = () => {
   // Marker data
   const markers = [
     {
+      id: 1,
       coordinate: { latitude: 54.6868, longitude: 25.2799 },
       title: "Kudirka Square",
       description: "Benches, skaters, and a statue of Vincas Kudirka",
     },
     {
+      id: 2,
       coordinate: { latitude: 54.6839, longitude: 25.2875 },
       title: "Cathedral Square",
       description: "Main square of the Vilnius Old Town",
     },
     {
+      id: 3,
       coordinate: { latitude: 54.6850, longitude: 25.2920 },
       title: "Gediminas' Tower",
       description: "The remaining part of the Upper Castle in Vilnius",
     },
     {
+      id: 4,
       coordinate: { latitude: 54.6820, longitude: 25.2797 },
       title: "Vilnius University",
       description: "One of the oldest universities in Northern Europe",
     },
     {
+      id: 5,
       coordinate: { latitude: 54.6781, longitude: 25.2858 },
       title: "Gate of Dawn",
       description: "A city gate of Vilnius and a prominent landmark",
     },
   ];
 
+  // Customizable cluster styles
+  const clusterStyles = {
+    container: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: 'black',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    text: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+  };
+
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
-        <MapView
+        <ClusteredMapView
           ref={mapRef}
           style={styles.map}
           initialRegion={initialRegion}
           onRegionChangeComplete={handleRegionChangeComplete}
           onPress={handleMapPress}
+          clusterColor="black" // Change cluster color to black
+          clusterTextColor="white"
+          minimumClusterSize={5} // Set minimum cluster size to 5 markers
+          customClusterStyles={clusterStyles} // Pass custom styles
         >
           <UrlTile
             urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
@@ -105,14 +131,15 @@ const App: React.FC = () => {
             flipY={false}
           />
           {markers.map((marker, index) => (
-            <CustomMarker
+            <Marker
               key={index}
               coordinate={marker.coordinate}
-              zoomLevel={zoomLevel}
               onPress={() => handleMarkerPress(marker)}
-            />
+            >
+              <Image source={require('../../assets/images/custom-marker.png')} style={{ width: 30, height: 30 }} />
+            </Marker>
           ))}
-        </MapView>
+        </ClusteredMapView>
         {selectedMarker && (
           <InfoWindow
             selectedMarker={selectedMarker}
