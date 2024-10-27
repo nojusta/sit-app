@@ -34,9 +34,8 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 };
 
 const TabLayout: React.FC = () => {
-  //const { loading, isLogged } = useGlobalContext(); dapiso situs tvarkyt, veliau bus
-
-  //if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+  const { loading, isLogged } = useGlobalContext();
+  if (!loading && !isLogged) return <Redirect href="/sign-in" />;
 
   return (
     <>
@@ -100,10 +99,9 @@ const TabLayout: React.FC = () => {
             ),
           }}
         />
-
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
+      <Loader isLoading={loading} />
       <StatusBar backgroundColor="#D3D3D3" style="dark" />
     </>
   );
