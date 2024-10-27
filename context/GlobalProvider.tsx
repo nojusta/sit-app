@@ -4,15 +4,18 @@ import React, {
   useEffect,
   useState,
   ReactNode,
+  ReactElement,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import { getCurrentUser } from "../lib/appwrite";
 
 // Define types for context
 interface GlobalContextProps {
   isLogged: boolean;
-  setIsLogged: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLogged: Dispatch<React.SetStateAction<boolean>>;
   user: any | null; // Replace 'any' with an actual type if possible
-  setUser: React.Dispatch<React.SetStateAction<any | null>>;
+  setUser: Dispatch<React.SetStateAction<any | null>>;
   loading: boolean;
 }
 

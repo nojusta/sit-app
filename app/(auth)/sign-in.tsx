@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { signIn, getCurrentUser } from "../../lib/appwrite";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import FormField from "../../components/FormField"; // Assuming FormField is a custom component
 import CustomButton from "../../components/CustomButton"; // Assuming CustomButton is a custom component
 import { images } from "../../constants"; // Assuming images is an object with image sources
@@ -51,27 +51,21 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#161622", height: "100%" }}>
-      <ScrollView
-        contentContainerStyle={{
-          minHeight: Dimensions.get("window").height - 100,
-        }}
-      >
-        <View>
+    <SafeAreaView className="bg-primary h-full">
+      <ScrollView>
+        <View
+          className="w-full flex justify-center h-full px-4 my-6"
+          style={{
+            minHeight: Dimensions.get("window").height - 100,
+          }}
+        >
           <Image
             source={images.logo}
             resizeMode="contain"
-            style={{ width: 130, height: 84, marginBottom: 16 }}
+            className="w-[130px] h-[84px] mb-4"
           />
 
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "600",
-              color: "white",
-              marginTop: 40,
-            }}
-          >
+          <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
             Log in to SIT
           </Text>
 
@@ -79,7 +73,7 @@ const SignIn = () => {
             title="Email"
             value={form.email}
             placeholder="Enter your email"
-            handleChangeText={(text) => setForm({ ...form, email: text })}
+            handleChangeText={(e) => setForm({ ...form, email: e })}
             otherStyles="mt-7"
             keyboardType="email-address"
           />
@@ -88,17 +82,28 @@ const SignIn = () => {
             title="Password"
             value={form.password}
             placeholder="Enter your password"
-            handleChangeText={(text) => setForm({ ...form, password: text })}
+            handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
-            secureTextEntry
           />
 
           <CustomButton
             title="Sign In"
             handlePress={submit}
-            containerStyles="w-full mt-7"
+            containerStyles="mt-7"
             isLoading={isSubmitting}
           />
+
+          <View className="flex justify-center pt-5 flex-row gap-2">
+            <Text className="text-lg text-gray-100 font-pregular">
+              Don't have an account?
+            </Text>
+            <Link
+              href="/sign-up"
+              className="text-lg font-psemibold text-secondary-100"
+            >
+              Sign up
+            </Link>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

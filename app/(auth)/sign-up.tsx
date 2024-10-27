@@ -12,7 +12,7 @@ import {
 import { Link, router } from "expo-router";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { createUser } from "../../lib/appwrite";
-import { CustomButton } from "../../components";
+import { CustomButton, FormField } from "../../components";
 import { images } from "../../constants";
 
 const SignUp = () => {
@@ -50,15 +50,11 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#161622", height: "100%" }}>
+    <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View
+          className="w-full flex justify-center h-full px-4 my-6"
           style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            paddingHorizontal: 16,
             minHeight: Dimensions.get("window").height - 100,
             marginTop: 5,
           }}
@@ -66,56 +62,36 @@ const SignUp = () => {
           <Image
             source={images.logo}
             resizeMode="contain"
-            style={{ width: 100, height: 54, marginBottom: 16 }}
+            className="w-[100px] h-[54px] mb-4"
           />
 
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "600",
-              color: "white",
-              marginTop: 40,
-            }}
-          >
+          <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
             Sign Up to SIT
           </Text>
 
-          <TextInput
+          <FormField
+            title="Username"
             value={form.username}
-            placeholder="Enter your username"
-            onChangeText={(text) => setForm({ ...form, username: text })}
-            style={{
-              marginTop: 20,
-              padding: 10,
-              backgroundColor: "#fff",
-              borderRadius: 5,
-            }}
+            placeholder="Enter your username" // Added placeholder
+            handleChangeText={(e) => setForm({ ...form, username: e })}
+            otherStyles="mt-10"
           />
 
-          <TextInput
+          <FormField
+            title="Email"
             value={form.email}
-            placeholder="Enter your email"
-            onChangeText={(text) => setForm({ ...form, email: text })}
+            placeholder="Enter your email" // Added placeholder
+            handleChangeText={(e) => setForm({ ...form, email: e })}
+            otherStyles="mt-7"
             keyboardType="email-address"
-            style={{
-              marginTop: 20,
-              padding: 10,
-              backgroundColor: "#fff",
-              borderRadius: 5,
-            }}
           />
 
-          <TextInput
+          <FormField
+            title="Password"
             value={form.password}
-            placeholder="Enter your password"
-            onChangeText={(text) => setForm({ ...form, password: text })}
-            secureTextEntry
-            style={{
-              marginTop: 20,
-              padding: 10,
-              backgroundColor: "#fff",
-              borderRadius: 5,
-            }}
+            placeholder="Enter your password" // Added placeholder
+            handleChangeText={(e) => setForm({ ...form, password: e })}
+            otherStyles="mt-7"
           />
 
           <CustomButton
@@ -125,19 +101,13 @@ const SignUp = () => {
             isLoading={isSubmitting}
           />
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              paddingTop: 20,
-            }}
-          >
-            <Text style={{ fontSize: 16, color: "#A0A0A0" }}>
+          <View className="flex justify-center pt-5 flex-row gap-2">
+            <Text className="text-lg text-gray-100 font-pregular">
               Have an account already?
             </Text>
             <Link
               href="/sign-in"
-              style={{ fontSize: 16, color: "#BEBEBE", marginLeft: 5 }}
+              className="text-lg font-psemibold text-secondary"
             >
               Login
             </Link>
