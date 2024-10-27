@@ -1,20 +1,29 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Dimensions, Alert, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router } from "expo-router";
-import { images } from "../../constants";
-import { CustomButton, FormField } from "../../components";
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  View,
+  Image,
+  Text,
+  Dimensions,
+} from "react-native";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import { signIn, getCurrentUser } from "../../lib/appwrite";
+import { router } from "expo-router";
+import FormField from "../../components/FormField"; // Assuming FormField is a custom component
+import CustomButton from "../../components/CustomButton"; // Assuming CustomButton is a custom component
+import { images } from "../../constants"; // Assuming images is an object with image sources
 
-interface FormState {
-  email: string;
-  password: string;
-}
+const SignIn = () => {
+  const { setUser, setIsLogged } = useGlobalContext();
+  const [isSubmitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
-const SignIn: React.FC = () => {
-  const [form, setForm] = useState<FormState>({ email: "", password: "" });
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-
-  const submit = async (): Promise<void> => {
+  const submit = async () => {
     if (form.email === "" || form.password === "") {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -23,36 +32,46 @@ const SignIn: React.FC = () => {
     setSubmitting(true);
 
     try {
-      // await signIn(form.email, form.password);
-      // const result = await getCurrentUser();
-      // setUser(result);
-      // setIsLogged(true);
+      await signIn(form.email, form.password);
+      const result = await getCurrentUser();
+      setUser(result);
+      setIsLogged(true);
 
       Alert.alert("Success", "User signed in successfully");
       router.replace("/home");
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        Alert.alert("Error", error.message);
+      } else {
+        Alert.alert("Error", "An unknown error occurred.");
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
-        <View
-          className="w-full flex justify-center h-full px-4 my-6"
-          style={{
-            minHeight: Dimensions.get("window").height - 100,
-          }}
-        >
+    <SafeAreaView style={{ backgroundColor: "#161622", height: "100%" }}>
+      <ScrollView
+        contentContainerStyle={{
+          minHeight: Dimensions.get("window").height - 100,
+        }}
+      >
+        <View>
           <Image
             source={images.logo}
             resizeMode="contain"
-            className="w-[130px] h-[84px] mb-4"
+            style={{ width: 130, height: 84, marginBottom: 16 }}
           />
 
-          <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "600",
+              color: "white",
+              marginTop: 40,
+            }}
+          >
             Log in to SIT
           </Text>
 
@@ -60,7 +79,7 @@ const SignIn: React.FC = () => {
             title="Email"
             value={form.email}
             placeholder="Enter your email"
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            handleChangeText={(text) => setForm({ ...form, email: text })}
             otherStyles="mt-7"
             keyboardType="email-address"
           />
@@ -69,28 +88,17 @@ const SignIn: React.FC = () => {
             title="Password"
             value={form.password}
             placeholder="Enter your password"
-            handleChangeText={(e) => setForm({ ...form, password: e })}
+            handleChangeText={(text) => setForm({ ...form, password: text })}
             otherStyles="mt-7"
+            secureTextEntry
           />
 
           <CustomButton
             title="Sign In"
             handlePress={submit}
-            containerStyles="mt-7"
+            containerStyles="w-full mt-7"
             isLoading={isSubmitting}
           />
-
-          <View className="flex justify-center pt-5 flex-row gap-2">
-            <Text className="text-lg text-gray-100 font-pregular">
-              Don't have an account?
-            </Text>
-            <Link
-              href="/sign-up"
-              className="text-lg font-psemibold text-secondary-100"
-            >
-              Sign up
-            </Link>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

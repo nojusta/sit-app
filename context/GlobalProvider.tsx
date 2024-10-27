@@ -1,11 +1,27 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  ReactElement,
+} from "react";
 import { getCurrentUser } from "../lib/appwrite";
 
+// Define the shape of the context state
+interface GlobalContextProps {
+  isLogged: boolean;
+  setIsLogged: React.Dispatch<React.SetStateAction<boolean>>;
+  user: any | null;
+  setUser: React.Dispatch<React.SetStateAction<any | null>>;
+  loading: boolean;
+}
+
 // Create the context with a default value
-const GlobalContext = createContext(null);
+const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
 
 // Custom hook to use the GlobalContext
-export const useGlobalContext = () => {
+export const useGlobalContext = (): GlobalContextProps => {
   const context = useContext(GlobalContext);
   if (!context) {
     throw new Error("useGlobalContext must be used within a GlobalProvider");
@@ -13,10 +29,14 @@ export const useGlobalContext = () => {
   return context;
 };
 
-const GlobalProvider = ({ children }) => {
-  const [isLogged, setIsLogged] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+interface GlobalProviderProps {
+  children: ReactNode;
+}
+
+const GlobalProvider = ({ children }: GlobalProviderProps): ReactElement => {
+  const [isLogged, setIsLogged] = useState<boolean>(false);
+  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
