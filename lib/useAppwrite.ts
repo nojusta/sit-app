@@ -14,7 +14,6 @@ const useAppwrite = <T>(fn: FetchFunction<T>) => {
       const res = await fn();
       setData(res);
     } catch (error: any) {
-      if (__DEV__) console.error("Appwrite error:", error); // Only log in development
       Alert.alert("Error", error.message);
     } finally {
       setLoading(false);

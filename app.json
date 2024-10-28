@@ -13,15 +13,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "package": "sit.app"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png", 
         "backgroundColor": "#ffffff"
-      },
-      "package": "sit.app"
+      }
     },
     "web": {
       "bundler": "metro",

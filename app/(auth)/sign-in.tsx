@@ -1,29 +1,20 @@
 import React, { useState } from "react";
-import {
-  Alert,
-  SafeAreaView,
-  ScrollView,
-  View,
-  Image,
-  Text,
-  Dimensions,
-} from "react-native";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { signIn, getCurrentUser } from "../../lib/appwrite";
+import { View, Text, ScrollView, Dimensions, Alert, Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-import FormField from "../../components/FormField"; // Assuming FormField is a custom component
-import CustomButton from "../../components/CustomButton"; // Assuming CustomButton is a custom component
-import { images } from "../../constants"; // Assuming images is an object with image sources
+import { images } from "../../constants";
+import { CustomButton, FormField } from "../../components";
 
-const SignIn = () => {
-  const { setUser, setIsLogged } = useGlobalContext();
-  const [isSubmitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+interface FormState {
+  email: string;
+  password: string;
+}
 
-  const submit = async () => {
+const SignIn: React.FC = () => {
+  const [form, setForm] = useState<FormState>({ email: "", password: "" });
+  const [isSubmitting, setSubmitting] = useState<boolean>(false);
+
+  const submit = async (): Promise<void> => {
     if (form.email === "" || form.password === "") {
       Alert.alert("Error", "Please fill in all fields");
       return;
@@ -32,19 +23,15 @@ const SignIn = () => {
     setSubmitting(true);
 
     try {
-      await signIn(form.email, form.password);
-      const result = await getCurrentUser();
-      setUser(result);
-      setIsLogged(true);
+      // await signIn(form.email, form.password);
+      // const result = await getCurrentUser();
+      // setUser(result);
+      // setIsLogged(true);
 
       Alert.alert("Success", "User signed in successfully");
       router.replace("/home");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        Alert.alert("Error", error.message);
-      } else {
-        Alert.alert("Error", "An unknown error occurred.");
-      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
     } finally {
       setSubmitting(false);
     }
