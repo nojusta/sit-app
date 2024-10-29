@@ -1,6 +1,7 @@
-# Welcome to sit-app👋
-
-![logo-small](https://github.com/user-attachments/assets/9afc3a7d-21c4-42d4-9518-dfec143e517e)
+<h1 align = "center"> Welcome to sit-app👋 </h1>
+<p align="center">
+   <img src="https://github.com/user-attachments/assets/9afc3a7d-21c4-42d4-9518-dfec143e517e"  width="200px" height="200px">
+</p>
 
 ## Get started
 
