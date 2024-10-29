@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
-import { Image, Text, View, ImageSourcePropType } from "react-native";
+import {
+  Image,
+  Text,
+  View,
+  ImageSourcePropType,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+} from "react-native";
 
 import { icons } from "../../constants";
 import { Loader } from "../../components";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { MarkerProvider, useMarkerContext } from "../../context/MarkerContext";
 
 interface TabIconProps {
   icon: ImageSourcePropType;
@@ -35,7 +44,24 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 
 const TabLayout: React.FC = () => {
   const { loading, isLogged } = useGlobalContext();
+  const [isTabLayoutVisible, setIsTabLayoutVisible] = useState(true);
+  const tabLayoutTranslateY = useRef(new Animated.Value(0)).current;
+  const { isMarkerSelected } = useMarkerContext();
+
   if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+
+  useEffect(() => {
+    Animated.timing(tabLayoutTranslateY, {
+      toValue: isMarkerSelected ? 84 : 0, // Adjust this value based on the height of your TabLayout
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    setIsTabLayoutVisible(!isMarkerSelected);
+  }, [isMarkerSelected]);
+
+  useEffect(() => {
+    console.log("Marker selected state:", isMarkerSelected);
+  }, [isMarkerSelected]);
 
   return (
     <>
@@ -107,4 +133,10 @@ const TabLayout: React.FC = () => {
   );
 };
 
-export default TabLayout;
+const App: React.FC = () => (
+  <MarkerProvider>
+    <TabLayout />
+  </MarkerProvider>
+);
+
+export default App;

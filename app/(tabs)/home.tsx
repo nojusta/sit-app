@@ -4,10 +4,12 @@ import MapView, { UrlTile, Region, Marker } from "react-native-maps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ClusteredMapView from "react-native-map-clustering";
 import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
+import { useMarkerContext } from "../../context/MarkerContext";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
 const App: React.FC = () => {
+  const { setIsMarkerSelected } = useMarkerContext();
   const [zoomLevel, setZoomLevel] = useState<number>(10); // State to track the zoom level
   const [selectedMarker, setSelectedMarker] = useState<any>(null); // State to track the selected marker
   const [lastRegion, setLastRegion] = useState<Region | null>(null); // State to store the last region before zooming into a marker
@@ -130,10 +132,10 @@ const App: React.FC = () => {
           initialRegion={initialRegion}
           onRegionChangeComplete={handleRegionChangeComplete}
           onPress={handleMapPress}
-          clusterColor="black" // Change cluster color to black
+          clusterColor="black"
           clusterTextColor="white"
-          minimumClusterSize={5} // Set minimum cluster size to 5 markers
-          customClusterStyles={clusterStyles} // Pass custom styles
+          minimumClusterSize={5}
+          customClusterStyles={clusterStyles}
         >
           <UrlTile
             urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
@@ -159,7 +161,7 @@ const App: React.FC = () => {
             setSelectedMarker={setSelectedMarker}
             lastRegion={lastRegion}
             mapRef={mapRef}
-            initialHeight={INITIAL_INFO_WINDOW_HEIGHT} // Pass initialHeight prop
+            initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
           />
         )}
       </View>

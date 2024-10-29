@@ -79,7 +79,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
       if (gestureState.dy < 0 && !isExpanded) {
         // Swipe up to expand
         Animated.timing(infoWindowHeight, {
-          toValue: screenHeight - insets.top - 80, // Adjust to stop at the bottom of the notch
+          toValue: screenHeight - insets.top, // Adjust to stop at the bottom of the notch
           duration: 480,
           easing: Easing.out(Easing.ease),
           useNativeDriver: false,
