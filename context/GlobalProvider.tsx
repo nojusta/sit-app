@@ -58,7 +58,7 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       .catch((error) => {
         console.error("Error fetching user:", error);
         setIsLogged(false);
-        setUser(null);
+        setUser(null); // Reset user state on error
       })
       .finally(() => {
         setLoading(false); // Ensure loading completes for all cases

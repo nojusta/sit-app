@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import MapView, { UrlTile, Region, Marker } from "react-native-maps";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ClusteredMapView from 'react-native-map-clustering';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import ClusteredMapView from "react-native-map-clustering";
 import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
@@ -33,21 +33,31 @@ const App: React.FC = () => {
     if (mapRef.current) {
       mapRef.current.getMapBoundaries().then((boundaries) => {
         const currentRegion = {
-          latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
-          longitude: (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
-          latitudeDelta: Math.abs(boundaries.northEast.latitude - boundaries.southWest.latitude),
-          longitudeDelta: Math.abs(boundaries.northEast.longitude - boundaries.southWest.longitude),
+          latitude:
+            (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
+          longitude:
+            (boundaries.northEast.longitude + boundaries.southWest.longitude) /
+            2,
+          latitudeDelta: Math.abs(
+            boundaries.northEast.latitude - boundaries.southWest.latitude
+          ),
+          longitudeDelta: Math.abs(
+            boundaries.northEast.longitude - boundaries.southWest.longitude
+          ),
         };
         setLastRegion(currentRegion);
       });
     }
 
     setSelectedMarker(marker);
-    mapRef.current?.animateToRegion({
-      ...marker.coordinate,
-      latitudeDelta: 0.002,
-      longitudeDelta: 0.002,
-    }, 800);
+    mapRef.current?.animateToRegion(
+      {
+        ...marker.coordinate,
+        latitudeDelta: 0.002,
+        longitudeDelta: 0.002,
+      },
+      800
+    );
   };
 
   // Handle map press event
@@ -60,7 +70,7 @@ const App: React.FC = () => {
     }
   };
 
-  // Marker data
+  // Multiple Marker data
   const markers = [
     {
       id: 1,
@@ -76,13 +86,13 @@ const App: React.FC = () => {
     },
     {
       id: 3,
-      coordinate: { latitude: 54.6850, longitude: 25.2920 },
+      coordinate: { latitude: 54.685, longitude: 25.292 },
       title: "Gediminas' Tower",
       description: "The remaining part of the Upper Castle in Vilnius",
     },
     {
       id: 4,
-      coordinate: { latitude: 54.6820, longitude: 25.2797 },
+      coordinate: { latitude: 54.682, longitude: 25.2797 },
       title: "Vilnius University",
       description: "One of the oldest universities in Northern Europe",
     },
@@ -100,14 +110,14 @@ const App: React.FC = () => {
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: 'black',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: "black",
+      justifyContent: "center",
+      alignItems: "center",
     },
     text: {
-      color: 'white',
+      color: "white",
       fontSize: 16,
-      fontWeight: 'bold',
+      fontWeight: "bold",
     },
   };
 
@@ -136,7 +146,10 @@ const App: React.FC = () => {
               coordinate={marker.coordinate}
               onPress={() => handleMarkerPress(marker)}
             >
-              <Image source={require('../../assets/images/custom-marker.png')} style={{ width: 30, height: 30 }} />
+              <Image
+                source={require("../../assets/images/custom-marker.png")}
+                style={{ width: 30, height: 30 }}
+              />
             </Marker>
           ))}
         </ClusteredMapView>

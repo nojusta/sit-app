@@ -1,6 +1,11 @@
 import { router } from "expo-router";
 import { SafeAreaView, Text, View, Button, Alert } from "react-native";
-import { Image, FlatList, TouchableOpacity, ListRenderItem } from "react-native";
+import {
+  Image,
+  FlatList,
+  TouchableOpacity,
+  ListRenderItem,
+} from "react-native";
 
 import { icons } from "../../constants";
 import { useGlobalContext } from "../../context/GlobalProvider";
@@ -24,7 +29,7 @@ const Profile: React.FC = () => {
   const handleSignOut = async () => {
     try {
       await signOut(); // Use the signOut function from appwrite.js
-      setUser(null);
+      setUser(null); // Reset the user state
       setIsLogged(false);
       Alert.alert("Success", "User signed out successfully");
       router.replace("/sign-in");
@@ -49,12 +54,7 @@ const Profile: React.FC = () => {
         data={[]} // Temporarily set to an empty array
         keyExtractor={(item) => item.$id}
         renderItem={renderItem}
-        ListEmptyComponent={() => (
-          <EmptyState
-            title="bus"
-            subtitle="bus"
-          />
-        )}
+        ListEmptyComponent={() => <EmptyState title="bus" subtitle="bus" />}
         ListHeaderComponent={() => (
           <View className="w-full justify-center items-center mt-6 mb-12 px-4">
             <TouchableOpacity
