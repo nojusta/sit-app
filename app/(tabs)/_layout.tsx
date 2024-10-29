@@ -74,7 +74,10 @@ const TabLayout: React.FC = () => {
             backgroundColor: "#D3D3D3", // Light gray background
             borderTopWidth: 1,
             borderTopColor: "#BEBEBE", // Medium gray border
-            height: 84,
+            transform: [{ translateY: tabLayoutTranslateY }], // Animated translateY
+            overflow: "hidden", // Ensure hidden tab bar does not affect layout
+            position: "absolute", // Ensure the tab bar is positioned at the bottom
+            bottom: 0, // Keep tab bar at the bottom
           },
         }}
       >

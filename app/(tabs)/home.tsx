@@ -31,7 +31,7 @@ const App: React.FC = () => {
 
   // Handle marker press event
   const handleMarkerPress = (marker: any) => {
-    console.log("Marker pressed:", marker); // Debugging log
+    console.log("Marker pressed:", marker);
     if (mapRef.current) {
       mapRef.current.getMapBoundaries().then((boundaries) => {
         const currentRegion = {
@@ -52,6 +52,7 @@ const App: React.FC = () => {
     }
 
     setSelectedMarker(marker);
+    setIsMarkerSelected(true);
     mapRef.current?.animateToRegion(
       {
         ...marker.coordinate,
@@ -66,6 +67,7 @@ const App: React.FC = () => {
   const handleMapPress = () => {
     if (selectedMarker) {
       setSelectedMarker(null);
+      setIsMarkerSelected(false);
       if (lastRegion) {
         mapRef.current?.animateToRegion(lastRegion, 800);
       }
