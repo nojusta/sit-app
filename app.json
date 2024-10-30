@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "package": "{APPWRITER_PACKAGE_NAME}"
+      "package": "com.sitapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png", 
         "backgroundColor": "#ffffff"
       },
-      "package": "{APPWRITER_PACKAGE_NAME}"
+      "package": "com.sitapp"
     },
     "web": {
       "bundler": "metro",

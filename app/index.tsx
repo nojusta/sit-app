@@ -7,7 +7,6 @@ import { images } from "../constants"; // Assuming images is an object with imag
 import Loader from "../components/Loader";
 import CustomButton from "../components/CustomButton"; // Assuming CustomButton is a custom component
 import GlobalProvider, { useGlobalContext } from "../context/GlobalProvider";
-
 interface AppProps {}
 
 const App: React.FC<AppProps> = () => {
