@@ -120,7 +120,11 @@ const MainApp: React.FC<AppProps> = () => {
               containerStyles="w-full mt-7"
             />
 
-            <CustomButton title="Dev Login" handlePress={handleSignIn} />
+            <CustomButton
+              title="Dev Log"
+              handlePress={handleSignIn}
+              containerStyles="mt-10"
+            />
           </View>
         </ScrollView>
 
