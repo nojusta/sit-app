@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "package": "sit.app"
+      "package": "{APPWRITER_PACKAGE_NAME}"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png", 
         "backgroundColor": "#ffffff"
       },
-      "package": "sit.app"
+      "package": "{APPWRITER_PACKAGE_NAME}"
     },
     "web": {
       "bundler": "metro",
