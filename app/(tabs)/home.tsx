@@ -8,7 +8,7 @@ import { useMarkerContext } from "../../context/MarkerContext";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
-const App: React.FC = () => {
+const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
   const [zoomLevel, setZoomLevel] = useState<number>(10); // State to track the zoom level
   const [selectedMarker, setSelectedMarker] = useState<any>(null); // State to track the selected marker
@@ -180,4 +180,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default HomeApp;

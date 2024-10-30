@@ -1,6 +1,10 @@
 import { router } from "expo-router";
-import { SafeAreaView, Text, View, Button, Alert } from "react-native";
 import {
+  SafeAreaView,
+  Text,
+  View,
+  Button,
+  Alert,
   Image,
   FlatList,
   TouchableOpacity,

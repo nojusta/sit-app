@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Link, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
@@ -7,10 +7,39 @@ import { images } from "../constants"; // Assuming images is an object with imag
 import Loader from "../components/Loader";
 import CustomButton from "../components/CustomButton"; // Assuming CustomButton is a custom component
 import GlobalProvider, { useGlobalContext } from "../context/GlobalProvider";
+import { Client, Account } from "appwrite"; // Ensure you have the correct imports
+import {
+  APPWRITE_ENDPOINT,
+  APPWRITE_PROJECT_ID,
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
+} from "@env";
+import { adminlogin } from "../lib/appwrite"; // Import the adminlogin function
+
 interface AppProps {}
 
-const App: React.FC<AppProps> = () => {
-  const { loading, isLogged } = useGlobalContext(); // Use the loading state from the context
+const client = new Client()
+  .setEndpoint(APPWRITE_ENDPOINT) // Your Appwrite endpoint
+  .setProject(APPWRITE_PROJECT_ID); // Your project ID
+
+const account = new Account(client);
+
+const MainApp: React.FC<AppProps> = () => {
+  const { setUser, isLogged, setIsLogged, loading, setLoading } =
+    useGlobalContext(); // Use the global context
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSignIn = async () => {
+    setSubmitting(true);
+    await adminlogin(
+      ADMIN_EMAIL,
+      ADMIN_PASSWORD,
+      setUser,
+      setIsLogged,
+      setSubmitting
+    );
+  };
 
   if (!loading && isLogged) return <Redirect href="/home" />;
 
@@ -90,6 +119,8 @@ const App: React.FC<AppProps> = () => {
               handlePress={() => router.push("/sign-in")}
               containerStyles="w-full mt-7"
             />
+
+            <CustomButton title="Dev Login" handlePress={handleSignIn} />
           </View>
         </ScrollView>
 
@@ -99,4 +130,4 @@ const App: React.FC<AppProps> = () => {
   );
 };
 
-export default App;
+export default MainApp;

@@ -17,6 +17,7 @@ interface GlobalContextProps {
   user: any | null; // Replace 'any' with an actual type if possible
   setUser: Dispatch<React.SetStateAction<any | null>>;
   loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 // Define a default value for the context (can be adjusted as needed)
@@ -26,6 +27,7 @@ const GlobalContext = createContext<GlobalContextProps>({
   user: null,
   setUser: () => {},
   loading: true,
+  setLoading: () => {},
 });
 
 // Custom hook to access the context
@@ -73,6 +75,7 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         user,
         setUser,
         loading,
+        setLoading,
       }}
     >
       {children}
