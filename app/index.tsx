@@ -7,14 +7,20 @@ import { images } from "../constants"; // Assuming images is an object with imag
 import Loader from "../components/Loader";
 import CustomButton from "../components/CustomButton"; // Assuming CustomButton is a custom component
 import GlobalProvider, { useGlobalContext } from "../context/GlobalProvider";
+import Constants from "expo-constants"; // Import expo-constants for environment variables
 import { Client, Account } from "appwrite"; // Ensure you have the correct imports
-import {
+import { adminlogin } from "../lib/appwrite"; // Import the adminlogin function
+
+const {
   APPWRITE_ENDPOINT,
   APPWRITE_PROJECT_ID,
+  APPWRITE_STORAGE_ID,
+  APPWRITE_DATABASE_ID,
+  APPWRITE_USER_COLLECTION_ID,
+  APPWRITE_MARKERS_COLLECTION_ID,
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
-} from "@env";
-import { adminlogin } from "../lib/appwrite"; // Import the adminlogin function
+} = Constants.expoConfig?.extra || {};
 
 interface AppProps {}
 

@@ -6,6 +6,9 @@ node_modules/
 dist/
 web-build/
 
+# Ignore app.json contains sensitive information
+app.json
+
 # Native
 *.orig.*
 *.jks
@@ -28,7 +31,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-.env
 
 # typescript
 *.tsbuildinfo
@@ -38,3 +40,5 @@ yarn-error.*
 
 expo-env.d.ts
 # @end expo-cli
+.env
+app.json
