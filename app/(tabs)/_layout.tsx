@@ -6,8 +6,6 @@ import {
   Text,
   View,
   ImageSourcePropType,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
 } from "react-native";
 
@@ -67,17 +65,18 @@ const TabLayout: React.FC = () => {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#4A4A4A", // Dark gray for active tab
-          tabBarInactiveTintColor: "#A9A9A9", // Light gray for inactive tab
+          tabBarActiveTintColor: "#ECEDEE", // Light gray for active tab
+          tabBarInactiveTintColor: "#9BA1A6", // Medium gray for inactive tab
           tabBarShowLabel: false,
           tabBarStyle: {
-            backgroundColor: "#D3D3D3", // Light gray background
+            backgroundColor: "#2D2D2D", // Dark gray background
             borderTopWidth: 1,
-            borderTopColor: "#BEBEBE", // Medium gray border
+            borderTopColor: "#3C3C3C", // Slightly darker gray border
             transform: [{ translateY: tabLayoutTranslateY }], // Animated translateY
             overflow: "hidden", // Ensure hidden tab bar does not affect layout
             position: "absolute", // Ensure the tab bar is positioned at the bottom
             bottom: 0, // Keep tab bar at the bottom
+            paddingTop: 10, // Add padding to the top
           },
         }}
       >
@@ -131,7 +130,7 @@ const TabLayout: React.FC = () => {
       </Tabs>
 
       <Loader isLoading={loading} />
-      <StatusBar backgroundColor="#D3D3D3" style="dark" />
+      <StatusBar backgroundColor="#2D2D2D" style="light" />
     </>
   );
 };

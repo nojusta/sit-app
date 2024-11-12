@@ -2,7 +2,9 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "types": ["nativewind/types"],
+    "types": [
+      "nativewind/types"
+    ],
     "paths": {
       "@/*": [
         "./*"
@@ -12,8 +14,9 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
     "lib/appwrite.js",
-    "@types"  ]
+    "@types",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }

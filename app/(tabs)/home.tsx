@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
-  StyleSheet,
   TouchableOpacity,
   Image,
   Alert,
@@ -21,6 +20,7 @@ import ClusteredMapView from "react-native-map-clustering";
 import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
 import { useMarkerContext } from "../../context/MarkerContext";
 import * as Location from "expo-location";
+import CircleButton from "../../components/CircleButton"; // Adjust the import path as needed
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -225,13 +225,13 @@ const HomeApp: React.FC = () => {
 
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
+      <View className="flex-1">
         <ClusteredMapView
           ref={mapRef}
           provider={
             Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
           }
-          style={styles.map}
+          className="flex-1"
           initialRegion={initialRegion}
           onRegionChangeComplete={handleRegionChangeComplete}
           onPress={handleMapPress}
@@ -256,7 +256,7 @@ const HomeApp: React.FC = () => {
             >
               <Image
                 source={require("../../assets/images/custom-marker.png")}
-                style={{ width: 40, height: 40 }}
+                className="w-10 h-10"
               />
             </Marker>
           ))}
@@ -279,106 +279,38 @@ const HomeApp: React.FC = () => {
           />
         )}
         {showInputBox && (
-          <View style={styles.inputBox}>
+          <View className="absolute bottom-44 left-5 right-5 bg-white p-2 rounded shadow-lg">
             <TextInput
-              style={styles.input}
+              className="h-10 border border-gray-400 mb-2 px-2"
               placeholder="Enter location information"
               value={markerInfo}
               onChangeText={setMarkerInfo}
             />
             <TouchableOpacity
-              style={styles.saveButton}
+              className="bg-blue-500 p-2 rounded items-center"
               onPress={() => {
                 Alert.alert("Marker Info", markerInfo);
                 setShowInputBox(false); // Hide the input box
               }}
             >
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text className="text-white font-bold">Save</Text>
             </TouchableOpacity>
           </View>
         )}
-        <TouchableOpacity
-          style={styles.centerButton}
+        <CircleButton
           onPress={handleCenterOnUserLocation}
-        >
-          <Text style={styles.centerButtonText}>⌖</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddMarker}>
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
+          icon="⌖"
+          style="absolute bottom-24 right-5"
+          isCenterOnUser={true} // Add this prop to differentiate the button
+        />
+        <CircleButton
+          onPress={handleAddMarker}
+          icon="+"
+          style="absolute bottom-24 left-5"
+        />
       </View>
     </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  centerButton: {
-    position: "absolute",
-    bottom: 90,
-    right: 20,
-    backgroundColor: "gray",
-    padding: 10,
-    borderRadius: 50,
-  },
-  centerButtonText: {
-    color: "white",
-    fontSize: 50,
-    fontWeight: "bold",
-  },
-  inputBox: {
-    position: "absolute",
-    bottom: 180,
-    left: 20,
-    right: 20,
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  saveButton: {
-    backgroundColor: "blue",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  addButton: {
-    position: "absolute",
-    bottom: 90,
-    left: 20,
-    backgroundColor: "rgba(0, 128, 0, 0.5)", // Green color with 50% opacity
-    paddingVertical: 15, // Adjust vertical padding
-    paddingHorizontal: 20, // Adjust horizontal padding
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  addButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 40, // Adjust font size if needed
-    lineHeight: 40, // Adjust line height to match font size
-  },
-});
 
 export default HomeApp;

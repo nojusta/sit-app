@@ -106,24 +106,10 @@ const MainApp: React.FC<AppProps> = () => {
               />
             </View>
 
-            <Link href="/home">
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: "PRegular",
-                  color: "#A0A0A0",
-                  marginTop: 28,
-                  textAlign: "center",
-                }}
-              >
-                Go to Home
-              </Text>
-            </Link>
-
             <CustomButton
               title="Continue with Email"
               handlePress={() => router.push("/sign-in")}
-              containerStyles="w-full mt-7"
+              containerStyles="w-3/4 mx-auto mt-7"
             />
 
             <CustomButton
