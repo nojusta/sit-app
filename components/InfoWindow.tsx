@@ -7,17 +7,19 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
+const INITIAL_INFO_WINDOW_HEIGHT = 100; // Adjusted initial height of the info window
 
 interface InfoWindowProps {
   selectedMarker: any;
   setSelectedMarker: (marker: any) => void;
   lastRegion: any;
   mapRef: React.RefObject<any>;
-  initialHeight: number; // Add initialHeight prop
+  initialHeight?: number; // Add initialHeight prop
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
@@ -25,9 +27,9 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   setSelectedMarker,
   lastRegion,
   mapRef,
-  initialHeight,
+  initialHeight = INITIAL_INFO_WINDOW_HEIGHT, // Default to INITIAL_INFO_WINDOW_HEIGHT if not provided
 }) => {
-  const [infoWindowHeight] = useState(new Animated.Value(0)); // Animated value for the info window height
+  const [infoWindowHeight] = useState(new Animated.Value(initialHeight)); // Animated value for the info window height
   const [infoWindowBottom] = useState(new Animated.Value(-initialHeight)); // Animated value for the info window bottom position
   const [isExpanded, setIsExpanded] = useState(false); // State to track if the info window is expanded
   const [overlayOpacity] = useState(new Animated.Value(0)); // Animated value for the overlay opacity
@@ -68,7 +70,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
         useNativeDriver: false,
       }).start();
     }
-  }, [selectedMarker]);
+  }, [selectedMarker, initialHeight]);
 
   // Pan responder to handle swipe gestures for expanding and minimizing the info window
   const panResponder = PanResponder.create({
@@ -125,10 +127,31 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
           {...panResponder.panHandlers}
         >
           <View style={styles.infoContent}>
-            <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
-            <Text style={styles.infoDescription}>
-              {visibleMarker.description}
-            </Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
+            </View>
+            <View
+              style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}
+            >
+              <Image
+                source={{ uri: visibleMarker.imageUri }}
+                style={styles.infoImage}
+              />
+            </View>
+            <View style={styles.ratingContainer}>
+              <View style={styles.ratingBox}>
+                {/* Placeholder for rating */}
+                <Text style={styles.ratingText}>Rating: ★★★★☆</Text>
+              </View>
+              <TouchableOpacity style={styles.rateButton}>
+                <Text style={styles.rateButtonText}>Rate</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.descriptionBox}>
+              <Text style={styles.infoDescription}>
+                {visibleMarker.description}
+              </Text>
+            </View>
           </View>
         </Animated.View>
       )}
@@ -153,20 +176,71 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignItems: "center",
-    padding: 20, // Ensure consistent padding
     zIndex: 2, // Ensure info window is above overlay
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   infoContent: {
     flex: 1,
     width: "100%",
     alignItems: "center",
   },
+  titleContainer: {
+    height: INITIAL_INFO_WINDOW_HEIGHT - 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   infoTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  imageBox: {
+    width: 350,
+    height: 350,
+    borderRadius: 10,
+    backgroundColor: "#f0f0f0", // Light grey background for the image box
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  ratingBox: {
+    alignItems: "flex-start",
+  },
+  ratingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  rateButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  rateButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  descriptionBox: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    width: "100%",
   },
   infoDescription: {
-    marginTop: 10,
     fontSize: 16,
   },
 });
