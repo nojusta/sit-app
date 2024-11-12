@@ -45,6 +45,7 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
   useEffect(() => {
     console.log("Fetching current user...");
+    setLoading(true);
     getCurrentUser()
       .then((res) => {
         console.log("User fetched:", res);
