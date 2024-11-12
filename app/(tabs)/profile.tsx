@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   SafeAreaView,
   Text,
@@ -9,6 +9,7 @@ import {
   FlatList,
   TouchableOpacity,
   ListRenderItem,
+  ActivityIndicator,
 } from "react-native";
 
 import { icons } from "../../constants";
@@ -28,9 +29,11 @@ interface Post {
 }
 
 const Profile: React.FC = () => {
-  const { setUser, setIsLogged } = useGlobalContext();
+  const { setUser, setIsLogged, loading, setLoading } = useGlobalContext();
+  const router = useRouter();
 
   const handleSignOut = async () => {
+    setLoading(true);
     try {
       await signOut(); // Use the signOut function from appwrite.js
       setUser(null); // Reset the user state
@@ -39,6 +42,8 @@ const Profile: React.FC = () => {
       router.replace("/sign-in");
     } catch (error) {
       Alert.alert("Error", "Failed to sign out");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,6 +56,14 @@ const Profile: React.FC = () => {
       avatar={item.creator.avatar}
     />
   );
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-800">
