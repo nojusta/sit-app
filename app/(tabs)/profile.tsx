@@ -10,12 +10,15 @@ import {
   TouchableOpacity,
   ListRenderItem,
   ActivityIndicator,
+  ActionSheetIOS,
+  Platform,
 } from "react-native";
+import { launchImageLibrary, launchCamera, ImagePickerResponse } from 'react-native-image-picker';
 
-import { icons } from "../../constants";
+import { icons, images } from "../../constants"; 
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { EmptyState, InfoBox, VideoCard } from "../../components";
-import { signOut } from "../../lib/appwrite"; // Import the signOut function
+import { signOut, uploadProfilePicture } from "../../lib/appwrite"; 
 
 interface Post {
   $id: string;
@@ -28,8 +31,14 @@ interface Post {
   };
 }
 
+interface User {
+  $id: string;
+  username: string;
+  avatar: string;
+}
+
 const Profile: React.FC = () => {
-  const { setUser, setIsLogged, loading, setLoading } = useGlobalContext();
+  const { user, setUser, setIsLogged, loading, setLoading } = useGlobalContext();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -44,6 +53,79 @@ const Profile: React.FC = () => {
       Alert.alert("Error", "Failed to sign out");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileChange = async (response: ImagePickerResponse) => {
+    if (response.didCancel) {
+      return;
+    }
+  
+    const file = response.assets?.[0];
+    if (file) {
+      setLoading(true);
+      try {
+        const fileUrl = await uploadProfilePicture({
+          uri: file.uri,
+          name: file.fileName,
+          type: file.type,
+        });
+        setUser((prevUser: User) => ({ ...prevUser, avatar: fileUrl }));
+        Alert.alert("Success", "Profile picture updated successfully");
+      } catch (error) {
+        Alert.alert("Error", "Failed to update profile picture");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleProfilePicturePress = () => {
+    console.log("Profile picture pressed");
+    if (Platform.OS === 'ios') {
+      console.log("iOS platform detected");
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Take Photo', 'Choose from Library'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          console.log("Button index:", buttonIndex);
+          if (buttonIndex === 1) {
+            console.log("Launching camera");
+            launchCamera({ mediaType: 'photo' }, handleFileChange);
+          } else if (buttonIndex === 2) {
+            console.log("Launching image library");
+            launchImageLibrary({ mediaType: 'photo' }, handleFileChange);
+          }
+        }
+      );
+    } else {
+      console.log("Android platform detected");
+      Alert.alert(
+        "Select Option",
+        "Choose an option to update your profile picture",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Take Photo",
+            onPress: () => {
+              console.log("Take Photo pressed");
+              launchCamera({ mediaType: 'photo' }, handleFileChange);
+            }
+          },
+          {
+            text: "Choose from Library",
+            onPress: () => {
+              console.log("Choose from Library pressed");
+              launchImageLibrary({ mediaType: 'photo' }, handleFileChange);
+            }
+          }
+        ]
+      );
     }
   };
 
@@ -86,19 +168,21 @@ const Profile: React.FC = () => {
             </TouchableOpacity>
 
             <View className="w-16 h-16 border border-gray-500 rounded-lg justify-center items-center">
-              {/* <Image
-                source={{ uri: user?.avatar || "" }} // Ensure avatar is a string
-                className="w-11/12 h-11/12 rounded-lg"
-                resizeMode="cover"
-              /> */}
+              <TouchableOpacity onPress={handleProfilePicturePress} style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
+                <Image
+                  source={user?.avatar ? { uri: user.avatar } : images.profile} // Use images.profile for testing
+                  className="w-11/12 h-11/12 rounded-lg"
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
             </View>
 
-            {/* <InfoBox
+            <InfoBox
               title={user?.username || ""} // Ensure username is a string
               subtitle="" // Added missing subtitle prop
               containerStyles="mt-5"
               titleStyles="text-lg"
-            /> */}
+            />
 
             <View className="mt-5 flex-row">
               <InfoBox

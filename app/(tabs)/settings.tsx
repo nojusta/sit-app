@@ -1,14 +1,112 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { useRouter } from "expo-router";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Alert,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import { icons } from "../../constants";
+import { signOut } from "../../lib/appwrite"; 
 
-const Settings = () => {
+const Settings: React.FC = () => {
+  const { setUser, setIsLogged, setLoading } = useGlobalContext();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    setLoading(true);
+    try {
+      await signOut(); // Use the signOut function from appwrite.js
+      setUser(null); // Reset the user state
+      setIsLogged(false);
+      Alert.alert("Success", "User signed out successfully");
+      router.replace("/sign-in");
+    } catch (error) {
+      Alert.alert("Error", "Failed to sign out");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View>
-      <Text>Settings</Text>
-    </View>
-  )
-}
+    <SafeAreaView className="flex-1 bg-gray-800">
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View className="flex-row justify-between items-center mb-12">
+          <Text className="text-3xl text-gray-300 font-pbold">Settings</Text>
+          <TouchableOpacity onPress={handleSignOut}>
+            <Image
+              source={icons.logout}
+              resizeMode="contain"
+              style={{ width: 28, height: 28 }}
+            />
+          </TouchableOpacity>
+        </View>
 
-export default Settings
+        <View className="mb-8">
+          <Text className="text-2xl text-gray-300 mb-4 font-pbold">Account</Text>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Privacy</Text>
+          </TouchableOpacity>
+        </View>
 
-const styles = StyleSheet.create({})
+        <View className="mb-8">
+          <Text className="text-2xl text-gray-300 mb-4 font-pbold">Notifications</Text>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Email Notifications</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Push Notifications</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-2xl text-gray-300 mb-4 font-pbold">About</Text>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Terms of Service</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="mt-4 flex-row items-center">
+            <Image
+              source={icons.profile}
+              resizeMode="contain"
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+            />
+            <Text className="text-xl text-gray-400 font-pregular">Privacy Policy</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default Settings;
