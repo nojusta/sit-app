@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
-import { signOut } from "../../lib/appwrite"; 
+import { signOut } from "../../lib/appwrite"; // Import the signOut function
 
 const Settings: React.FC = () => {
   const { setUser, setIsLogged, setLoading } = useGlobalContext();
@@ -40,7 +40,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.logout}
               resizeMode="contain"
-              style={{ width: 28, height: 28 }}
+              style={{ width: 28, height: 28, tintColor: 'red' }}
             />
           </TouchableOpacity>
         </View>
@@ -51,15 +51,15 @@ const Settings: React.FC = () => {
             <Image
               source={icons.profile}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Profile</Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
-              source={icons.profile}
+              source={icons.privacy}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Privacy</Text>
           </TouchableOpacity>
@@ -69,17 +69,17 @@ const Settings: React.FC = () => {
           <Text className="text-2xl text-gray-300 mb-4 font-pbold">Notifications</Text>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
-              source={icons.profile}
+              source={icons.push}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Email Notifications</Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
-              source={icons.profile}
+              source={icons.email}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Push Notifications</Text>
           </TouchableOpacity>
@@ -89,17 +89,17 @@ const Settings: React.FC = () => {
           <Text className="text-2xl text-gray-300 mb-4 font-pbold">About</Text>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
-              source={icons.profile}
+              source={icons.terms}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Terms of Service</Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
-              source={icons.profile}
+              source={icons.privacypolicy}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#374151' }} // Darker gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Privacy Policy</Text>
           </TouchableOpacity>

@@ -153,7 +153,7 @@ const Profile: React.FC = () => {
         data={[]} // Temporarily set to an empty array
         keyExtractor={(item) => item.$id}
         renderItem={renderItem}
-        ListEmptyComponent={() => <EmptyState title="bus" subtitle="bus" />}
+        ListEmptyComponent={() => <EmptyState title="This user has no posts." subtitle="" />}
         ListHeaderComponent={() => (
           <View className="w-full justify-center items-center mt-6 mb-12 px-4">
             <TouchableOpacity

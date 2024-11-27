@@ -36,9 +36,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({ title, subtitle }) => {
       </Text>
 
       <CustomButton
-        title="Back to Explore"
+        title="Back to Map"
         handlePress={handlePress}
-        containerStyles={{ width: "100%", marginVertical: 20 }} 
+        containerStyles="w-10/12 mt-5" 
         isLoading={isLoading}
       />
     </View>

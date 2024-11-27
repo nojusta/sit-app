@@ -14,6 +14,12 @@ const eyeHide: ImageSourcePropType = require("../assets/icons/eye-hide.png");
 const eye: ImageSourcePropType = require("../assets/icons/eye.png");
 const play: ImageSourcePropType = require("../assets/icons/play.png");
 const settings: ImageSourcePropType = require("../assets/icons/settings.png");
+const privacy: ImageSourcePropType = require("../assets/icons/privacy.png");
+const email: ImageSourcePropType = require("../assets/icons/email.png");
+const push: ImageSourcePropType = require("../assets/icons/push.png");
+const terms: ImageSourcePropType = require("../assets/icons/terms.png");
+const privacypolicy: ImageSourcePropType = require("../assets/icons/privacypolicy.png");
+
 
 const icons = {
   play,
@@ -30,6 +36,11 @@ const icons = {
   eyeHide,
   eye,
   settings,
+  privacy,
+  email,
+  push,
+  terms,
+  privacypolicy,
 };
 
 export default icons;
