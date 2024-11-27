@@ -301,7 +301,7 @@ const HomeApp: React.FC = () => {
           onPress={handleCenterOnUserLocation}
           icon="⌖"
           style="absolute bottom-24 right-5"
-          isCenterOnUser={true} // Add this prop to differentiate the button
+          isCenterOnUser={true} 
         />
         <CircleButton
           onPress={handleAddMarker}
