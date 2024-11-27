@@ -17,10 +17,10 @@ import MapView, {
 } from "react-native-maps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ClusteredMapView from "react-native-map-clustering";
-import InfoWindow from "../../components/InfoWindow"; // Import the InfoWindow component
+import InfoWindow from "../../components/InfoWindow";
 import { useMarkerContext } from "../../context/MarkerContext";
 import * as Location from "expo-location";
-import CircleButton from "../../components/CircleButton"; // Adjust the import path as needed
+import CircleButton from "../../components/CircleButton";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -300,13 +300,13 @@ const HomeApp: React.FC = () => {
         <CircleButton
           onPress={handleCenterOnUserLocation}
           icon="⌖"
-          style="absolute bottom-24 right-5"
+          style="absolute bottom-28 right-5"
           isCenterOnUser={true} 
         />
         <CircleButton
           onPress={handleAddMarker}
           icon="+"
-          style="absolute bottom-24 left-5"
+          style="absolute bottom-28 left-5"
         />
       </View>
     </SafeAreaProvider>
