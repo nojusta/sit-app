@@ -7,17 +7,19 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
+const INITIAL_INFO_WINDOW_HEIGHT = 100;
 
 interface InfoWindowProps {
   selectedMarker: any;
   setSelectedMarker: (marker: any) => void;
   lastRegion: any;
   mapRef: React.RefObject<any>;
-  initialHeight: number; // Add initialHeight prop
+  initialHeight?: number;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
@@ -25,36 +27,34 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   setSelectedMarker,
   lastRegion,
   mapRef,
-  initialHeight,
+  initialHeight = INITIAL_INFO_WINDOW_HEIGHT,
 }) => {
-  const [infoWindowHeight] = useState(new Animated.Value(0)); // Animated value for the info window height
-  const [infoWindowBottom] = useState(new Animated.Value(-initialHeight)); // Animated value for the info window bottom position
-  const [isExpanded, setIsExpanded] = useState(false); // State to track if the info window is expanded
-  const [overlayOpacity] = useState(new Animated.Value(0)); // Animated value for the overlay opacity
-  const [visibleMarker, setVisibleMarker] = useState(selectedMarker); // State to control the visibility of the marker
+  const [infoWindowHeight] = useState(new Animated.Value(initialHeight));
+  const [infoWindowBottom] = useState(new Animated.Value(-initialHeight));
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [overlayOpacity] = useState(new Animated.Value(0));
+  const [visibleMarker, setVisibleMarker] = useState(selectedMarker);
 
-  const screenHeight = Dimensions.get("window").height; // Get the screen height
-  const insets = useSafeAreaInsets(); // Get the safe area insets
+  const screenHeight = Dimensions.get("window").height;
+  const insets = useSafeAreaInsets();
 
-  // Effect to handle marker visibility
   useEffect(() => {
     if (selectedMarker === null) {
       Animated.timing(infoWindowBottom, {
-        toValue: -initialHeight, // Move the info window downwards
-        duration: 1000, // Slower closing animation
+        toValue: -initialHeight,
+        duration: 1000,
         easing: Easing.in(Easing.ease),
         useNativeDriver: false,
       }).start(() => {
-        setVisibleMarker(null); // Update the marker visibility after the animation
+        setVisibleMarker(null);
         Animated.timing(overlayOpacity, {
           toValue: 0,
-          duration: 1000, // Slower closing animation
-          useNativeDriver: false, // Set to false for opacity animation
+          duration: 1000,
+          useNativeDriver: false,
         }).start();
       });
     } else {
-      setVisibleMarker(selectedMarker); // Update the marker visibility immediately
-      // Animate to initial height when a marker is selected
+      setVisibleMarker(selectedMarker);
       Animated.timing(infoWindowHeight, {
         toValue: initialHeight,
         duration: 400,
@@ -68,18 +68,15 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
         useNativeDriver: false,
       }).start();
     }
-  }, [selectedMarker]);
+  }, [selectedMarker, initialHeight]);
 
-  // Pan responder to handle swipe gestures for expanding and minimizing the info window
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dy) > 100; // Increase the threshold for detecting the swipe gesture
-    },
+    onMoveShouldSetPanResponder: (_, gestureState) =>
+      Math.abs(gestureState.dy) > 100,
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dy < 0 && !isExpanded) {
-        // Swipe up to expand
         Animated.timing(infoWindowHeight, {
-          toValue: screenHeight - insets.top, // Adjust to stop at the bottom of the notch
+          toValue: screenHeight - insets.top,
           duration: 480,
           easing: Easing.out(Easing.ease),
           useNativeDriver: false,
@@ -87,12 +84,11 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
           setIsExpanded(true);
           Animated.timing(overlayOpacity, {
             toValue: 1,
-            duration: 400, // Adjust this value to change the speed of the blur animation
-            useNativeDriver: false, // Set to false for opacity animation
+            duration: 400,
+            useNativeDriver: false,
           }).start();
         });
       } else if (gestureState.dy > 0 && isExpanded) {
-        // Swipe down to minimize
         Animated.timing(infoWindowHeight, {
           toValue: initialHeight,
           duration: 480,
@@ -102,8 +98,8 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
           setIsExpanded(false);
           Animated.timing(overlayOpacity, {
             toValue: 0,
-            duration: 400, // Adjust this value to change the speed of the blur animation
-            useNativeDriver: false, // Set to false for opacity animation
+            duration: 400,
+            useNativeDriver: false,
           }).start();
         });
       }
@@ -114,7 +110,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
     <>
       <Animated.View
         style={[styles.overlay, { opacity: overlayOpacity }]}
-        pointerEvents={isExpanded ? "auto" : "none"} // Disable pointer events when overlay is not visible
+        pointerEvents={isExpanded ? "auto" : "none"}
       />
       {visibleMarker && (
         <Animated.View
@@ -125,10 +121,28 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
           {...panResponder.panHandlers}
         >
           <View style={styles.infoContent}>
-            <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
-            <Text style={styles.infoDescription}>
-              {visibleMarker.description}
-            </Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
+            </View>
+            <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
+              <Image
+                source={{ uri: visibleMarker.imageUri }}
+                style={styles.infoImage}
+              />
+            </View>
+            <View style={styles.ratingContainer}>
+              <View style={styles.ratingBox}>
+                <Text style={styles.ratingText}>Rating: ★★★★☆</Text>
+              </View>
+              <TouchableOpacity style={styles.rateButton}>
+                <Text style={styles.rateButtonText}>Rate</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.descriptionBox}>
+              <Text style={styles.infoDescription}>
+                {visibleMarker.description}
+              </Text>
+            </View>
           </View>
         </Animated.View>
       )}
@@ -143,8 +157,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Grey with opacity
-    zIndex: 1, // Ensure overlay is above other content
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    zIndex: 1,
   },
   infoWindow: {
     position: "absolute",
@@ -153,20 +167,71 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignItems: "center",
-    padding: 20, // Ensure consistent padding
-    zIndex: 2, // Ensure info window is above overlay
+    zIndex: 2,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   infoContent: {
     flex: 1,
     width: "100%",
     alignItems: "center",
   },
+  titleContainer: {
+    height: INITIAL_INFO_WINDOW_HEIGHT - 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   infoTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  imageBox: {
+    width: 350,
+    height: 350,
+    borderRadius: 10,
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  ratingBox: {
+    alignItems: "flex-start",
+  },
+  ratingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  rateButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  rateButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  descriptionBox: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    width: "100%",
   },
   infoDescription: {
-    marginTop: 10,
     fontSize: 16,
   },
 });

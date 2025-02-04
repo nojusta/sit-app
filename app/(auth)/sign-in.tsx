@@ -41,7 +41,7 @@ const SignIn = () => {
       router.replace("/home");
     } catch (error: unknown) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert("Error", "Incorrect email or password. Please try again.");
       } else {
         Alert.alert("Error", "An unknown error occurred.");
       }

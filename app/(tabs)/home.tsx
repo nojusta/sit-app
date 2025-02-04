@@ -21,6 +21,7 @@ import InfoWindow from "../../components/InfoWindow";
 import { useMarkerContext } from "../../context/MarkerContext";
 import * as Location from "expo-location";
 import CircleButton from "../../components/CircleButton";
+import InputBox from "../../components/InputBox"; 
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -34,6 +35,7 @@ const HomeApp: React.FC = () => {
   ); // State to store the user's location
   const [errorMsg, setErrorMsg] = useState<string | null>(null); // State to store error messages
   const [userMarker, setUserMarker] = useState<Region | null>(null); // State to store the user's marker
+  const [markerName, setMarkerName] = useState<string>(""); // State to store the marker name
   const [markerInfo, setMarkerInfo] = useState<string>(""); // State to store the marker information
   const [showInputBox, setShowInputBox] = useState<boolean>(false); // State to show/hide the input box
   const mapRef = useRef<MapView>(null); // Reference to the MapView
@@ -223,94 +225,89 @@ const HomeApp: React.FC = () => {
     },
   };
 
-  return (
-    <SafeAreaProvider>
-      <View className="flex-1">
-        <ClusteredMapView
-          ref={mapRef}
-          provider={
-            Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-          }
-          className="flex-1"
-          initialRegion={initialRegion}
-          onRegionChangeComplete={handleRegionChangeComplete}
-          onPress={handleMapPress}
-          onLongPress={handleLongPress} // Handle long press on the map
-          showsUserLocation={true}
-          showsMyLocationButton={false}
-          clusterColor="black"
-          clusterTextColor="white"
-          minimumClusterSize={5}
-          customClusterStyles={clusterStyles}
-        >
-          <UrlTile
-            urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
-            maximumZ={19}
-            flipY={false}
-          />
-          {markers.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={marker.coordinate}
-              onPress={() => handleMarkerPress(marker)}
-            >
-              <Image
-                source={require("../../assets/images/custom-marker.png")}
-                className="w-10 h-10"
-              />
-            </Marker>
-          ))}
-          {userMarker && (
-            <Marker
-              coordinate={userMarker}
-              draggable
-              onDragEnd={handleMarkerDragEnd}
-              title={"Your Marker"}
+    return (
+      <SafeAreaProvider>
+        <View className="flex-1">
+          <ClusteredMapView
+            ref={mapRef}
+            provider={
+              Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+            }
+            className="flex-1"
+            initialRegion={initialRegion}
+            onRegionChangeComplete={handleRegionChangeComplete}
+            onPress={handleMapPress}
+            onLongPress={handleLongPress} // Handle long press on the map
+            showsUserLocation={true}
+            showsMyLocationButton={false}
+            clusterColor="black"
+            clusterTextColor="white"
+            minimumClusterSize={5}
+            customClusterStyles={clusterStyles}
+          >
+            <UrlTile
+              urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
+              maximumZ={19}
+              flipY={false}
+            />
+            {markers.map((marker, index) => (
+              <Marker
+                key={index}
+                coordinate={marker.coordinate}
+                onPress={() => handleMarkerPress(marker)}
+              >
+                <Image
+                  source={require("../../assets/images/custom-marker.png")}
+                  className="w-10 h-10"
+                />
+              </Marker>
+            ))}
+            {userMarker && (
+              <Marker
+                coordinate={userMarker}
+                draggable
+                onDragEnd={handleMarkerDragEnd}
+                title={"Your Marker"}
+              >
+                <Image
+                  source={require("../../assets/images/custom-marker.png")}
+                  className="w-10 h-10"
+                />
+              </Marker>
+            )}
+          </ClusteredMapView>
+          {selectedMarker && (
+            <InfoWindow
+              selectedMarker={selectedMarker}
+              setSelectedMarker={setSelectedMarker}
+              lastRegion={lastRegion}
+              mapRef={mapRef}
+              initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
             />
           )}
-        </ClusteredMapView>
-        {selectedMarker && (
-          <InfoWindow
-            selectedMarker={selectedMarker}
-            setSelectedMarker={setSelectedMarker}
-            lastRegion={lastRegion}
-            mapRef={mapRef}
-            initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
-          />
-        )}
-        {showInputBox && (
-          <View className="absolute bottom-44 left-5 right-5 bg-white p-2 rounded shadow-lg">
-            <TextInput
-              className="h-10 border border-gray-400 mb-2 px-2"
-              placeholder="Enter location information"
-              value={markerInfo}
-              onChangeText={setMarkerInfo}
+          {showInputBox && (
+            <InputBox
+              markerName={markerName}
+              setMarkerName={setMarkerName}
+              markerInfo={markerInfo}
+              setMarkerInfo={setMarkerInfo}
+              setShowInputBox={setShowInputBox}
             />
-            <TouchableOpacity
-              className="bg-blue-500 p-2 rounded items-center"
-              onPress={() => {
-                Alert.alert("Marker Info", markerInfo);
-                setShowInputBox(false); // Hide the input box
-              }}
-            >
-              <Text className="text-white font-bold">Save</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <CircleButton
-          onPress={handleCenterOnUserLocation}
-          icon="⌖"
-          style="absolute bottom-28 right-5"
-          isCenterOnUser={true} 
-        />
-        <CircleButton
-          onPress={handleAddMarker}
-          icon="+"
-          style="absolute bottom-28 left-5"
-        />
-      </View>
-    </SafeAreaProvider>
-  );
-};
-
-export default HomeApp;
+          )}
+          <CircleButton
+            onPress={handleCenterOnUserLocation}
+            icon="⌖"
+            style="absolute bottom-28 right-5"
+            isCenterOnUser={true} 
+          />
+          <CircleButton
+            onPress={handleAddMarker}
+            icon="+"
+            style="absolute bottom-28 left-5"
+          />
+        </View>
+      </SafeAreaProvider>
+    );
+  };
+  
+  export default HomeApp;
