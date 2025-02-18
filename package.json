@@ -46,7 +46,7 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.3",
     "react-native-gesture-handler": "~2.20.2",
-    "react-native-image-picker": "^7.1.2",
+    "react-native-image-picker": "^7.2.3",
     "react-native-leaflet": "^0.0.0-reserved",
     "react-native-leaflet-view": "^0.1.2",
     "react-native-map-clustering": "^3.4.2",

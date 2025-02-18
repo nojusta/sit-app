@@ -122,13 +122,17 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
         >
           <View style={styles.infoContent}>
             <View style={styles.titleContainer}>
-              <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
+              <Text style={styles.infoTitle}>{visibleMarker.markerName}</Text>
             </View>
-            <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
-              <Image
-                source={{ uri: visibleMarker.imageUri }}
-                style={styles.infoImage}
-              />
+            <View
+              style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}
+            >
+              {visibleMarker.image && (
+                <Image
+                  source={{ uri: visibleMarker.image }}
+                  style={styles.infoImage}
+                />
+              )}
             </View>
             <View style={styles.ratingContainer}>
               <View style={styles.ratingBox}>
@@ -140,7 +144,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
             </View>
             <View style={styles.descriptionBox}>
               <Text style={styles.infoDescription}>
-                {visibleMarker.description}
+                {visibleMarker.markerInfo}
               </Text>
             </View>
           </View>

@@ -21,13 +21,15 @@ import InfoWindow from "../../components/InfoWindow";
 import { useMarkerContext } from "../../context/MarkerContext";
 import * as Location from "expo-location";
 import CircleButton from "../../components/CircleButton";
-import InputBox from "../../components/InputBox"; 
+import InputBox from "../../components/InputBox";
+import { fetchMarkers } from "../../lib/appwrite";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
 const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
   const [zoomLevel, setZoomLevel] = useState<number>(10); // State to track the zoom level
+  const [fetchedMarkers, setFetchedMarkers] = useState<any[]>([]); // State to store markers
   const [selectedMarker, setSelectedMarker] = useState<any>(null); // State to track the selected marker
   const [lastRegion, setLastRegion] = useState<Region | null>(null); // State to store the last region before zooming into a marker
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -62,6 +64,20 @@ const HomeApp: React.FC = () => {
     })();
   }, []);
 
+  // Fetch markers from the database
+  useEffect(() => {
+    const loadMarkers = async () => {
+      try {
+        const fetchedMarkers = await fetchMarkers();
+        setFetchedMarkers(fetchedMarkers);
+      } catch (error) {
+        console.error("Error loading markers:", error);
+      }
+    };
+
+    loadMarkers();
+  }, []);
+
   // Handle region change complete event
   const handleRegionChangeComplete = (region: Region): void => {
     const zoom = Math.round(Math.log(360 / region.longitudeDelta) / Math.LN2);
@@ -70,7 +86,7 @@ const HomeApp: React.FC = () => {
 
   // Handle marker press event
   const handleMarkerPress = (marker: any) => {
-    console.log("Marker pressed:", marker);
+    console.log("Marker pressed:", markerName);
     if (mapRef.current) {
       mapRef.current.getMapBoundaries().then((boundaries) => {
         const currentRegion = {
@@ -89,17 +105,19 @@ const HomeApp: React.FC = () => {
         setLastRegion(currentRegion);
       });
     }
-
     setSelectedMarker(marker);
     setIsMarkerSelected(true);
-    mapRef.current?.animateToRegion(
-      {
-        ...marker.coordinate,
-        latitudeDelta: 0.002,
-        longitudeDelta: 0.002,
-      },
-      800
-    );
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: marker.latitude,
+          longitude: marker.longitude,
+          latitudeDelta: 0.002,
+          longitudeDelta: 0.002,
+        },
+        800
+      );
+    }
   };
 
   // Handle map press event
@@ -174,40 +192,6 @@ const HomeApp: React.FC = () => {
     });
   };
 
-  // Multiple Marker data
-  const markers = [
-    {
-      id: 1,
-      coordinate: { latitude: 54.6868, longitude: 25.2799 },
-      title: "Kudirka Square",
-      description: "Benches, skaters, and a statue of Vincas Kudirka",
-    },
-    {
-      id: 2,
-      coordinate: { latitude: 54.6839, longitude: 25.2875 },
-      title: "Cathedral Square",
-      description: "Main square of the Vilnius Old Town",
-    },
-    {
-      id: 3,
-      coordinate: { latitude: 54.685, longitude: 25.292 },
-      title: "Gediminas' Tower",
-      description: "The remaining part of the Upper Castle in Vilnius",
-    },
-    {
-      id: 4,
-      coordinate: { latitude: 54.682, longitude: 25.2797 },
-      title: "Vilnius University",
-      description: "One of the oldest universities in Northern Europe",
-    },
-    {
-      id: 5,
-      coordinate: { latitude: 54.6781, longitude: 25.2858 },
-      title: "Gate of Dawn",
-      description: "A city gate of Vilnius and a prominent landmark",
-    },
-  ];
-
   // Customizable cluster styles
   const clusterStyles = {
     container: {
@@ -225,89 +209,94 @@ const HomeApp: React.FC = () => {
     },
   };
 
-    return (
-      <SafeAreaProvider>
-        <View className="flex-1">
-          <ClusteredMapView
-            ref={mapRef}
-            provider={
-              Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-            }
-            className="flex-1"
-            initialRegion={initialRegion}
-            onRegionChangeComplete={handleRegionChangeComplete}
-            onPress={handleMapPress}
-            onLongPress={handleLongPress} // Handle long press on the map
-            showsUserLocation={true}
-            showsMyLocationButton={false}
-            clusterColor="black"
-            clusterTextColor="white"
-            minimumClusterSize={5}
-            customClusterStyles={clusterStyles}
-          >
-            <UrlTile
-              urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
-              maximumZ={19}
-              flipY={false}
-            />
-            {markers.map((marker, index) => (
-              <Marker
-                key={index}
-                coordinate={marker.coordinate}
-                onPress={() => handleMarkerPress(marker)}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            ))}
-            {userMarker && (
-              <Marker
-                coordinate={userMarker}
-                draggable
-                onDragEnd={handleMarkerDragEnd}
-                title={"Your Marker"}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            )}
-          </ClusteredMapView>
-          {selectedMarker && (
-            <InfoWindow
-              selectedMarker={selectedMarker}
-              setSelectedMarker={setSelectedMarker}
-              lastRegion={lastRegion}
-              mapRef={mapRef}
-              initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
-            />
-          )}
-          {showInputBox && (
-            <InputBox
-              markerName={markerName}
-              setMarkerName={setMarkerName}
-              markerInfo={markerInfo}
-              setMarkerInfo={setMarkerInfo}
-              setShowInputBox={setShowInputBox}
-            />
-          )}
-          <CircleButton
-            onPress={handleCenterOnUserLocation}
-            icon="⌖"
-            style="absolute bottom-28 right-5"
-            isCenterOnUser={true} 
+  return (
+    <SafeAreaProvider>
+      <View className="flex-1">
+        <ClusteredMapView
+          ref={mapRef}
+          provider={
+            Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+          }
+          className="flex-1"
+          initialRegion={initialRegion}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          onPress={handleMapPress}
+          onLongPress={handleLongPress} // Handle long press on the map
+          showsUserLocation={true}
+          showsMyLocationButton={false}
+          clusterColor="black"
+          clusterTextColor="white"
+          minimumClusterSize={5}
+          customClusterStyles={clusterStyles}
+        >
+          <UrlTile
+            urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
+            maximumZ={19}
+            flipY={false}
           />
-          <CircleButton
-            onPress={handleAddMarker}
-            icon="+"
-            style="absolute bottom-28 left-5"
+          {fetchedMarkers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              onPress={() => handleMarkerPress(marker)}
+            >
+              <Image
+                source={require("../../assets/images/custom-marker.png")}
+                className="w-10 h-10"
+              />
+            </Marker>
+          ))}
+          {userMarker && (
+            <Marker
+              coordinate={userMarker}
+              draggable
+              onDragEnd={handleMarkerDragEnd}
+              title={"Your Marker"}
+            >
+              <Image
+                source={require("../../assets/images/custom-marker.png")}
+                className="w-10 h-10"
+              />
+            </Marker>
+          )}
+        </ClusteredMapView>
+        {selectedMarker && (
+          <InfoWindow
+            selectedMarker={selectedMarker}
+            setSelectedMarker={setSelectedMarker}
+            lastRegion={lastRegion}
+            mapRef={mapRef}
+            initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
           />
-        </View>
-      </SafeAreaProvider>
-    );
-  };
-  
-  export default HomeApp;
+        )}
+        {showInputBox && (
+          <InputBox
+            markerName={markerName}
+            setMarkerName={setMarkerName}
+            markerInfo={markerInfo}
+            setMarkerInfo={setMarkerInfo}
+            setShowInputBox={setShowInputBox}
+            latitude={userMarker?.latitude ?? 0}
+            longitude={userMarker?.longitude ?? 0}
+          />
+        )}
+        <CircleButton
+          onPress={handleCenterOnUserLocation}
+          icon="⌖"
+          style="absolute bottom-28 right-5"
+          isCenterOnUser={true}
+        />
+        <CircleButton
+          onPress={handleAddMarker}
+          icon="+"
+          style="absolute bottom-28 left-5"
+        />
+      </View>
+    </SafeAreaProvider>
+  );
+};
+
+export default HomeApp;
