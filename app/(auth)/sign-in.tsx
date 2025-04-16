@@ -11,10 +11,10 @@ import {
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { signIn, getCurrentUser } from "../../lib/appwrite";
 import { Link, router } from "expo-router";
-import FormField from "../../components/FormField"; // Assuming FormField is a custom component
-import CustomButton from "../../components/CustomButton"; // Assuming CustomButton is a custom component
-import { images } from "../../constants"; // Assuming images is an object with image sources
-
+import FormField from "../../components/FormField"; 
+import CustomButton from "../../components/CustomButton"; 
+import { images } from "../../constants"; 
+import { User } from "../../context/GlobalProvider"; 
 const SignIn = () => {
   const { setUser, setIsLogged } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
@@ -28,15 +28,16 @@ const SignIn = () => {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
-
+  
     setSubmitting(true);
-
+  
     try {
       await signIn(form.email, form.password);
       const result = await getCurrentUser();
-      setUser(result);
-      setIsLogged(true);
-
+      
+      setUser(result as User);
+      setIsLogged(!!result);
+  
       Alert.alert("Success", "User signed in successfully");
       router.replace("/home");
     } catch (error: unknown) {

@@ -14,6 +14,7 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import { createUser } from "../../lib/appwrite";
 import { CustomButton, FormField } from "../../components";
 import { images } from "../../constants";
+import { User } from "../../context/GlobalProvider";
 
 const SignUp = () => {
   const { setUser, setIsLogged } = useGlobalContext();
@@ -27,15 +28,15 @@ const SignUp = () => {
   const submit = async () => {
     if (form.username === "" || form.email === "" || form.password === "") {
       Alert.alert("Error", "Please fill in all fields");
-      return; // Add return to prevent further execution if validation fails
+      return;
     }
-
+  
     setSubmitting(true);
     try {
       const result = await createUser(form.email, form.password, form.username);
-      setUser(result);
+      setUser(result as User);
       setIsLogged(true);
-
+  
       Alert.alert("Success", "User signed up successfully");
       router.replace("/home");
     } catch (error: unknown) {

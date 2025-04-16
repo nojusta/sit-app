@@ -1,12 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
-  TouchableOpacity,
   Image,
   Alert,
-  Text,
   Platform,
-  TextInput,
 } from "react-native";
 import MapView, {
   UrlTile,
@@ -242,6 +239,7 @@ const HomeApp: React.FC = () => {
             showsMyLocationButton={false}
             clusterColor="black"
             clusterTextColor="white"
+            // @ts-ignore (for now)
             minimumClusterSize={5}
             customClusterStyles={clusterStyles}
           >

@@ -4,25 +4,30 @@ import React, {
   useEffect,
   useState,
   ReactNode,
-  ReactElement,
   Dispatch,
   SetStateAction,
 } from "react";
 import { getCurrentUser } from "../lib/appwrite";
+import { Models } from "react-native-appwrite";
 
-// Define types for context
+export interface User extends Models.Document {
+  accountID: string;
+  email: string;
+  username: string;
+  avatar?: string;
+}
+
 interface GlobalContextProps {
   isLogged: boolean;
-  setIsLogged: Dispatch<React.SetStateAction<boolean>>;
-  user: any | null; // Replace 'any' with an actual type if possible
-  setUser: Dispatch<React.SetStateAction<any | null>>;
+  setIsLogged: Dispatch<SetStateAction<boolean>>;
+  user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-// Define a default value for the context (can be adjusted as needed)
 const GlobalContext = createContext<GlobalContextProps>({
-  isLogged: true,
+  isLogged: false,
   setIsLogged: () => {},
   user: null,
   setUser: () => {},
@@ -30,41 +35,35 @@ const GlobalContext = createContext<GlobalContextProps>({
   setLoading: () => {},
 });
 
-// Custom hook to access the context
 export const useGlobalContext = () => useContext(GlobalContext);
 
-// Define props for the GlobalProvider component
 interface GlobalProviderProps {
   children: ReactNode;
 }
 
 const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [isLogged, setIsLogged] = useState<boolean>(false);
-  const [user, setUser] = useState<any | null>(null); // Replace 'any' if a specific type is available
-  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("Fetching current user...");
     setLoading(true);
     getCurrentUser()
       .then((res) => {
-        console.log("User fetched:", res);
         if (res) {
           setIsLogged(true);
-          setUser(res);
+          setUser(res as User);
         } else {
-          // Handle guest user
           setIsLogged(false);
           setUser(null);
         }
       })
-      .catch((error) => {
-        console.error("Error fetching user:", error);
+      .catch(() => {
         setIsLogged(false);
-        setUser(null); // Reset user state on error
+        setUser(null);
       })
       .finally(() => {
-        setLoading(false); // Ensure loading completes for all cases
+        setLoading(false);
       });
   }, []);
 

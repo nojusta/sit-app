@@ -31,12 +31,6 @@ interface Post {
   };
 }
 
-interface User {
-  $id: string;
-  username: string;
-  avatar: string;
-}
-
 const Profile: React.FC = () => {
   const { user, setUser, setIsLogged, loading, setLoading } = useGlobalContext();
   const router = useRouter();
@@ -67,10 +61,16 @@ const Profile: React.FC = () => {
       try {
         const fileUrl = await uploadProfilePicture({
           uri: file.uri,
-          name: file.fileName,
-          type: file.type,
+          name: file.fileName || 'profile.jpg',
+          type: file.type || 'image/jpeg',
+          size: file.fileSize || 0,
         });
-        setUser((prevUser: User) => ({ ...prevUser, avatar: fileUrl }));
+        
+        setUser((prevUser) => {
+          if (!prevUser) return null;
+          return { ...prevUser, avatar: fileUrl };
+        });
+        
         Alert.alert("Success", "Profile picture updated successfully");
       } catch (error) {
         Alert.alert("Error", "Failed to update profile picture");
