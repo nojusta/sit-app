@@ -1,13 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
-import {
-  Image,
-  Text,
-  View,
-  ImageSourcePropType,
-  Animated,
-} from "react-native";
+import { Image, Text, View, ImageSourcePropType, Animated } from "react-native";
 
 import { icons } from "../../constants";
 import { Loader } from "../../components";
@@ -23,7 +17,7 @@ interface TabIconProps {
 
 const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center', width: 60 }}>
+    <View style={{ alignItems: "center", justifyContent: "center", width: 60 }}>
       <Image
         source={icon}
         resizeMode="contain"
@@ -35,7 +29,7 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
           fontSize: 10,
           fontFamily: focused ? "Poppins-SemiBold" : "Poppins-Regular",
           marginTop: 2,
-          textAlign: 'center',
+          textAlign: "center",
         }}
       >
         {name}
@@ -46,11 +40,8 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 
 const TabLayout: React.FC = () => {
   const { loading, isLogged } = useGlobalContext();
-  const [isTabLayoutVisible, setIsTabLayoutVisible] = useState(true);
   const tabLayoutTranslateY = useRef(new Animated.Value(0)).current;
   const { isMarkerSelected } = useMarkerContext();
-
-  if (!loading && !isLogged) return <Redirect href="/sign-in" />;
 
   useEffect(() => {
     Animated.timing(tabLayoutTranslateY, {
@@ -58,8 +49,7 @@ const TabLayout: React.FC = () => {
       duration: 300,
       useNativeDriver: true,
     }).start();
-    setIsTabLayoutVisible(!isMarkerSelected);
-  }, [isMarkerSelected]);
+  }, [isMarkerSelected, tabLayoutTranslateY]);
 
   useEffect(() => {
     console.log("Marker selected state:", isMarkerSelected);
@@ -67,6 +57,7 @@ const TabLayout: React.FC = () => {
 
   return (
     <>
+      {!loading && !isLogged ? <Redirect href="/sign-in" /> : null}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "#ECEDEE", // Light gray for active tab
@@ -90,12 +81,7 @@ const TabLayout: React.FC = () => {
             title: "Home",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.home}
-                color={color}
-                name="Home"
-                focused={focused}
-              />
+              <TabIcon icon={icons.home} color={color} name="Home" focused={focused} />
             ),
           }}
         />

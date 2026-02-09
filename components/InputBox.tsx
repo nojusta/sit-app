@@ -16,10 +16,8 @@ const InputBox: React.FC<InputBoxProps> = ({
   setMarkerInfo,
   setShowInputBox,
 }) => {
-  const handleCameraPress = () =>
-    Alert.alert("Camera", "Camera button pressed");
-  const handleGalleryPress = () =>
-    Alert.alert("Gallery", "Gallery button pressed");
+  const handleCameraPress = () => Alert.alert("Camera", "Camera button pressed");
+  const handleGalleryPress = () => Alert.alert("Gallery", "Gallery button pressed");
 
   const handleSubmit = () => {
     Alert.alert("Marker Info", `Name: ${markerName}\nInfo: ${markerInfo}`);

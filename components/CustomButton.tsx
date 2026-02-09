@@ -30,9 +30,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       }`}
       disabled={isLoading}
     >
-      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>
-        {title}
-      </Text>
+      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>{title}</Text>
 
       {isLoading && (
         <ActivityIndicator

@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   ScrollView,
   View,
-  TextInput,
   Text,
   Image,
   Dimensions,
@@ -30,13 +29,13 @@ const SignUp = () => {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
-  
+
     setSubmitting(true);
     try {
       const result = await createUser(form.email, form.password, form.username);
       setUser(result as User);
       setIsLogged(true);
-  
+
       Alert.alert("Success", "User signed up successfully");
       router.replace("/home");
     } catch (error: unknown) {
@@ -106,10 +105,7 @@ const SignUp = () => {
             <Text className="text-lg text-gray-100 font-pregular">
               Have an account already?
             </Text>
-            <Link
-              href="/sign-in"
-              className="text-lg font-psemibold text-secondary"
-            >
+            <Link href="/sign-in" className="text-lg font-psemibold text-secondary">
               Login
             </Link>
           </View>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { router, usePathname } from "expo-router";
-import { View, TouchableOpacity, Image, TextInput, Alert, TextInputProps } from "react-native";
+import { View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import React from "react";
 
 import { icons } from "../constants";
@@ -28,7 +28,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ initialQuery = "" }) => {
           if (query === "")
             return Alert.alert(
               "Missing Query",
-              "Please input something to search results across database"
+              "Please input something to search results across database",
             );
 
           if (pathname.startsWith("/search")) router.setParams({ query });

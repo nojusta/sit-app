@@ -11,10 +11,10 @@ import {
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { signIn, getCurrentUser } from "../../lib/appwrite";
 import { Link, router } from "expo-router";
-import FormField from "../../components/FormField"; 
-import CustomButton from "../../components/CustomButton"; 
-import { images } from "../../constants"; 
-import { User } from "../../context/GlobalProvider"; 
+import FormField from "../../components/FormField";
+import CustomButton from "../../components/CustomButton";
+import { images } from "../../constants";
+import { User } from "../../context/GlobalProvider";
 const SignIn = () => {
   const { setUser, setIsLogged } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
@@ -28,16 +28,16 @@ const SignIn = () => {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
-  
+
     setSubmitting(true);
-  
+
     try {
       await signIn(form.email, form.password);
       const result = await getCurrentUser();
-      
+
       setUser(result as User);
       setIsLogged(!!result);
-  
+
       Alert.alert("Success", "User signed in successfully");
       router.replace("/home");
     } catch (error: unknown) {
@@ -98,10 +98,7 @@ const SignIn = () => {
             <Text className="text-lg text-gray-100 font-pregular">
               Don't have an account?
             </Text>
-            <Link
-              href="/sign-up"
-              className="text-lg font-psemibold text-secondary-100"
-            >
+            <Link href="/sign-up" className="text-lg font-psemibold text-secondary-100">
               Sign up
             </Link>
           </View>

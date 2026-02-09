@@ -3,29 +3,31 @@ import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "../constants"; 
+import { images } from "../constants";
 import Loader from "../components/Loader";
-import CustomButton from "../components/CustomButton"; 
-import { useGlobalContext } from "../context/GlobalProvider";
-import Constants from "expo-constants"; 
-import { adminLogin } from "../lib/appwrite"; 
+import CustomButton from "../components/CustomButton";
+import { useGlobalContext, User } from "../context/GlobalProvider";
+import Constants from "expo-constants";
+import { adminLogin } from "../lib/appwrite";
 
 const { ADMIN_EMAIL, ADMIN_PASSWORD } = Constants.expoConfig?.extra || {};
 
 const MainApp = () => {
-  const { setUser, isLogged, setIsLogged, loading } = useGlobalContext(); 
+  const { setUser, isLogged, setIsLogged, loading } = useGlobalContext();
   const [submitting, setSubmitting] = useState(false);
 
   const handleSignIn = async () => {
     if (ADMIN_EMAIL && ADMIN_PASSWORD) {
       setSubmitting(true);
-      await adminLogin(
-        ADMIN_EMAIL,
-        ADMIN_PASSWORD,
-        setUser,
-        setIsLogged,
-        setSubmitting
-      );
+      try {
+        const user = await adminLogin(ADMIN_EMAIL, ADMIN_PASSWORD);
+        setUser(user as User | null);
+        setIsLogged(true);
+      } catch (error) {
+        if (__DEV__) console.error("Admin login failed", error);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 

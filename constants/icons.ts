@@ -20,7 +20,6 @@ const push: ImageSourcePropType = require("../assets/icons/push.png");
 const terms: ImageSourcePropType = require("../assets/icons/terms.png");
 const privacypolicy: ImageSourcePropType = require("../assets/icons/privacypolicy.png");
 
-
 const icons = {
   play,
   bookmark,

@@ -1,16 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Image,
-  Alert,
-  Platform,
-} from "react-native";
+import { View, Image, Alert, Platform } from "react-native";
 import MapView, {
   UrlTile,
   Region,
   Marker,
   PROVIDER_GOOGLE,
   PROVIDER_DEFAULT,
+  LatLng,
+  MapEvent,
 } from "react-native-maps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ClusteredMapView from "react-native-map-clustering";
@@ -18,19 +15,23 @@ import InfoWindow from "../../components/InfoWindow";
 import { useMarkerContext } from "../../context/MarkerContext";
 import * as Location from "expo-location";
 import CircleButton from "../../components/CircleButton";
-import InputBox from "../../components/InputBox"; 
+import InputBox from "../../components/InputBox";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
+type MarkerData = {
+  id: number;
+  coordinate: LatLng;
+  title: string;
+  description: string;
+  imageUri?: string;
+};
+
 const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
-  const [zoomLevel, setZoomLevel] = useState<number>(10); // State to track the zoom level
-  const [selectedMarker, setSelectedMarker] = useState<any>(null); // State to track the selected marker
+  const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [lastRegion, setLastRegion] = useState<Region | null>(null); // State to store the last region before zooming into a marker
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null
-  ); // State to store the user's location
-  const [errorMsg, setErrorMsg] = useState<string | null>(null); // State to store error messages
+  const [location, setLocation] = useState<Location.LocationObject | null>(null); // State to store the user's location
   const [userMarker, setUserMarker] = useState<Region | null>(null); // State to store the user's marker
   const [markerName, setMarkerName] = useState<string>(""); // State to store the marker name
   const [markerInfo, setMarkerInfo] = useState<string>(""); // State to store the marker information
@@ -48,39 +49,30 @@ const HomeApp: React.FC = () => {
   // Request location permissions and get the user's current location
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
     })();
   }, []);
 
-  // Handle region change complete event
-  const handleRegionChangeComplete = (region: Region): void => {
-    const zoom = Math.round(Math.log(360 / region.longitudeDelta) / Math.LN2);
-    setZoomLevel(zoom);
-  };
-
   // Handle marker press event
-  const handleMarkerPress = (marker: any) => {
+  const handleMarkerPress = (marker: MarkerData) => {
     console.log("Marker pressed:", marker);
     if (mapRef.current) {
       mapRef.current.getMapBoundaries().then((boundaries) => {
         const currentRegion = {
-          latitude:
-            (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
+          latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
           longitude:
-            (boundaries.northEast.longitude + boundaries.southWest.longitude) /
-            2,
+            (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
           latitudeDelta: Math.abs(
-            boundaries.northEast.latitude - boundaries.southWest.latitude
+            boundaries.northEast.latitude - boundaries.southWest.latitude,
           ),
           longitudeDelta: Math.abs(
-            boundaries.northEast.longitude - boundaries.southWest.longitude
+            boundaries.northEast.longitude - boundaries.southWest.longitude,
           ),
         };
         setLastRegion(currentRegion);
@@ -95,7 +87,7 @@ const HomeApp: React.FC = () => {
         latitudeDelta: 0.002,
         longitudeDelta: 0.002,
       },
-      800
+      800,
     );
   };
 
@@ -122,13 +114,10 @@ const HomeApp: React.FC = () => {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         },
-        1000
+        1000,
       );
     } else {
-      Alert.alert(
-        "Location not available",
-        "Unable to get your current location."
-      );
+      Alert.alert("Location not available", "Unable to get your current location.");
     }
   };
 
@@ -142,15 +131,12 @@ const HomeApp: React.FC = () => {
         longitudeDelta: 0.01,
       });
     } else {
-      Alert.alert(
-        "Location not available",
-        "Unable to get your current location."
-      );
+      Alert.alert("Location not available", "Unable to get your current location.");
     }
   };
 
   // Handle long press on the map to add a marker
-  const handleLongPress = (e: any) => {
+  const handleLongPress = (e: MapEvent<{ coordinate: LatLng }>) => {
     const coordinate = e.nativeEvent.coordinate;
     setUserMarker({
       latitude: coordinate.latitude,
@@ -162,7 +148,7 @@ const HomeApp: React.FC = () => {
   };
 
   // Handle marker drag end event
-  const handleMarkerDragEnd = (e: any) => {
+  const handleMarkerDragEnd = (e: MapEvent<{ coordinate: LatLng }>) => {
     setUserMarker({
       latitude: e.nativeEvent.coordinate.latitude,
       longitude: e.nativeEvent.coordinate.longitude,
@@ -172,7 +158,7 @@ const HomeApp: React.FC = () => {
   };
 
   // Multiple Marker data
-  const markers = [
+  const markers: MarkerData[] = [
     {
       id: 1,
       coordinate: { latitude: 54.6868, longitude: 25.2799 },
@@ -222,90 +208,84 @@ const HomeApp: React.FC = () => {
     },
   };
 
-    return (
-      <SafeAreaProvider>
-        <View className="flex-1">
-          <ClusteredMapView
-            ref={mapRef}
-            provider={
-              Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-            }
-            className="flex-1"
-            initialRegion={initialRegion}
-            onRegionChangeComplete={handleRegionChangeComplete}
-            onPress={handleMapPress}
-            onLongPress={handleLongPress} // Handle long press on the map
-            showsUserLocation={true}
-            showsMyLocationButton={false}
-            clusterColor="black"
-            clusterTextColor="white"
-            // @ts-ignore (for now)
-            minimumClusterSize={5}
-            customClusterStyles={clusterStyles}
-          >
-            <UrlTile
-              urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
-              maximumZ={19}
-              flipY={false}
-            />
-            {markers.map((marker, index) => (
-              <Marker
-                key={index}
-                coordinate={marker.coordinate}
-                onPress={() => handleMarkerPress(marker)}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            ))}
-            {userMarker && (
-              <Marker
-                coordinate={userMarker}
-                draggable
-                onDragEnd={handleMarkerDragEnd}
-                title={"Your Marker"}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            )}
-          </ClusteredMapView>
-          {selectedMarker && (
-            <InfoWindow
-              selectedMarker={selectedMarker}
-              setSelectedMarker={setSelectedMarker}
-              lastRegion={lastRegion}
-              mapRef={mapRef}
-              initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
-            />
-          )}
-          {showInputBox && (
-            <InputBox
-              markerName={markerName}
-              setMarkerName={setMarkerName}
-              markerInfo={markerInfo}
-              setMarkerInfo={setMarkerInfo}
-              setShowInputBox={setShowInputBox}
-            />
-          )}
-          <CircleButton
-            onPress={handleCenterOnUserLocation}
-            icon="⌖"
-            style="absolute bottom-28 right-5"
-            isCenterOnUser={true} 
+  return (
+    <SafeAreaProvider>
+      <View className="flex-1">
+        <ClusteredMapView
+          ref={mapRef}
+          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+          className="flex-1"
+          initialRegion={initialRegion}
+          onPress={handleMapPress}
+          onLongPress={handleLongPress} // Handle long press on the map
+          showsUserLocation={true}
+          showsMyLocationButton={false}
+          clusterColor="black"
+          clusterTextColor="white"
+          // @ts-expect-error Provided by clustering lib
+          minimumClusterSize={5}
+          customClusterStyles={clusterStyles}
+        >
+          <UrlTile
+            urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
+            maximumZ={19}
+            flipY={false}
           />
-          <CircleButton
-            onPress={handleAddMarker}
-            icon="+"
-            style="absolute bottom-28 left-5"
+          {markers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={marker.coordinate}
+              onPress={() => handleMarkerPress(marker)}
+            >
+              <Image
+                source={require("../../assets/images/custom-marker.png")}
+                className="w-10 h-10"
+              />
+            </Marker>
+          ))}
+          {userMarker && (
+            <Marker
+              coordinate={userMarker}
+              draggable
+              onDragEnd={handleMarkerDragEnd}
+              title={"Your Marker"}
+            >
+              <Image
+                source={require("../../assets/images/custom-marker.png")}
+                className="w-10 h-10"
+              />
+            </Marker>
+          )}
+        </ClusteredMapView>
+        {selectedMarker && (
+          <InfoWindow
+            selectedMarker={selectedMarker}
+            initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
           />
-        </View>
-      </SafeAreaProvider>
-    );
-  };
-  
-  export default HomeApp;
+        )}
+        {showInputBox && (
+          <InputBox
+            markerName={markerName}
+            setMarkerName={setMarkerName}
+            markerInfo={markerInfo}
+            setMarkerInfo={setMarkerInfo}
+            setShowInputBox={setShowInputBox}
+          />
+        )}
+        <CircleButton
+          onPress={handleCenterOnUserLocation}
+          icon="⌖"
+          style="absolute bottom-28 right-5"
+          isCenterOnUser={true}
+        />
+        <CircleButton
+          onPress={handleAddMarker}
+          icon="+"
+          style="absolute bottom-28 left-5"
+        />
+      </View>
+    </SafeAreaProvider>
+  );
+};
+
+export default HomeApp;

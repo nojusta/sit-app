@@ -24,7 +24,7 @@ const Settings: React.FC = () => {
       setIsLogged(false);
       Alert.alert("Success", "User signed out successfully");
       router.replace("/sign-in");
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to sign out");
     } finally {
       setLoading(false);
@@ -40,7 +40,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.logout}
               resizeMode="contain"
-              style={{ width: 28, height: 28, tintColor: 'red' }}
+              style={{ width: 28, height: 28, tintColor: "red" }}
             />
           </TouchableOpacity>
         </View>
@@ -51,7 +51,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.profile}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Profile</Text>
           </TouchableOpacity>
@@ -59,7 +59,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.privacy}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Privacy</Text>
           </TouchableOpacity>
@@ -71,17 +71,21 @@ const Settings: React.FC = () => {
             <Image
               source={icons.push}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Email Notifications</Text>
+            <Text className="text-xl text-gray-400 font-pregular">
+              Email Notifications
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
               source={icons.email}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Push Notifications</Text>
+            <Text className="text-xl text-gray-400 font-pregular">
+              Push Notifications
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -91,7 +95,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.terms}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Terms of Service</Text>
           </TouchableOpacity>
@@ -99,7 +103,7 @@ const Settings: React.FC = () => {
             <Image
               source={icons.privacypolicy}
               resizeMode="contain"
-              style={{ width: 28, height: 28, marginRight: 12, tintColor: '#9CA3AF' }} // Lighter gray
+              style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
             <Text className="text-xl text-gray-400 font-pregular">Privacy Policy</Text>
           </TouchableOpacity>
