@@ -8,7 +8,7 @@ import React, {
   SetStateAction,
 } from "react";
 import { getCurrentUser } from "../lib/appwrite";
-import { Models } from "react-native-appwrite";
+import { Models } from "appwrite";
 
 export interface User extends Models.Document {
   accountID: string;

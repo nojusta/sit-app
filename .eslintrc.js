@@ -26,6 +26,7 @@ module.exports = {
     "react-native/no-raw-text": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-require-imports": "off",
   },
   settings: {
     react: {

@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import {
-  SafeAreaView,
   Text,
   View,
   Alert,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
 import { signOut } from "../../lib/appwrite"; // Import the signOut function

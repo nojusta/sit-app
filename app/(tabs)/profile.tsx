@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import {
-  SafeAreaView,
   View,
   Alert,
   Image,
@@ -11,6 +10,7 @@ import {
   ActionSheetIOS,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   launchImageLibrary,
   launchCamera,
@@ -57,8 +57,13 @@ const Profile: React.FC = () => {
       return;
     }
 
-    const file = response.assets?.[0];
-    if (file) {
+      const file = response.assets?.[0];
+      if (file) {
+      if (!file.uri) {
+        Alert.alert("Error", "Selected file is missing a URI.");
+        return;
+      }
+
       setLoading(true);
       try {
         const fileUrl = await uploadProfilePicture({
@@ -70,7 +75,7 @@ const Profile: React.FC = () => {
 
         setUser((prevUser) => {
           if (!prevUser) return null;
-          return { ...prevUser, avatar: fileUrl };
+          return { ...prevUser, avatar: fileUrl.toString() };
         });
 
         Alert.alert("Success", "Profile picture updated successfully");

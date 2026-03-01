@@ -9,7 +9,6 @@ export default {
     icon: "./assets/images/logo-small.png",
     scheme: "sit-app",
     userInterfaceStyle: "automatic",
-    newArchEnabled: true,
     splash: {
       image: "./assets/images/logo.png",
       resizeMode: "contain",
@@ -17,7 +16,7 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      package: "com.sitapp",
+      bundleIdentifier: "com.sitapp",
       infoPlist: {
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to update your profile picture.",
