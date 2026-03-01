@@ -98,7 +98,9 @@ const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
 const Trending: React.FC<TrendingProps> = ({ posts }) => {
   const [activeItem, setActiveItem] = useState(posts[0].$id);
 
-  const viewableItemsChanged: FlatListProps<Post>['onViewableItemsChanged'] = ({ viewableItems }) => {
+  const viewableItemsChanged: FlatListProps<Post>["onViewableItemsChanged"] = ({
+    viewableItems,
+  }) => {
     if (viewableItems.length > 0) {
       setActiveItem(viewableItems[0].key as string);
     }
@@ -109,9 +111,7 @@ const Trending: React.FC<TrendingProps> = ({ posts }) => {
       data={posts}
       horizontal
       keyExtractor={(item) => item.$id}
-      renderItem={({ item }) => (
-        <TrendingItem activeItem={activeItem} item={item} />
-      )}
+      renderItem={({ item }) => <TrendingItem activeItem={activeItem} item={item} />}
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={{
         itemVisiblePercentThreshold: 70,

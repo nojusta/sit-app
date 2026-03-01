@@ -8,7 +8,7 @@ import React, {
   SetStateAction,
 } from "react";
 import { getCurrentUser } from "../lib/appwrite";
-import { Models } from "react-native-appwrite";
+import { Models } from "appwrite";
 
 export interface User extends Models.Document {
   accountID: string;
@@ -24,6 +24,7 @@ interface GlobalContextProps {
   setUser: Dispatch<SetStateAction<User | null>>;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
+  error: Error | null;
 }
 
 const GlobalContext = createContext<GlobalContextProps>({
@@ -33,6 +34,7 @@ const GlobalContext = createContext<GlobalContextProps>({
   setUser: () => {},
   loading: true,
   setLoading: () => {},
+  error: null,
 });
 
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -45,11 +47,14 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   const [isLogged, setIsLogged] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    getCurrentUser()
-      .then((res) => {
+    const loadUser = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await getCurrentUser();
         if (res) {
           setIsLogged(true);
           setUser(res as User);
@@ -57,14 +62,20 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
           setIsLogged(false);
           setUser(null);
         }
-      })
-      .catch(() => {
+      } catch (err) {
+        const normalized = err instanceof Error ? err : new Error("Unknown error");
+        setError(normalized);
         setIsLogged(false);
         setUser(null);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    loadUser();
+    return () => {
+      // getCurrentUser does not currently support abort signals; placeholder for future cancellation.
+    };
   }, []);
 
   return (
@@ -76,6 +87,7 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         setUser,
         loading,
         setLoading,
+        error,
       }}
     >
       {children}

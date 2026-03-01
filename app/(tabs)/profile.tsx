@@ -1,9 +1,6 @@
 import { useRouter } from "expo-router";
 import {
-  SafeAreaView,
-  Text,
   View,
-  Button,
   Alert,
   Image,
   FlatList,
@@ -13,12 +10,17 @@ import {
   ActionSheetIOS,
   Platform,
 } from "react-native";
-import { launchImageLibrary, launchCamera, ImagePickerResponse } from 'react-native-image-picker';
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  launchImageLibrary,
+  launchCamera,
+  ImagePickerResponse,
+} from "react-native-image-picker";
 
-import { icons, images } from "../../constants"; 
+import { icons, images } from "../../constants";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { EmptyState, InfoBox, VideoCard } from "../../components";
-import { signOut, uploadProfilePicture } from "../../lib/appwrite"; 
+import { signOut, uploadProfilePicture } from "../../lib/appwrite";
 
 interface Post {
   $id: string;
@@ -43,7 +45,7 @@ const Profile: React.FC = () => {
       setIsLogged(false);
       Alert.alert("Success", "User signed out successfully");
       router.replace("/sign-in");
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to sign out");
     } finally {
       setLoading(false);
@@ -54,25 +56,30 @@ const Profile: React.FC = () => {
     if (response.didCancel) {
       return;
     }
-  
-    const file = response.assets?.[0];
-    if (file) {
+
+      const file = response.assets?.[0];
+      if (file) {
+      if (!file.uri) {
+        Alert.alert("Error", "Selected file is missing a URI.");
+        return;
+      }
+
       setLoading(true);
       try {
         const fileUrl = await uploadProfilePicture({
           uri: file.uri,
-          name: file.fileName || 'profile.jpg',
-          type: file.type || 'image/jpeg',
+          name: file.fileName || "profile.jpg",
+          type: file.type || "image/jpeg",
           size: file.fileSize || 0,
         });
-        
+
         setUser((prevUser) => {
           if (!prevUser) return null;
-          return { ...prevUser, avatar: fileUrl };
+          return { ...prevUser, avatar: fileUrl.toString() };
         });
-        
+
         Alert.alert("Success", "Profile picture updated successfully");
-      } catch (error) {
+      } catch {
         Alert.alert("Error", "Failed to update profile picture");
       } finally {
         setLoading(false);
@@ -82,50 +89,46 @@ const Profile: React.FC = () => {
 
   const handleProfilePicturePress = () => {
     console.log("Profile picture pressed");
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       console.log("iOS platform detected");
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ['Cancel', 'Take Photo', 'Choose from Library'],
+          options: ["Cancel", "Take Photo", "Choose from Library"],
           cancelButtonIndex: 0,
         },
         (buttonIndex) => {
           console.log("Button index:", buttonIndex);
           if (buttonIndex === 1) {
             console.log("Launching camera");
-            launchCamera({ mediaType: 'photo' }, handleFileChange);
+            launchCamera({ mediaType: "photo" }, handleFileChange);
           } else if (buttonIndex === 2) {
             console.log("Launching image library");
-            launchImageLibrary({ mediaType: 'photo' }, handleFileChange);
+            launchImageLibrary({ mediaType: "photo" }, handleFileChange);
           }
-        }
+        },
       );
     } else {
       console.log("Android platform detected");
-      Alert.alert(
-        "Select Option",
-        "Choose an option to update your profile picture",
-        [
-          {
-            text: "Cancel",
-            style: "cancel"
+      Alert.alert("Select Option", "Choose an option to update your profile picture", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Take Photo",
+          onPress: () => {
+            console.log("Take Photo pressed");
+            launchCamera({ mediaType: "photo" }, handleFileChange);
           },
-          {
-            text: "Take Photo",
-            onPress: () => {
-              console.log("Take Photo pressed");
-              launchCamera({ mediaType: 'photo' }, handleFileChange);
-            }
+        },
+        {
+          text: "Choose from Library",
+          onPress: () => {
+            console.log("Choose from Library pressed");
+            launchImageLibrary({ mediaType: "photo" }, handleFileChange);
           },
-          {
-            text: "Choose from Library",
-            onPress: () => {
-              console.log("Choose from Library pressed");
-              launchImageLibrary({ mediaType: 'photo' }, handleFileChange);
-            }
-          }
-        ]
-      );
+        },
+      ]);
     }
   };
 
@@ -153,22 +156,20 @@ const Profile: React.FC = () => {
         data={[]} // Temporarily set to an empty array
         keyExtractor={(item) => item.$id}
         renderItem={renderItem}
-        ListEmptyComponent={() => <EmptyState title="This user has no posts." subtitle="" />}
+        ListEmptyComponent={() => (
+          <EmptyState title="This user has no posts." subtitle="" />
+        )}
         ListHeaderComponent={() => (
           <View className="w-full justify-center items-center mt-6 mb-12 px-4">
-            <TouchableOpacity
-              onPress={handleSignOut}
-              className="w-full items-end mb-10"
-            >
-              <Image
-                source={icons.logout}
-                resizeMode="contain"
-                className="w-6 h-6"
-              />
+            <TouchableOpacity onPress={handleSignOut} className="w-full items-end mb-10">
+              <Image source={icons.logout} resizeMode="contain" className="w-6 h-6" />
             </TouchableOpacity>
 
             <View className="w-16 h-16 border border-gray-500 rounded-lg justify-center items-center">
-              <TouchableOpacity onPress={handleProfilePicturePress} style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}>
+              <TouchableOpacity
+                onPress={handleProfilePicturePress}
+                style={{ backgroundColor: "rgba(0,0,0,0.1)" }}
+              >
                 <Image
                   source={user?.avatar ? { uri: user.avatar } : images.profile} // Use images.profile for testing
                   className="w-11/12 h-11/12 rounded-lg"
@@ -191,11 +192,7 @@ const Profile: React.FC = () => {
                 titleStyles="text-xl"
                 containerStyles="mr-10"
               />
-              <InfoBox
-                title="1.2k"
-                subtitle="Followers"
-                titleStyles="text-xl"
-              />
+              <InfoBox title="1.2k" subtitle="Followers" titleStyles="text-xl" />
             </View>
           </View>
         )}

@@ -14,19 +14,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100;
 
+type MarkerDetails = {
+  title: string;
+  description: string;
+  imageUri?: string;
+};
+
 interface InfoWindowProps {
-  selectedMarker: any;
-  setSelectedMarker: (marker: any) => void;
-  lastRegion: any;
-  mapRef: React.RefObject<any>;
+  selectedMarker: MarkerDetails | null;
   initialHeight?: number;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
   selectedMarker,
-  setSelectedMarker,
-  lastRegion,
-  mapRef,
   initialHeight = INITIAL_INFO_WINDOW_HEIGHT,
 }) => {
   const [infoWindowHeight] = useState(new Animated.Value(initialHeight));
@@ -68,11 +68,10 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
         useNativeDriver: false,
       }).start();
     }
-  }, [selectedMarker, initialHeight]);
+  }, [selectedMarker, initialHeight, infoWindowBottom, infoWindowHeight, overlayOpacity]);
 
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) =>
-      Math.abs(gestureState.dy) > 100,
+    onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dy) > 100,
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dy < 0 && !isExpanded) {
         Animated.timing(infoWindowHeight, {
@@ -125,10 +124,13 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
               <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
             </View>
             <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
-              <Image
-                source={{ uri: visibleMarker.imageUri }}
-                style={styles.infoImage}
-              />
+              {visibleMarker.imageUri ? (
+                <Image source={{ uri: visibleMarker.imageUri }} style={styles.infoImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Text style={styles.imagePlaceholderText}>No image available</Text>
+                </View>
+              )}
             </View>
             <View style={styles.ratingContainer}>
               <View style={styles.ratingBox}>
@@ -139,9 +141,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
               </TouchableOpacity>
             </View>
             <View style={styles.descriptionBox}>
-              <Text style={styles.infoDescription}>
-                {visibleMarker.description}
-              </Text>
+              <Text style={styles.infoDescription}>{visibleMarker.description}</Text>
             </View>
           </View>
         </Animated.View>
@@ -198,6 +198,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 10,
+  },
+  imagePlaceholder: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e5e7eb",
+  },
+  imagePlaceholderText: {
+    color: "#6b7280",
+    fontSize: 14,
   },
   ratingContainer: {
     flexDirection: "row",

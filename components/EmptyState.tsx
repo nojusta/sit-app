@@ -24,11 +24,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ title, subtitle }) => {
 
   return (
     <View className="flex justify-center items-center px-4">
-      <Image
-        source={images.empty}
-        resizeMode="contain"
-        className="w-[270px] h-[216px]"
-      />
+      <Image source={images.empty} resizeMode="contain" className="w-[270px] h-[216px]" />
 
       <Text className="text-sm font-pmedium text-gray-100">{title}</Text>
       <Text className="text-xl text-center font-psemibold text-white mt-2">
@@ -38,7 +34,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ title, subtitle }) => {
       <CustomButton
         title="Back to Map"
         handlePress={handlePress}
-        containerStyles="w-10/12 mt-5" 
+        containerStyles="w-10/12 mt-5"
         isLoading={isLoading}
       />
     </View>
