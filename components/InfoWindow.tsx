@@ -124,7 +124,13 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
               <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
             </View>
             <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
-              <Image source={{ uri: visibleMarker.imageUri }} style={styles.infoImage} />
+              {visibleMarker.imageUri ? (
+                <Image source={{ uri: visibleMarker.imageUri }} style={styles.infoImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Text style={styles.imagePlaceholderText}>No image available</Text>
+                </View>
+              )}
             </View>
             <View style={styles.ratingContainer}>
               <View style={styles.ratingBox}>
@@ -192,6 +198,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 10,
+  },
+  imagePlaceholder: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e5e7eb",
+  },
+  imagePlaceholderText: {
+    color: "#6b7280",
+    fontSize: 14,
   },
   ratingContainer: {
     flexDirection: "row",

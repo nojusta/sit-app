@@ -64,19 +64,26 @@ const useMapInteractions = ({
 
   const handleMarkerPress = (marker: MarkerData) => {
     if (mapRef.current) {
-      mapRef.current.getMapBoundaries().then((boundaries) => {
-        const currentRegion = {
-          latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
-          longitude: (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
-          latitudeDelta: Math.abs(
-            boundaries.northEast.latitude - boundaries.southWest.latitude,
-          ),
-          longitudeDelta: Math.abs(
-            boundaries.northEast.longitude - boundaries.southWest.longitude,
-          ),
-        };
-        setLastRegion(currentRegion);
-      });
+      mapRef.current
+        .getMapBoundaries()
+        .then((boundaries) => {
+          const currentRegion = {
+            latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
+            longitude: (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
+            latitudeDelta: Math.abs(
+              boundaries.northEast.latitude - boundaries.southWest.latitude,
+            ),
+            longitudeDelta: Math.abs(
+              boundaries.northEast.longitude - boundaries.southWest.longitude,
+            ),
+          };
+          setLastRegion(currentRegion);
+        })
+        .catch((error) => {
+          if (__DEV__) {
+            console.warn("Failed to capture map boundaries before focusing marker.", error);
+          }
+        });
     }
 
     setSelectedMarker(marker);

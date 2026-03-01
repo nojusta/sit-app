@@ -55,9 +55,12 @@ const TabLayout: React.FC = () => {
     console.log("Marker selected state:", isMarkerSelected);
   }, [isMarkerSelected]);
 
+  if (!loading && !isLogged) {
+    return <Redirect href="/sign-in" />;
+  }
+
   return (
     <>
-      {!loading && !isLogged ? <Redirect href="/sign-in" /> : null}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "#ECEDEE", // Light gray for active tab

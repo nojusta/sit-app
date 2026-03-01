@@ -57,7 +57,6 @@ const SignUp = () => {
                 pathname: "/sign-in",
                 params: {
                   email: form.email,
-                  password: form.password,
                 },
               });
             },

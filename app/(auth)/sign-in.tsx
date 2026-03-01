@@ -20,11 +20,11 @@ import { User } from "../../context/GlobalProvider";
 
 const SignIn = () => {
   const { setUser, setIsLogged } = useGlobalContext();
-  const params = useLocalSearchParams<{ email?: string; password?: string }>();
+  const params = useLocalSearchParams<{ email?: string }>();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: typeof params.email === "string" ? params.email : "",
-    password: typeof params.password === "string" ? params.password : "",
+    password: "",
   });
 
   const submit = async () => {
