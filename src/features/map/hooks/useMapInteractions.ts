@@ -69,7 +69,8 @@ const useMapInteractions = ({
         .then((boundaries) => {
           const currentRegion = {
             latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
-            longitude: (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
+            longitude:
+              (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
             latitudeDelta: Math.abs(
               boundaries.northEast.latitude - boundaries.southWest.latitude,
             ),
@@ -81,7 +82,10 @@ const useMapInteractions = ({
         })
         .catch((error) => {
           if (__DEV__) {
-            console.warn("Failed to capture map boundaries before focusing marker.", error);
+            console.warn(
+              "Failed to capture map boundaries before focusing marker.",
+              error,
+            );
           }
         });
     }

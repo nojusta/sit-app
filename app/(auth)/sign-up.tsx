@@ -11,11 +11,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { createUser } from "../../lib/appwrite";
-import { CustomButton, FormField } from "../../components";
-import { images } from "../../constants";
-import { User } from "../../context/GlobalProvider";
+import { useAuthContext, User } from "@/features/auth";
+import { createUser } from "@/services/appwrite";
+import { images } from "@/shared/constants";
+import { CustomButton, FormField } from "@/shared/components";
 
 const isConflictError = (error: unknown): error is { code: number } =>
   typeof error === "object" &&
@@ -25,7 +24,7 @@ const isConflictError = (error: unknown): error is { code: number } =>
   (error as { code: number }).code === 409;
 
 const SignUp = () => {
-  const { setUser, setIsLogged } = useGlobalContext();
+  const { setUser, setIsLogged } = useAuthContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     username: "",

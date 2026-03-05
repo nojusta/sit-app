@@ -3,10 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
 import { Image, Text, View, ImageSourcePropType, Animated } from "react-native";
 
-import { icons } from "../../constants";
-import { Loader } from "../../components";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { MarkerProvider, useMarkerContext } from "../../context/MarkerContext";
+import { useAuthContext } from "@/features/auth";
+import { MarkerProvider, useMarkerContext } from "@/features/map";
+import { icons } from "@/shared/constants";
+import { Loader } from "@/shared/components";
 
 interface TabIconProps {
   icon: ImageSourcePropType;
@@ -39,7 +39,7 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 };
 
 const TabLayout: React.FC = () => {
-  const { loading, isLogged } = useGlobalContext();
+  const { loading, isLogged } = useAuthContext();
   const tabLayoutTranslateY = useRef(new Animated.Value(0)).current;
   const { isMarkerSelected } = useMarkerContext();
 

@@ -4,10 +4,7 @@ import Constants from "expo-constants";
 
 const manifest2Extra = Constants.manifest2?.extra?.expoClient?.extra ?? {};
 const expoExtra =
-  Constants.expoConfig?.extra ??
-  Constants.manifest?.extra ??
-  manifest2Extra ??
-  {};
+  Constants.expoConfig?.extra ?? Constants.manifest?.extra ?? manifest2Extra ?? {};
 
 const {
   APPWRITE_ENDPOINT,

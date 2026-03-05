@@ -1,14 +1,21 @@
 import React, { useRef } from "react";
 import { View, Image, Platform } from "react-native";
-import MapView, { UrlTile, Marker, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from "react-native-maps";
+import MapView, {
+  UrlTile,
+  Marker,
+  PROVIDER_GOOGLE,
+  PROVIDER_DEFAULT,
+} from "react-native-maps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ClusteredMapView from "react-native-map-clustering";
-import InfoWindow from "../../components/InfoWindow";
-import { useMarkerContext } from "../../context/MarkerContext";
-import CircleButton from "../../components/CircleButton";
-import InputBox from "../../components/InputBox";
-import useUserLocation from "../../hooks/useUserLocation";
-import useMapInteractions from "../../hooks/useMapInteractions";
+import {
+  CircleButton,
+  InfoWindow,
+  useMapInteractions,
+  useMarkerContext,
+  useUserLocation,
+} from "@/features/map";
+import { MarkerInputBox } from "@/features/markers";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -126,7 +133,7 @@ const HomeApp: React.FC = () => {
           />
         )}
         {showInputBox && (
-          <InputBox
+          <MarkerInputBox
             markerName={markerName}
             setMarkerName={setMarkerName}
             markerInfo={markerInfo}

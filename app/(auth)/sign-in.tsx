@@ -10,16 +10,14 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { signIn, getCurrentUser } from "../../lib/appwrite";
+import { useAuthContext, User } from "@/features/auth";
+import { signIn, getCurrentUser } from "@/services/appwrite";
 import { Link, router, useLocalSearchParams } from "expo-router";
-import FormField from "../../components/FormField";
-import CustomButton from "../../components/CustomButton";
-import { images } from "../../constants";
-import { User } from "../../context/GlobalProvider";
+import { images } from "@/shared/constants";
+import { CustomButton, FormField } from "@/shared/components";
 
 const SignIn = () => {
-  const { setUser, setIsLogged } = useGlobalContext();
+  const { setUser, setIsLogged } = useAuthContext();
   const params = useLocalSearchParams<{ email?: string }>();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
