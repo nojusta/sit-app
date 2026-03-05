@@ -7,7 +7,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import { getCurrentUser } from "../lib/appwrite";
+import { getCurrentUser } from "@/services/appwrite";
 import { Models } from "appwrite";
 
 export interface User extends Models.Document {
@@ -17,7 +17,7 @@ export interface User extends Models.Document {
   avatar?: string;
 }
 
-interface GlobalContextProps {
+interface AuthContextProps {
   isLogged: boolean;
   setIsLogged: Dispatch<SetStateAction<boolean>>;
   user: User | null;
@@ -27,7 +27,7 @@ interface GlobalContextProps {
   error: Error | null;
 }
 
-const GlobalContext = createContext<GlobalContextProps>({
+const AuthContext = createContext<AuthContextProps>({
   isLogged: false,
   setIsLogged: () => {},
   user: null,
@@ -37,13 +37,13 @@ const GlobalContext = createContext<GlobalContextProps>({
   error: null,
 });
 
-export const useGlobalContext = () => useContext(GlobalContext);
+export const useAuthContext = () => useContext(AuthContext);
 
-interface GlobalProviderProps {
+interface AuthProviderProps {
   children: ReactNode;
 }
 
-const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLogged, setIsLogged] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -79,7 +79,7 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <GlobalContext.Provider
+    <AuthContext.Provider
       value={{
         isLogged,
         setIsLogged,
@@ -91,8 +91,8 @@ const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       }}
     >
       {children}
-    </GlobalContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
-export default GlobalProvider;
+export default AuthProvider;

@@ -7,8 +7,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import GlobalProvider from "@/context/GlobalProvider";
+import { AuthProvider } from "@/features/auth";
+import { useColorScheme } from "@/shared/hooks";
 
 // Prevents the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -40,7 +40,7 @@ export default function RootLayout() {
   }
 
   return (
-    <GlobalProvider>
+    <AuthProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -49,6 +49,6 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>
-    </GlobalProvider>
+    </AuthProvider>
   );
 }

@@ -1,19 +1,12 @@
 import { useRouter } from "expo-router";
-import {
-  Text,
-  View,
-  Alert,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { Text, View, Alert, Image, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { icons } from "../../constants";
-import { signOut } from "../../lib/appwrite"; // Import the signOut function
+import { useAuthContext } from "@/features/auth";
+import { signOut } from "@/services/appwrite";
+import { icons } from "@/shared/constants";
 
 const Settings: React.FC = () => {
-  const { setUser, setIsLogged, setLoading } = useGlobalContext();
+  const { setUser, setIsLogged, setLoading } = useAuthContext();
   const router = useRouter();
 
   const handleSignOut = async () => {

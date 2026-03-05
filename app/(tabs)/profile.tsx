@@ -17,10 +17,11 @@ import {
   ImagePickerResponse,
 } from "react-native-image-picker";
 
-import { icons, images } from "../../constants";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { EmptyState, InfoBox, VideoCard } from "../../components";
-import { signOut, uploadProfilePicture } from "../../lib/appwrite";
+import { useAuthContext } from "@/features/auth";
+import { VideoCard } from "@/features/markers";
+import { signOut, uploadProfilePicture } from "@/services/appwrite";
+import { icons, images } from "@/shared/constants";
+import { EmptyState, InfoBox } from "@/shared/components";
 
 interface Post {
   $id: string;
@@ -34,7 +35,7 @@ interface Post {
 }
 
 const Profile: React.FC = () => {
-  const { user, setUser, setIsLogged, loading, setLoading } = useGlobalContext();
+  const { user, setUser, setIsLogged, loading, setLoading } = useAuthContext();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -57,8 +58,8 @@ const Profile: React.FC = () => {
       return;
     }
 
-      const file = response.assets?.[0];
-      if (file) {
+    const file = response.assets?.[0];
+    if (file) {
       if (!file.uri) {
         Alert.alert("Error", "Selected file is missing a URI.");
         return;

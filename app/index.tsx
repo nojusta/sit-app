@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { images } from "../constants";
-import Loader from "../components/Loader";
-import CustomButton from "../components/CustomButton";
-import { useGlobalContext, User } from "../context/GlobalProvider";
+import { useAuthContext, User } from "@/features/auth";
+import { images } from "@/shared/constants";
+import { CustomButton, Loader } from "@/shared/components";
 import Constants from "expo-constants";
-import { adminLogin } from "../lib/appwrite";
-import { Alert } from "react-native";
+import { adminLogin } from "@/services/appwrite";
 
 type ExpoExtra = Record<string, string | undefined>;
 
@@ -27,12 +25,15 @@ const expoExtra =
 const { ADMIN_EMAIL, ADMIN_PASSWORD } = expoExtra;
 
 const MainApp = () => {
-  const { setUser, isLogged, setIsLogged, loading } = useGlobalContext();
+  const { setUser, isLogged, setIsLogged, loading } = useAuthContext();
   const [submitting, setSubmitting] = useState(false);
 
   const handleSignIn = async () => {
     if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-      Alert.alert("Missing admin credentials", "Check ADMIN_EMAIL and ADMIN_PASSWORD in your env config.");
+      Alert.alert(
+        "Missing admin credentials",
+        "Check ADMIN_EMAIL and ADMIN_PASSWORD in your env config.",
+      );
       return;
     }
 
@@ -43,7 +44,10 @@ const MainApp = () => {
       setIsLogged(Boolean(user));
     } catch (error) {
       if (__DEV__) console.error("Admin login failed", error);
-      Alert.alert("Admin login failed", error instanceof Error ? error.message : "Unknown error.");
+      Alert.alert(
+        "Admin login failed",
+        error instanceof Error ? error.message : "Unknown error.",
+      );
     } finally {
       setSubmitting(false);
     }

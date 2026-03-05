@@ -125,7 +125,10 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
             </View>
             <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
               {visibleMarker.imageUri ? (
-                <Image source={{ uri: visibleMarker.imageUri }} style={styles.infoImage} />
+                <Image
+                  source={{ uri: visibleMarker.imageUri }}
+                  style={styles.infoImage}
+                />
               ) : (
                 <View style={styles.imagePlaceholder}>
                   <Text style={styles.imagePlaceholderText}>No image available</Text>

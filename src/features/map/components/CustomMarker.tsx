@@ -17,7 +17,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
   coordinate,
   title,
   description,
-  image = require("../assets/images/custom-marker.png"),
+  image = require("../../../../assets/images/custom-marker.png"),
   zoomLevel,
 }) => {
   // Adjust size based on zoom level

@@ -9,14 +9,14 @@
     ],
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "lib/appwrite.js",
+    "src/**/*.js",
     "@types",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
