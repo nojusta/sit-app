@@ -20,8 +20,20 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "react-native", "react-hooks"],
+  plugins: ["@typescript-eslint", "react-native", "react-hooks", "unused-imports"],
   rules: {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "error",
+      {
+        args: "after-used",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+        varsIgnorePattern: "^_",
+      },
+    ],
     "react-native/no-inline-styles": "off",
     "react-native/no-raw-text": "off",
     "@typescript-eslint/no-explicit-any": "warn",

@@ -16,7 +16,7 @@ This project should be run in development build mode, not as a long-term Expo Go
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 20.19.4+ and npm
 - Xcode for iOS development builds
 - Android Studio for Android development builds
 - Expo CLI via `npx`
@@ -27,6 +27,12 @@ This project should be run in development build mode, not as a long-term Expo Go
 
 ```bash
 npm install
+```
+
+If you use `nvm`, the repo includes an `.nvmrc`, so you can run:
+
+```bash
+nvm use
 ```
 
 2. Create your local env file:
@@ -100,8 +106,21 @@ prettier --write .
 Type-check:
 
 ```bash
-npx tsc --noEmit
+npm run type-check
 ```
+
+Run the full local gate before pushing:
+
+```bash
+npm run check
+```
+
+## Git hooks
+
+Hooks are installed automatically when dependencies are installed via `npm install`.
+
+- `pre-commit`: runs `lint-staged` on staged files only, auto-fixes ESLint and Prettier issues where possible
+- `pre-push`: runs `npm run check`, which blocks pushes on ESLint errors, unused imports/variables, TypeScript errors, or failing tests
 
 ## Project structure
 
