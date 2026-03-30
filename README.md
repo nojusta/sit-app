@@ -16,7 +16,7 @@ This project should be run in development build mode, not as a long-term Expo Go
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 20.19.4+ and npm
 - Xcode for iOS development builds
 - Android Studio for Android development builds
 - Expo CLI via `npx`
@@ -27,6 +27,12 @@ This project should be run in development build mode, not as a long-term Expo Go
 
 ```bash
 npm install
+```
+
+If you use `nvm`, the repo includes an `.nvmrc`, so you can run:
+
+```bash
+nvm use
 ```
 
 2. Create your local env file:
