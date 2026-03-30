@@ -100,8 +100,21 @@ prettier --write .
 Type-check:
 
 ```bash
-npx tsc --noEmit
+npm run type-check
 ```
+
+Run the full local gate before pushing:
+
+```bash
+npm run check
+```
+
+## Git hooks
+
+Hooks are installed automatically when dependencies are installed via `npm install`.
+
+- `pre-commit`: runs `lint-staged` on staged files only, auto-fixes ESLint and Prettier issues where possible
+- `pre-push`: runs `npm run check`, which blocks pushes on ESLint errors, unused imports/variables, TypeScript errors, or failing tests
 
 ## Project structure
 
