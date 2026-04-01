@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-import { useAuthContext, User } from "@/features/auth";
 import {
   normalizeRegistrationForm,
+  useAuthContext,
+  User,
   validateRegistrationForm,
-} from "@/features/auth/utils/credentials";
+} from "@/features/auth";
 import { createUser } from "@/services/appwrite";
 import { images } from "@/shared/constants";
 import { CustomButton, FormField } from "@/shared/components";

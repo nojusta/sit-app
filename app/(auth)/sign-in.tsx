@@ -10,8 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuthContext, User } from "@/features/auth";
-import { normalizeEmail } from "@/features/auth/utils/credentials";
+import { normalizeEmail, useAuthContext, User } from "@/features/auth";
 import { signIn, getCurrentUser } from "@/services/appwrite";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { images } from "@/shared/constants";

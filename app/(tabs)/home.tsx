@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View, Image, Platform } from "react-native";
+import { View, Image, Platform, Text, TouchableOpacity, Linking } from "react-native";
 import MapView, {
   UrlTile,
   Marker,
@@ -23,7 +23,7 @@ const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
   const mapRef = useRef<MapView | null>(null); // Reference to the MapView
   const superClusterRef = useRef(null);
-  const { location } = useUserLocation();
+  const { location, isPermissionDenied } = useUserLocation();
   const {
     markers,
     selectedMarker,
@@ -74,6 +74,22 @@ const HomeApp: React.FC = () => {
   return (
     <SafeAreaProvider>
       <View className="flex-1">
+        {isPermissionDenied && (
+          <View className="absolute top-4 left-4 right-4 z-10 rounded-2xl bg-[#1F2937] px-4 py-3">
+            <Text className="text-sm font-pmedium text-white">
+              Navigation requires location access. Enable location permission to use the
+              centering button.
+            </Text>
+            <TouchableOpacity
+              onPress={() => Linking.openSettings()}
+              className="mt-2 self-start"
+            >
+              <Text className="text-sm font-psemibold text-secondary-100">
+                Open settings
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <ClusteredMapView
           mapRef={(map) => {
             mapRef.current = map as MapView | null;
@@ -146,6 +162,7 @@ const HomeApp: React.FC = () => {
           icon="⌖"
           style="absolute bottom-28 right-5"
           isCenterOnUser={true}
+          disabled={isPermissionDenied}
         />
         <CircleButton
           onPress={handleAddMarker}

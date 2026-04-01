@@ -3,7 +3,7 @@ import {
   normalizeEmail,
   normalizeRegistrationForm,
   validateRegistrationForm,
-} from "../credentials";
+} from "../index";
 
 describe("credentials helpers", () => {
   it("normalizes registration values", () => {
