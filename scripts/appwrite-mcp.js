@@ -759,11 +759,26 @@ function buildAppwriteUrl(resourcePath, query) {
     );
   }
 
+  if (rawPath.includes("?") || rawPath.includes("#")) {
+    throw new Error(
+      "Appwrite request path must not include query strings or fragments. Use the query field instead.",
+    );
+  }
+
+  validateRelativeAppwritePath(rawPath);
+
   const normalizedPath = rawPath.replace(/^\/+/, "");
   const url = new URL(normalizedPath, baseUrl);
+  const basePathname = getBasePathname(baseUrl);
 
   if (url.origin !== baseUrl.origin) {
     throw new Error("Resolved Appwrite request URL must stay on the configured origin.");
+  }
+
+  if (!url.pathname.startsWith(basePathname)) {
+    throw new Error(
+      "Resolved Appwrite request URL must stay under the configured endpoint path.",
+    );
   }
 
   for (const [key, value] of Object.entries(cleanObject(query))) {
@@ -794,6 +809,37 @@ function getAppwriteBaseUrl() {
 
 function isAbsoluteUrlPath(resourcePath) {
   return /^[a-zA-Z][a-zA-Z\d+\-.]*:/u.test(resourcePath) || resourcePath.startsWith("//");
+}
+
+function getBasePathname(baseUrl) {
+  return baseUrl.pathname.endsWith("/") ? baseUrl.pathname : `${baseUrl.pathname}/`;
+}
+
+function validateRelativeAppwritePath(resourcePath) {
+  const normalizedPath = resourcePath.replace(/^\/+/, "");
+  const segments = normalizedPath.split("/");
+
+  for (const segment of segments) {
+    if (!segment) {
+      continue;
+    }
+
+    let decodedSegment;
+
+    try {
+      decodedSegment = decodeURIComponent(segment);
+    } catch {
+      throw new Error("Appwrite request path contains invalid URL encoding.");
+    }
+
+    if (decodedSegment === "." || decodedSegment === "..") {
+      throw new Error("Appwrite request path must not contain dot segments.");
+    }
+
+    if (decodedSegment.includes("/") || decodedSegment.includes("\\")) {
+      throw new Error("Appwrite request path must not contain encoded path separators.");
+    }
+  }
 }
 
 function ensureConfig() {
