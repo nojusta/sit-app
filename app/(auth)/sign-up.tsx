@@ -12,6 +12,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import { useAuthContext, User } from "@/features/auth";
+import {
+  normalizeRegistrationForm,
+  validateRegistrationForm,
+} from "@/features/auth/utils/credentials";
 import { createUser } from "@/services/appwrite";
 import { images } from "@/shared/constants";
 import { CustomButton, FormField } from "@/shared/components";
@@ -33,14 +37,21 @@ const SignUp = () => {
   });
 
   const submit = async () => {
-    if (form.username === "" || form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all fields");
+    const validationMessage = validateRegistrationForm(form);
+    if (validationMessage) {
+      Alert.alert("Error", validationMessage);
       return;
     }
 
+    const normalizedForm = normalizeRegistrationForm(form);
+
     setSubmitting(true);
     try {
-      const result = await createUser(form.email, form.password, form.username);
+      const result = await createUser(
+        normalizedForm.email,
+        normalizedForm.password,
+        normalizedForm.username,
+      );
       setUser(result as User);
       setIsLogged(true);
 
@@ -55,7 +66,7 @@ const SignUp = () => {
               router.replace({
                 pathname: "/sign-in",
                 params: {
-                  email: form.email,
+                  email: normalizedForm.email,
                 },
               });
             },
@@ -99,9 +110,9 @@ const SignUp = () => {
             </Text>
 
             <FormField
-              title="Username"
+              title="Display name"
               value={form.username}
-              placeholder="Enter your username"
+              placeholder="Optional"
               handleChangeText={(e) => setForm({ ...form, username: e })}
               otherStyles="mt-10"
             />
@@ -113,6 +124,8 @@ const SignUp = () => {
               handleChangeText={(e) => setForm({ ...form, email: e })}
               otherStyles="mt-7"
               keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <FormField
@@ -121,6 +134,9 @@ const SignUp = () => {
               placeholder="Enter your password"
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
+              isPassword
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <CustomButton

@@ -21,17 +21,22 @@ export const appwriteConfig = {
 };
 
 const client = new Client();
-const missingConfig = Object.entries(appwriteConfig).filter(([, value]) => !value);
-const appwriteReady = missingConfig.length === 0;
+const baseConfig = {
+  endpoint: appwriteConfig.endpoint,
+  projectId: appwriteConfig.projectId,
+};
+const missingBaseConfig = Object.entries(baseConfig).filter(([, value]) => !value);
+const appwriteReady = missingBaseConfig.length === 0;
+const storageReady = appwriteReady && Boolean(appwriteConfig.storageId);
 
 if (appwriteReady) {
   client.setEndpoint(appwriteConfig.endpoint).setProject(appwriteConfig.projectId);
 } else if (__DEV__) {
-  console.warn("Appwrite config missing values:", missingConfig);
+  console.warn("Appwrite base config missing values:", missingBaseConfig);
 }
 
 const account = appwriteReady ? new Account(client) : null;
-const storage = appwriteReady ? new Storage(client) : null;
+const storage = storageReady ? new Storage(client) : null;
 
 const ensureReady = () => {
   if (!appwriteReady) {
@@ -40,6 +45,18 @@ const ensureReady = () => {
     );
   }
 };
+
+const ensureStorageReady = () => {
+  ensureReady();
+  if (!storageReady) {
+    throw new Error("Appwrite storage is not configured.");
+  }
+};
+
+const normalizeIdentifiers = (currentAccount) =>
+  [currentAccount.email].filter(
+    (value) => typeof value === "string" && value.trim().length > 0,
+  );
 
 const normalizeUser = (currentAccount) => ({
   $id: currentAccount.$id,
@@ -50,6 +67,9 @@ const normalizeUser = (currentAccount) => ({
     typeof currentAccount.prefs?.avatar === "string"
       ? currentAccount.prefs.avatar
       : undefined,
+  status: currentAccount.status,
+  joined: currentAccount.registration ?? currentAccount.$createdAt,
+  identifiers: normalizeIdentifiers(currentAccount),
 });
 
 // Register user
@@ -139,7 +159,7 @@ export async function adminLogin(email, password) {
  */
 export async function uploadProfilePicture(file) {
   try {
-    ensureReady();
+    ensureStorageReady();
     // Upload file to Appwrite storage
     const response = await storage.createFile(
       appwriteConfig.storageId,

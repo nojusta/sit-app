@@ -8,13 +8,16 @@ import React, {
   SetStateAction,
 } from "react";
 import { getCurrentUser } from "@/services/appwrite";
-import { Models } from "appwrite";
 
-export interface User extends Models.Document {
+export interface User {
+  $id: string;
   accountID: string;
   email: string;
   username: string;
   avatar?: string;
+  status?: boolean;
+  joined?: string;
+  identifiers?: string[];
 }
 
 interface AuthContextProps {

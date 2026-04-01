@@ -17,6 +17,7 @@ interface FormFieldProps extends TextInputProps {
   placeholder: string;
   handleChangeText: (text: string) => void;
   otherStyles?: string;
+  isPassword?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -25,6 +26,7 @@ const FormField: React.FC<FormFieldProps> = ({
   placeholder,
   handleChangeText,
   otherStyles = "",
+  isPassword = false,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,11 +42,11 @@ const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
-          secureTextEntry={title === "Password" && !showPassword}
+          secureTextEntry={isPassword && !showPassword}
           {...props}
         />
 
-        {title === "Password" && (
+        {isPassword && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
               source={!showPassword ? icons.eye : icons.eyeHide}
