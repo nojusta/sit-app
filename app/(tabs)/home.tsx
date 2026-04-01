@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View, Image, Platform, Text, TouchableOpacity, Linking } from "react-native";
+import { View, Image, Platform, Linking } from "react-native";
 import MapView, {
   UrlTile,
   Marker,
@@ -16,6 +16,7 @@ import {
   useUserLocation,
 } from "@/features/map";
 import { MarkerInputBox } from "@/features/markers";
+import { NoticeBanner } from "@/shared/components";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -75,20 +76,12 @@ const HomeApp: React.FC = () => {
     <SafeAreaProvider>
       <View className="flex-1">
         {isPermissionDenied && (
-          <View className="absolute top-4 left-4 right-4 z-10 rounded-2xl bg-[#1F2937] px-4 py-3">
-            <Text className="text-sm font-pmedium text-white">
-              Navigation requires location access. Enable location permission to use the
-              centering button.
-            </Text>
-            <TouchableOpacity
-              onPress={() => Linking.openSettings()}
-              className="mt-2 self-start"
-            >
-              <Text className="text-sm font-psemibold text-secondary-100">
-                Open settings
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <NoticeBanner
+            title="Location access required"
+            description="Enable location permission to use location-based navigation features on the map."
+            actionLabel="Open settings"
+            onAction={() => Linking.openSettings()}
+          />
         )}
         <ClusteredMapView
           mapRef={(map) => {
@@ -163,11 +156,13 @@ const HomeApp: React.FC = () => {
           style="absolute bottom-28 right-5"
           isCenterOnUser={true}
           disabled={isPermissionDenied}
+          accessibilityLabel="Center on my location"
         />
         <CircleButton
           onPress={handleAddMarker}
           icon="+"
           style="absolute bottom-28 left-5"
+          accessibilityLabel="Add marker"
         />
       </View>
     </SafeAreaProvider>
