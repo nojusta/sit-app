@@ -746,11 +746,25 @@ async function appwriteFetch(method, resourcePath, options = {}) {
 }
 
 function buildAppwriteUrl(resourcePath, query) {
-  const normalizedEndpoint = config.endpoint.endsWith("/")
-    ? config.endpoint
-    : `${config.endpoint}/`;
-  const normalizedPath = String(resourcePath || "").replace(/^\/+/, "");
-  const url = new URL(normalizedPath, normalizedEndpoint);
+  const baseUrl = getAppwriteBaseUrl();
+  const rawPath = String(resourcePath || "").trim();
+
+  if (!rawPath) {
+    throw new Error("Appwrite request path is required.");
+  }
+
+  if (isAbsoluteUrlPath(rawPath)) {
+    throw new Error(
+      "Appwrite request path must be a relative path under the configured endpoint.",
+    );
+  }
+
+  const normalizedPath = rawPath.replace(/^\/+/, "");
+  const url = new URL(normalizedPath, baseUrl);
+
+  if (url.origin !== baseUrl.origin) {
+    throw new Error("Resolved Appwrite request URL must stay on the configured origin.");
+  }
 
   for (const [key, value] of Object.entries(cleanObject(query))) {
     if (value === undefined || value === null) {
@@ -768,6 +782,18 @@ function buildAppwriteUrl(resourcePath, query) {
   }
 
   return url;
+}
+
+function getAppwriteBaseUrl() {
+  const normalizedEndpoint = config.endpoint.endsWith("/")
+    ? config.endpoint
+    : `${config.endpoint}/`;
+
+  return new URL(normalizedEndpoint);
+}
+
+function isAbsoluteUrlPath(resourcePath) {
+  return /^[a-zA-Z][a-zA-Z\d+\-.]*:/u.test(resourcePath) || resourcePath.startsWith("//");
 }
 
 function ensureConfig() {
