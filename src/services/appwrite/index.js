@@ -53,6 +53,36 @@ const ensureStorageReady = () => {
   }
 };
 
+const getErrorCode = (error) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  typeof error.code === "number"
+    ? error.code
+    : null;
+
+const getErrorMessage = (error) =>
+  error instanceof Error
+    ? error.message
+    : typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+      ? error.message
+      : "";
+
+const isExpectedUnauthenticatedError = (error) => {
+  const code = getErrorCode(error);
+  const message = getErrorMessage(error).toLowerCase();
+
+  return (
+    code === 401 ||
+    message.includes("missing scopes") ||
+    message.includes("role: guests") ||
+    message.includes("current session not found")
+  );
+};
+
 const normalizeIdentifiers = (currentAccount) =>
   [currentAccount.email].filter(
     (value) => typeof value === "string" && value.trim().length > 0,
@@ -107,7 +137,9 @@ export async function getAccount() {
     const currentAccount = await account.get();
     return currentAccount;
   } catch (error) {
-    if (__DEV__) console.error("No authenticated user:", error);
+    if (__DEV__ && !isExpectedUnauthenticatedError(error)) {
+      console.error("No authenticated user:", error);
+    }
     return null; // Return null for unauthenticated users
   }
 }
