@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { useIsFocused } from "@react-navigation/native";
 import { View, Image, Platform, Linking } from "react-native";
 import MapView, {
   UrlTile,
@@ -24,7 +25,8 @@ const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
   const mapRef = useRef<MapView | null>(null); // Reference to the MapView
   const superClusterRef = useRef(null);
-  const { location, isPermissionDenied } = useUserLocation();
+  const isFocused = useIsFocused();
+  const { location, isPermissionDenied, refreshLocation } = useUserLocation();
   const {
     markers,
     selectedMarker,
@@ -71,6 +73,12 @@ const HomeApp: React.FC = () => {
       fontWeight: "bold",
     },
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      void refreshLocation({ requestPermission: false });
+    }
+  }, [isFocused, refreshLocation]);
 
   return (
     <SafeAreaProvider>

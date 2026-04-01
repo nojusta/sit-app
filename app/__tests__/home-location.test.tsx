@@ -1,4 +1,5 @@
 import React from "react";
+import { useIsFocused } from "@react-navigation/native";
 import { Linking } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
@@ -7,6 +8,11 @@ import HomeApp from "../(tabs)/home";
 const setIsMarkerSelected = jest.fn();
 const handleCenterOnUserLocation = jest.fn();
 const handleAddMarker = jest.fn();
+const refreshLocation = jest.fn();
+
+jest.mock("@react-navigation/native", () => ({
+  useIsFocused: jest.fn(),
+}));
 
 jest.mock("react-native-maps", () => {
   const React = require("react");
@@ -69,6 +75,46 @@ jest.mock("@/features/markers", () => ({
   },
 }));
 
+jest.mock("@/shared/components", () => {
+  const React = require("react");
+  const { Text, TouchableOpacity, View } = require("react-native");
+
+  return {
+    NoticeBanner: ({
+      title,
+      description,
+      actionLabel,
+      onAction,
+    }: {
+      title: string;
+      description: string;
+      actionLabel?: string;
+      onAction?: () => void;
+    }) => {
+      const [collapsed, setCollapsed] = React.useState(false);
+
+      return (
+        <View>
+          <Text>{title}</Text>
+          <TouchableOpacity
+            onPress={() => setCollapsed((current: boolean) => !current)}
+            accessibilityRole="button"
+            accessibilityLabel={collapsed ? "Expand notice" : "Minimize notice"}
+          >
+            <Text>{collapsed ? "Expand notice" : "Minimize notice"}</Text>
+          </TouchableOpacity>
+          {!collapsed ? <Text>{description}</Text> : null}
+          {!collapsed && actionLabel && onAction ? (
+            <TouchableOpacity onPress={onAction}>
+              <Text>{actionLabel}</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      );
+    },
+  };
+});
+
 jest.mock("@/features/map", () => {
   const React = require("react");
   const { Text } = require("react-native");
@@ -87,10 +133,12 @@ jest.mock("@/features/map", () => {
 
 const { useMapInteractions, useMarkerContext, useUserLocation } =
   jest.requireMock("@/features/map");
+const mockedUseIsFocused = jest.mocked(useIsFocused);
 
 describe("home location permission flow", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockedUseIsFocused.mockReturnValue(true);
 
     useMarkerContext.mockReturnValue({
       setIsMarkerSelected,
@@ -126,9 +174,12 @@ describe("home location permission flow", () => {
       isPermissionDenied: true,
       isPermissionGranted: false,
       isPermissionLoading: false,
+      refreshLocation,
     });
 
     render(<HomeApp />);
+
+    expect(refreshLocation).toHaveBeenCalledWith({ requestPermission: false });
 
     expect(
       screen.getByText(
@@ -156,6 +207,7 @@ describe("home location permission flow", () => {
       isPermissionDenied: true,
       isPermissionGranted: false,
       isPermissionLoading: false,
+      refreshLocation,
     });
 
     render(<HomeApp />);
@@ -188,6 +240,7 @@ describe("home location permission flow", () => {
       isPermissionDenied: false,
       isPermissionGranted: true,
       isPermissionLoading: false,
+      refreshLocation,
     });
 
     render(<HomeApp />);

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AppState, type AppStateStatus } from "react-native";
 import * as Location from "expo-location";
 
 export type LocationPermissionState = "idle" | "loading" | "granted" | "denied";
@@ -7,20 +8,19 @@ const useUserLocation = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [permissionState, setPermissionState] = useState<LocationPermissionState>("idle");
 
-  useEffect(() => {
-    let isMounted = true;
-
-    (async () => {
-      setPermissionState("loading");
-
+  const syncLocationPermissionAndPosition = useCallback(
+    async (options = { requestPermission: false }) => {
       try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-
-        if (!isMounted) {
-          return;
+        if (options.requestPermission) {
+          setPermissionState("loading");
         }
 
-        if (status !== "granted") {
+        const permissionResult = options.requestPermission
+          ? await Location.requestForegroundPermissionsAsync()
+          : await Location.getForegroundPermissionsAsync();
+        const isGranted = String(permissionResult.status) === "granted";
+
+        if (!isGranted) {
           setPermissionState("denied");
           setLocation(null);
           return;
@@ -28,27 +28,45 @@ const useUserLocation = () => {
 
         setPermissionState("granted");
 
-        const currentLocation = await Location.getCurrentPositionAsync({});
-
-        if (isMounted) {
+        try {
+          const currentLocation = await Location.getCurrentPositionAsync({});
           setLocation(currentLocation);
+        } catch (error) {
+          if (__DEV__) {
+            console.warn("Failed to fetch current location.", error);
+          }
+
+          setLocation(null);
         }
       } catch (error) {
         if (__DEV__) {
-          console.warn("Failed to request location permission or fetch location.", error);
+          console.warn("Failed to synchronize location permission.", error);
         }
 
-        if (isMounted) {
+        if (options.requestPermission) {
           setPermissionState("denied");
-          setLocation(null);
         }
       }
-    })();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    void syncLocationPermissionAndPosition({ requestPermission: true });
+
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (nextAppState: AppStateStatus) => {
+        if (nextAppState === "active") {
+          void syncLocationPermissionAndPosition({ requestPermission: false });
+        }
+      },
+    );
 
     return () => {
-      isMounted = false;
+      appStateSubscription.remove();
     };
-  }, []);
+  }, [syncLocationPermissionAndPosition]);
 
   return {
     location,
@@ -56,6 +74,7 @@ const useUserLocation = () => {
     isPermissionDenied: permissionState === "denied",
     isPermissionGranted: permissionState === "granted",
     isPermissionLoading: permissionState === "idle" || permissionState === "loading",
+    refreshLocation: syncLocationPermissionAndPosition,
   };
 };
 
