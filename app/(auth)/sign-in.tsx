@@ -10,7 +10,13 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { normalizeEmail, useAuthContext, User } from "@/features/auth";
+import {
+  isInvalidCredentialsError,
+  normalizeEmail,
+  useAuthContext,
+  User,
+  validateLoginForm,
+} from "@/features/auth";
 import { signIn, getCurrentUser } from "@/services/appwrite";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { images } from "@/shared/constants";
@@ -26,8 +32,9 @@ const SignIn = () => {
   });
 
   const submit = async () => {
-    if (form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all fields");
+    const validationMessage = validateLoginForm(form);
+    if (validationMessage) {
+      Alert.alert("Error", validationMessage);
       return;
     }
 
@@ -38,17 +45,20 @@ const SignIn = () => {
     try {
       await signIn(normalizedEmail, form.password);
       const result = await getCurrentUser();
+      if (!result) {
+        throw new Error("Unable to load your account right now. Please try again.");
+      }
 
       setUser(result as User);
       setIsLogged(!!result);
-
-      Alert.alert("Success", "User signed in successfully");
       router.replace("/home");
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (isInvalidCredentialsError(error)) {
         Alert.alert("Error", "Incorrect email or password. Please try again.");
+      } else if (error instanceof Error) {
+        Alert.alert("Sign in failed", error.message);
       } else {
-        Alert.alert("Error", "An unknown error occurred.");
+        Alert.alert("Sign in failed", "Unable to sign in right now. Please try again.");
       }
     } finally {
       setSubmitting(false);

@@ -1,7 +1,9 @@
 import {
   getDefaultUsername,
+  isInvalidCredentialsError,
   normalizeEmail,
   normalizeRegistrationForm,
+  validateLoginForm,
   validateRegistrationForm,
 } from "../index";
 
@@ -48,5 +50,27 @@ describe("credentials helpers", () => {
         password: "password123",
       }),
     ).toBeNull();
+  });
+
+  it("rejects invalid login input", () => {
+    expect(validateLoginForm({ email: "", password: "" })).toBe(
+      "Please fill in email and password.",
+    );
+    expect(validateLoginForm({ email: "invalid-email", password: "password123" })).toBe(
+      "Please enter a valid email address.",
+    );
+  });
+
+  it("accepts valid login input", () => {
+    expect(
+      validateLoginForm({ email: "demo@example.com", password: "password123" }),
+    ).toBe(null);
+  });
+
+  it("detects invalid-credentials Appwrite errors", () => {
+    expect(isInvalidCredentialsError({ code: 401 })).toBe(true);
+    expect(isInvalidCredentialsError({ type: "user_invalid_credentials" })).toBe(true);
+    expect(isInvalidCredentialsError(new Error("Network error"))).toBe(false);
+    expect(isInvalidCredentialsError({ code: 500 })).toBe(false);
   });
 });

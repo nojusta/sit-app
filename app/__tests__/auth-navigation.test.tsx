@@ -167,7 +167,7 @@ describe("auth screen flows", () => {
   });
 
   it("keeps the user on sign-in when authentication fails", async () => {
-    mockedSignIn.mockRejectedValue(new Error("Bad credentials"));
+    mockedSignIn.mockRejectedValue({ code: 401 });
 
     render(<SignIn />);
 
@@ -187,5 +187,80 @@ describe("auth screen flows", () => {
 
     expect(replace).not.toHaveBeenCalled();
     expect(setUser).not.toHaveBeenCalled();
+  });
+
+  it("blocks sign-in before the request when the email format is invalid", async () => {
+    render(<SignIn />);
+
+    fireEvent.changeText(screen.getByPlaceholderText("Enter your email"), "not-an-email");
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your password"),
+      "password123",
+    );
+    fireEvent.press(screen.getByText("Sign In"));
+
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        "Error",
+        "Please enter a valid email address.",
+      ),
+    );
+
+    expect(mockedSignIn).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it("shows a technical error when sign-in fails for a non-auth reason", async () => {
+    mockedSignIn.mockRejectedValue(new Error("Appwrite configuration is missing."));
+
+    render(<SignIn />);
+
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your email"),
+      "eva@example.com",
+    );
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your password"),
+      "password123",
+    );
+    fireEvent.press(screen.getByText("Sign In"));
+
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        "Sign in failed",
+        "Appwrite configuration is missing.",
+      ),
+    );
+
+    expect(replace).not.toHaveBeenCalled();
+    expect(setUser).not.toHaveBeenCalled();
+  });
+
+  it("does not navigate when the session is created but the current user cannot be loaded", async () => {
+    mockedSignIn.mockResolvedValue({} as never);
+    mockedGetCurrentUser.mockResolvedValue(null as never);
+
+    render(<SignIn />);
+
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your email"),
+      "eva@example.com",
+    );
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your password"),
+      "password123",
+    );
+    fireEvent.press(screen.getByText("Sign In"));
+
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        "Sign in failed",
+        "Unable to load your account right now. Please try again.",
+      ),
+    );
+
+    expect(replace).not.toHaveBeenCalled();
+    expect(setUser).not.toHaveBeenCalled();
+    expect(setIsLogged).not.toHaveBeenCalledWith(true);
   });
 });
