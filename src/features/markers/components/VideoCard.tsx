@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ResizeMode, Video, AVPlaybackStatus } from "expo-av";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 
 import { icons } from "@/shared/constants";
+import InlineVideoPlayer from "./InlineVideoPlayer";
 
 interface VideoCardProps {
   title: string;
@@ -50,17 +50,10 @@ const VideoCard: React.FC<VideoCardProps> = ({
       </View>
 
       {play ? (
-        <Video
-          source={{ uri: video }}
-          className="w-full h-60 rounded-xl mt-3"
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls
-          shouldPlay
-          onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
-            if (status.isLoaded && status.didJustFinish) {
-              setPlay(false);
-            }
-          }}
+        <InlineVideoPlayer
+          source={video}
+          containerClassName="w-full h-60 rounded-xl mt-3 overflow-hidden"
+          onPlaybackFinished={() => setPlay(false)}
         />
       ) : (
         <TouchableOpacity

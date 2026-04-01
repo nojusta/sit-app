@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ResizeMode, Video, AVPlaybackStatus } from "expo-av";
 import * as Animatable from "react-native-animatable";
 import {
   FlatList,
@@ -14,6 +13,7 @@ import {
 import React from "react";
 
 import { icons } from "@/shared/constants";
+import InlineVideoPlayer from "./InlineVideoPlayer";
 
 interface Post {
   $id: string;
@@ -58,17 +58,10 @@ const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
       duration={500}
     >
       {play ? (
-        <Video
-          source={{ uri: item.video }}
-          className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls
-          shouldPlay
-          onPlaybackStatusUpdate={(status: AVPlaybackStatus) => {
-            if (status.isLoaded && status.didJustFinish) {
-              setPlay(false);
-            }
-          }}
+        <InlineVideoPlayer
+          source={item.video}
+          containerClassName="w-52 h-72 rounded-[33px] mt-3 bg-white/10 overflow-hidden"
+          onPlaybackFinished={() => setPlay(false)}
         />
       ) : (
         <TouchableOpacity
