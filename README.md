@@ -115,6 +115,50 @@ Run the full local gate before pushing:
 npm run check
 ```
 
+## Codex Appwrite MCP
+
+This repo includes a local Appwrite MCP server so Codex can automate Appwrite work without sending you back to the Appwrite console.
+
+### Setup
+
+1. Add these values to `.env`:
+
+```bash
+APPWRITE_ENDPOINT=https://<region>.cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=<your-project-id>
+APPWRITE_API_KEY=<server-api-key>
+```
+
+2. Create the Appwrite API key with the minimum scopes you actually want Codex to use. For example:
+
+- database and collection setup scopes if you want schema automation
+- storage scopes if you want bucket automation
+- functions scopes if you want function automation
+
+3. Reload the editor so the workspace MCP config in `.vscode/mcp.json` is picked up.
+
+### What it can do
+
+The local server in `scripts/appwrite-mcp.js` exposes Appwrite tools for:
+
+- listing and creating databases
+- listing and creating collections
+- creating collection attributes and indexes
+- listing, creating, and updating documents
+- listing and creating storage buckets
+- listing and creating functions
+- sending a generic Appwrite REST request for unsupported endpoints
+
+DELETE is disabled by default for the generic request tool. If you intentionally want Codex to use DELETE endpoints, set `APPWRITE_MCP_ALLOW_DELETE=true` in `.env`.
+
+### Local test
+
+You can start the MCP server directly with:
+
+```bash
+npm run mcp:appwrite
+```
+
 ## Git hooks
 
 Hooks are installed automatically when dependencies are installed via `npm install`.
