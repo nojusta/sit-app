@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
-import { View, Image, Platform } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { View, Image, Platform, Linking } from "react-native";
 import MapView, {
   UrlTile,
   Marker,
@@ -16,6 +17,7 @@ import {
   useUserLocation,
 } from "@/features/map";
 import { MarkerInputBox } from "@/features/markers";
+import { NoticeBanner } from "@/shared/components";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
 
@@ -23,7 +25,8 @@ const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
   const mapRef = useRef<MapView | null>(null); // Reference to the MapView
   const superClusterRef = useRef(null);
-  const { location } = useUserLocation();
+  const isFocused = useIsFocused();
+  const { location, isPermissionDenied, refreshLocation } = useUserLocation();
   const {
     markers,
     selectedMarker,
@@ -71,9 +74,23 @@ const HomeApp: React.FC = () => {
     },
   };
 
+  useEffect(() => {
+    if (isFocused) {
+      void refreshLocation({ requestPermission: false });
+    }
+  }, [isFocused, refreshLocation]);
+
   return (
     <SafeAreaProvider>
       <View className="flex-1">
+        {isPermissionDenied && (
+          <NoticeBanner
+            title="Location access required"
+            description="Enable location permission to use location-based navigation features on the map."
+            actionLabel="Open settings"
+            onAction={() => Linking.openSettings()}
+          />
+        )}
         <ClusteredMapView
           mapRef={(map) => {
             mapRef.current = map as MapView | null;
@@ -146,11 +163,14 @@ const HomeApp: React.FC = () => {
           icon="⌖"
           style="absolute bottom-28 right-5"
           isCenterOnUser={true}
+          disabled={isPermissionDenied}
+          accessibilityLabel="Center on my location"
         />
         <CircleButton
           onPress={handleAddMarker}
           icon="+"
           style="absolute bottom-28 left-5"
+          accessibilityLabel="Add marker"
         />
       </View>
     </SafeAreaProvider>

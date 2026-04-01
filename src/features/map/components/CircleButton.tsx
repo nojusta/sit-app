@@ -7,6 +7,8 @@ interface CircleButtonProps {
   icon: string;
   style?: string;
   isCenterOnUser?: boolean;
+  disabled?: boolean;
+  accessibilityLabel?: string;
 }
 
 const CircleButton: React.FC<CircleButtonProps> = ({
@@ -14,11 +16,19 @@ const CircleButton: React.FC<CircleButtonProps> = ({
   icon,
   style,
   isCenterOnUser,
+  disabled = false,
+  accessibilityLabel,
 }) => {
   return (
     <TouchableOpacity
-      className={`bg-[#2D2D2D] w-16 h-16 rounded-full shadow-lg justify-center items-center ${style}`}
+      className={`bg-[#2D2D2D] w-16 h-16 rounded-full shadow-lg justify-center items-center ${
+        disabled ? "opacity-40" : ""
+      } ${style}`}
       onPress={onPress}
+      disabled={disabled}
+      accessibilityState={{ disabled }}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
     >
       {isCenterOnUser ? (
         <MaterialIcons name="my-location" size={24} color="white" />

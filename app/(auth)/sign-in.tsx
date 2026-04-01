@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuthContext, User } from "@/features/auth";
+import { normalizeEmail, useAuthContext, User } from "@/features/auth";
 import { signIn, getCurrentUser } from "@/services/appwrite";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { images } from "@/shared/constants";
@@ -31,10 +31,12 @@ const SignIn = () => {
       return;
     }
 
+    const normalizedEmail = normalizeEmail(form.email);
+
     setSubmitting(true);
 
     try {
-      await signIn(form.email, form.password);
+      await signIn(normalizedEmail, form.password);
       const result = await getCurrentUser();
 
       setUser(result as User);
@@ -86,6 +88,8 @@ const SignIn = () => {
               handleChangeText={(e) => setForm({ ...form, email: e })}
               otherStyles="mt-7"
               keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <FormField
@@ -94,6 +98,9 @@ const SignIn = () => {
               placeholder="Enter your password"
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
+              isPassword
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <CustomButton
