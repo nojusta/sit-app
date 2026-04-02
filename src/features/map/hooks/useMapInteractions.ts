@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert } from "react-native";
 import MapView, { LatLng, Region } from "react-native-maps";
 import { LocationObject } from "expo-location";
+import {
+  getLocationCoordinate,
+  LOCATION_ACCESS_REQUIRED_MESSAGE,
+} from "../utils/navigation";
 
 export type MarkerData = {
   id: number;
@@ -14,6 +18,7 @@ export type MarkerData = {
 interface UseMapInteractionsOptions {
   mapRef: React.RefObject<MapView | null>;
   location: LocationObject | null;
+  isLocationPermissionDenied?: boolean;
   onMarkerSelectionChange?: (selected: boolean) => void;
 }
 
@@ -53,6 +58,7 @@ const DEFAULT_MARKERS: MarkerData[] = [
 const useMapInteractions = ({
   mapRef,
   location,
+  isLocationPermissionDenied = false,
   onMarkerSelectionChange,
 }: UseMapInteractionsOptions) => {
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
@@ -61,8 +67,21 @@ const useMapInteractions = ({
   const [markerName, setMarkerName] = useState<string>("");
   const [markerInfo, setMarkerInfo] = useState<string>("");
   const [showInputBox, setShowInputBox] = useState<boolean>(false);
+  const [navigationDestination, setNavigationDestination] = useState<MarkerData | null>(
+    null,
+  );
+
+  const currentLocationCoordinate = useMemo(
+    () => getLocationCoordinate(location),
+    [location],
+  );
+  const isNavigationActive = navigationDestination !== null;
 
   const handleMarkerPress = (marker: MarkerData) => {
+    if (isNavigationActive) {
+      return;
+    }
+
     if (mapRef.current) {
       mapRef.current
         .getMapBoundaries()
@@ -108,7 +127,7 @@ const useMapInteractions = ({
       setUserMarker(null);
       setShowInputBox(false);
       onMarkerSelectionChange?.(false);
-      if (lastRegion) {
+      if (lastRegion && !isNavigationActive) {
         mapRef.current?.animateToRegion(lastRegion, 800);
       }
     }
@@ -162,6 +181,37 @@ const useMapInteractions = ({
     });
   };
 
+  const handleStartNavigation = (marker: MarkerData | null = selectedMarker) => {
+    if (!marker) {
+      return;
+    }
+
+    if (isLocationPermissionDenied) {
+      Alert.alert("Location access required", LOCATION_ACCESS_REQUIRED_MESSAGE);
+      return;
+    }
+
+    if (!currentLocationCoordinate) {
+      Alert.alert(
+        "Location unavailable",
+        "Unable to determine your current location. Please try again.",
+      );
+      return;
+    }
+
+    setNavigationDestination(marker);
+    setSelectedMarker(null);
+    onMarkerSelectionChange?.(false);
+  };
+
+  const handleStopNavigation = () => {
+    setNavigationDestination(null);
+
+    if (lastRegion) {
+      mapRef.current?.animateToRegion(lastRegion, 800);
+    }
+  };
+
   return {
     markers: DEFAULT_MARKERS,
     selectedMarker,
@@ -178,6 +228,10 @@ const useMapInteractions = ({
     handleMarkerDragEnd,
     handleCenterOnUserLocation,
     handleAddMarker,
+    handleStartNavigation,
+    handleStopNavigation,
+    isNavigationActive,
+    activeNavigationDestination: navigationDestination,
   };
 };
 

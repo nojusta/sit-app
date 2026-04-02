@@ -8,27 +8,36 @@ import React from "react";
 
 interface CustomButtonProps {
   title: string;
-  handlePress: (event: GestureResponderEvent) => void;
+  handlePress: (event?: GestureResponderEvent) => void;
   containerStyles?: string;
   textStyles?: string;
   isLoading?: boolean;
+  disabled?: boolean;
+  accessibilityLabel?: string;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   title,
   handlePress,
-  containerStyles = "", // Default to an empty string
-  textStyles = "", // Default to an empty string
+  containerStyles = "",
+  textStyles = "",
   isLoading,
+  disabled = false,
+  accessibilityLabel,
 }) => {
+  const isDisabled = Boolean(isLoading || disabled);
+
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
       className={`bg-secondary-200 rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
-        isLoading ? "opacity-50" : ""
+        isDisabled ? "opacity-50" : ""
       }`}
-      disabled={isLoading}
+      disabled={isDisabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
+      accessibilityLabel={accessibilityLabel ?? title}
     >
       <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>{title}</Text>
 

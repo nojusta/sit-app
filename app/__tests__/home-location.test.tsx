@@ -80,6 +80,23 @@ jest.mock("@/shared/components", () => {
   const { Text, TouchableOpacity, View } = require("react-native");
 
   return {
+    CustomButton: ({
+      title,
+      handlePress,
+      accessibilityLabel,
+    }: {
+      title: string;
+      handlePress: () => void;
+      accessibilityLabel?: string;
+    }) => (
+      <TouchableOpacity
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? title}
+      >
+        <Text>{title}</Text>
+      </TouchableOpacity>
+    ),
     NoticeBanner: ({
       title,
       description,
@@ -122,8 +139,20 @@ jest.mock("@/features/map", () => {
 
   return {
     ...actual,
-    InfoWindow: ({ selectedMarker }: { selectedMarker: { title: string } }) => (
-      <Text>{selectedMarker.title}</Text>
+    GoogleNavigationView: ({ destination }: { destination: { title: string } }) => (
+      <Text>Google navigation to {destination.title}</Text>
+    ),
+    InfoWindow: ({
+      selectedMarker,
+      onStartNavigation,
+    }: {
+      selectedMarker: { title: string };
+      onStartNavigation?: () => void;
+    }) => (
+      <>
+        <Text>{selectedMarker.title}</Text>
+        <Text onPress={onStartNavigation}>Start Navigation</Text>
+      </>
     ),
     useMapInteractions: jest.fn(),
     useMarkerContext: jest.fn(),
@@ -160,6 +189,10 @@ describe("home location permission flow", () => {
       handleMarkerDragEnd: jest.fn(),
       handleCenterOnUserLocation,
       handleAddMarker,
+      handleStartNavigation: jest.fn(),
+      handleStopNavigation: jest.fn(),
+      isNavigationActive: false,
+      activeNavigationDestination: null,
     });
   });
 
@@ -259,5 +292,109 @@ describe("home location permission flow", () => {
 
     fireEvent.press(centerButton);
     expect(handleCenterOnUserLocation).toHaveBeenCalled();
+  });
+
+  it("starts embedded navigation mode and swaps the floating map controls", () => {
+    const handleStopNavigation = jest.fn();
+
+    useUserLocation.mockReturnValue({
+      location: {
+        coords: { latitude: 54.6872, longitude: 25.2797 },
+      },
+      permissionState: "granted",
+      isPermissionDenied: false,
+      isPermissionGranted: true,
+      isPermissionLoading: false,
+      refreshLocation,
+    });
+
+    useMapInteractions.mockReturnValue({
+      markers: [],
+      selectedMarker: null,
+      userMarker: null,
+      markerName: "",
+      markerInfo: "",
+      showInputBox: false,
+      setMarkerName: jest.fn(),
+      setMarkerInfo: jest.fn(),
+      setShowInputBox: jest.fn(),
+      handleMarkerPress: jest.fn(),
+      handleMapPress: jest.fn(),
+      handleLongPress: jest.fn(),
+      handleMarkerDragEnd: jest.fn(),
+      handleCenterOnUserLocation,
+      handleAddMarker,
+      handleStartNavigation: jest.fn(),
+      handleStopNavigation,
+      isNavigationActive: true,
+      activeNavigationDestination: {
+        id: 1,
+        title: "Cathedral Square",
+        description: "Main square",
+        coordinate: { latitude: 54.6839, longitude: 25.2875 },
+      },
+    });
+
+    render(<HomeApp />);
+
+    expect(screen.getByText("Google navigation to Cathedral Square")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Add marker" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Center on my location" })).toBeNull();
+
+    const stopNavigationButton = screen.getByRole("button", {
+      name: "Stop navigation",
+    });
+
+    fireEvent.press(stopNavigationButton);
+    expect(handleStopNavigation).toHaveBeenCalled();
+  });
+
+  it("passes the selected marker into start navigation from the marker sheet", () => {
+    const handleStartNavigation = jest.fn();
+    const selectedMarker = {
+      id: 1,
+      title: "Kudirka Square",
+      description: "Benches, skaters, and a statue of Vincas Kudirka",
+      coordinate: { latitude: 54.6868, longitude: 25.2799 },
+    };
+
+    useUserLocation.mockReturnValue({
+      location: {
+        coords: { latitude: 54.6872, longitude: 25.2797 },
+      },
+      permissionState: "granted",
+      isPermissionDenied: false,
+      isPermissionGranted: true,
+      isPermissionLoading: false,
+      refreshLocation,
+    });
+
+    useMapInteractions.mockReturnValue({
+      markers: [],
+      selectedMarker,
+      userMarker: null,
+      markerName: "",
+      markerInfo: "",
+      showInputBox: false,
+      setMarkerName: jest.fn(),
+      setMarkerInfo: jest.fn(),
+      setShowInputBox: jest.fn(),
+      handleMarkerPress: jest.fn(),
+      handleMapPress: jest.fn(),
+      handleLongPress: jest.fn(),
+      handleMarkerDragEnd: jest.fn(),
+      handleCenterOnUserLocation,
+      handleAddMarker,
+      handleStartNavigation,
+      handleStopNavigation: jest.fn(),
+      isNavigationActive: false,
+      activeNavigationDestination: null,
+    });
+
+    render(<HomeApp />);
+
+    fireEvent.press(screen.getByText("Start Navigation"));
+
+    expect(handleStartNavigation).toHaveBeenCalledWith(selectedMarker);
   });
 });

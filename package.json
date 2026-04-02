@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@googlemaps/react-native-navigation-sdk": "^0.14.2",
     "@react-navigation/native": "^7.0.14",
     "appwrite": "^16.0.2",
     "expo": "~54.0.33",

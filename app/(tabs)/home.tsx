@@ -11,15 +11,16 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import ClusteredMapView from "react-native-map-clustering";
 import {
   CircleButton,
+  GoogleNavigationView,
   InfoWindow,
   useMapInteractions,
   useMarkerContext,
   useUserLocation,
 } from "@/features/map";
 import { MarkerInputBox } from "@/features/markers";
-import { NoticeBanner } from "@/shared/components";
+import { CustomButton, NoticeBanner } from "@/shared/components";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 100; // Initial height of the info window
+const INITIAL_INFO_WINDOW_HEIGHT = 170;
 
 const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
@@ -43,9 +44,14 @@ const HomeApp: React.FC = () => {
     handleMarkerDragEnd,
     handleCenterOnUserLocation,
     handleAddMarker,
+    handleStartNavigation,
+    handleStopNavigation,
+    isNavigationActive,
+    activeNavigationDestination,
   } = useMapInteractions({
     mapRef,
     location,
+    isLocationPermissionDenied: isPermissionDenied,
     onMarkerSelectionChange: setIsMarkerSelected,
   });
 
@@ -91,62 +97,70 @@ const HomeApp: React.FC = () => {
             onAction={() => Linking.openSettings()}
           />
         )}
-        <ClusteredMapView
-          mapRef={(map) => {
-            mapRef.current = map as MapView | null;
-          }}
-          superClusterRef={superClusterRef}
-          provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-          className="flex-1"
-          initialRegion={initialRegion}
-          onPress={handleMapPress}
-          onRegionChangeComplete={() => {}}
-          onClusterPress={() => {}}
-          onMarkersChange={() => {}}
-          onLongPress={(e) => handleLongPress(e.nativeEvent.coordinate)} // Handle long press on the map
-          showsUserLocation={true}
-          showsMyLocationButton={false}
-          clusterColor="black"
-          clusterTextColor="white"
-          // @ts-expect-error Provided by clustering lib
-          minimumClusterSize={5}
-          customClusterStyles={clusterStyles}
-        >
-          <UrlTile
-            urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
-            maximumZ={19}
-            flipY={false}
+        {isNavigationActive && activeNavigationDestination ? (
+          <GoogleNavigationView
+            destination={activeNavigationDestination}
+            onStopNavigation={handleStopNavigation}
           />
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={marker.coordinate}
-              onPress={() => handleMarkerPress(marker)}
-            >
-              <Image
-                source={require("../../assets/images/custom-marker.png")}
-                className="w-10 h-10"
-              />
-            </Marker>
-          ))}
-          {userMarker && (
-            <Marker
-              coordinate={userMarker}
-              draggable
-              onDragEnd={(e) => handleMarkerDragEnd(e.nativeEvent.coordinate)}
-              title={"Your Marker"}
-            >
-              <Image
-                source={require("../../assets/images/custom-marker.png")}
-                className="w-10 h-10"
-              />
-            </Marker>
-          )}
-        </ClusteredMapView>
-        {selectedMarker && (
+        ) : (
+          <ClusteredMapView
+            mapRef={(map) => {
+              mapRef.current = map as MapView | null;
+            }}
+            superClusterRef={superClusterRef}
+            provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+            className="flex-1"
+            initialRegion={initialRegion}
+            onPress={handleMapPress}
+            onRegionChangeComplete={() => {}}
+            onClusterPress={() => {}}
+            onMarkersChange={() => {}}
+            onLongPress={(e) => handleLongPress(e.nativeEvent.coordinate)}
+            showsUserLocation={true}
+            showsMyLocationButton={false}
+            clusterColor="black"
+            clusterTextColor="white"
+            // @ts-expect-error Provided by clustering lib
+            minimumClusterSize={5}
+            customClusterStyles={clusterStyles}
+          >
+            <UrlTile
+              urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
+              maximumZ={19}
+              flipY={false}
+            />
+            {markers.map((marker) => (
+              <Marker
+                key={marker.id}
+                coordinate={marker.coordinate}
+                onPress={() => handleMarkerPress(marker)}
+              >
+                <Image
+                  source={require("../../assets/images/custom-marker.png")}
+                  className="w-10 h-10"
+                />
+              </Marker>
+            ))}
+            {userMarker && (
+              <Marker
+                coordinate={userMarker}
+                draggable
+                onDragEnd={(e) => handleMarkerDragEnd(e.nativeEvent.coordinate)}
+                title={"Your Marker"}
+              >
+                <Image
+                  source={require("../../assets/images/custom-marker.png")}
+                  className="w-10 h-10"
+                />
+              </Marker>
+            )}
+          </ClusteredMapView>
+        )}
+        {!isNavigationActive && selectedMarker && (
           <InfoWindow
             selectedMarker={selectedMarker}
             initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
+            onStartNavigation={() => handleStartNavigation(selectedMarker)}
           />
         )}
         {showInputBox && (
@@ -158,20 +172,31 @@ const HomeApp: React.FC = () => {
             setShowInputBox={setShowInputBox}
           />
         )}
-        <CircleButton
-          onPress={handleCenterOnUserLocation}
-          icon="⌖"
-          style="absolute bottom-28 right-5"
-          isCenterOnUser={true}
-          disabled={isPermissionDenied}
-          accessibilityLabel="Center on my location"
-        />
-        <CircleButton
-          onPress={handleAddMarker}
-          icon="+"
-          style="absolute bottom-28 left-5"
-          accessibilityLabel="Add marker"
-        />
+        {isNavigationActive ? (
+          <CustomButton
+            title="Stop Navigation"
+            handlePress={handleStopNavigation}
+            containerStyles="absolute bottom-10 left-5 right-5 min-h-[56px]"
+            accessibilityLabel="Stop navigation"
+          />
+        ) : (
+          <>
+            <CircleButton
+              onPress={handleCenterOnUserLocation}
+              icon="⌖"
+              style="absolute bottom-28 right-5"
+              isCenterOnUser={true}
+              disabled={isPermissionDenied}
+              accessibilityLabel="Center on my location"
+            />
+            <CircleButton
+              onPress={handleAddMarker}
+              icon="+"
+              style="absolute bottom-28 left-5"
+              accessibilityLabel="Add marker"
+            />
+          </>
+        )}
       </View>
     </SafeAreaProvider>
   );

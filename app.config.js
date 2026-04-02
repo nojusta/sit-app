@@ -17,12 +17,20 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.sitapp",
+      config: {
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+      },
       infoPlist: {
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to update your profile picture.",
       },
     },
     android: {
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+      },
       adaptiveIcon: {
         foregroundImage: "./assets/images/logo.png",
         backgroundColor: "#ffffff",
@@ -46,6 +54,7 @@ export default {
       APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID,
       APPWRITE_USER_COLLECTION_ID: process.env.APPWRITE_USER_COLLECTION_ID,
       APPWRITE_MARKERS_COLLECTION_ID: process.env.APPWRITE_MARKERS_COLLECTION_ID,
+      GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
       ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     },
