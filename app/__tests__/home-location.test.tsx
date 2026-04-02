@@ -14,38 +14,6 @@ jest.mock("@react-navigation/native", () => ({
   useIsFocused: jest.fn(),
 }));
 
-jest.mock("react-native-maps", () => {
-  const React = require("react");
-  const { View } = require("react-native");
-
-  const MockMap = ({ children }: { children: React.ReactNode }) => (
-    <View>{children}</View>
-  );
-  const Marker = ({ children }: { children?: React.ReactNode }) => (
-    <View>{children}</View>
-  );
-  const UrlTile = () => null;
-
-  return {
-    __esModule: true,
-    default: MockMap,
-    Marker,
-    UrlTile,
-    PROVIDER_GOOGLE: "google",
-    PROVIDER_DEFAULT: "default",
-  };
-});
-
-jest.mock("react-native-map-clustering", () => {
-  const React = require("react");
-  const { View } = require("react-native");
-  const MockClusteredMapView = ({ children }: { children: React.ReactNode }) => (
-    <View>{children}</View>
-  );
-  MockClusteredMapView.displayName = "MockClusteredMapView";
-  return MockClusteredMapView;
-});
-
 jest.mock("react-native-safe-area-context", () => {
   const React = require("react");
   const { View } = require("react-native");
@@ -139,9 +107,18 @@ jest.mock("@/features/map", () => {
 
   return {
     ...actual,
-    GoogleNavigationView: ({ destination }: { destination: { title: string } }) => (
-      <Text>Google navigation to {destination.title}</Text>
+    GoogleMapSurface: ({
+      navigationDestination,
+    }: {
+      navigationDestination?: { title: string } | null;
+    }) => (
+      <Text>
+        {navigationDestination
+          ? `Google map surface navigating to ${navigationDestination.title}`
+          : "Google map surface"}
+      </Text>
     ),
+    isGoogleNavigationSdkNativeAvailable: jest.fn(() => true),
     InfoWindow: ({
       selectedMarker,
       onStartNavigation,
@@ -337,7 +314,9 @@ describe("home location permission flow", () => {
 
     render(<HomeApp />);
 
-    expect(screen.getByText("Google navigation to Cathedral Square")).toBeTruthy();
+    expect(
+      screen.getByText("Google map surface navigating to Cathedral Square"),
+    ).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Add marker" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Center on my location" })).toBeNull();
 

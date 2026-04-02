@@ -1,5 +1,5 @@
 import { type LocationObject } from "expo-location";
-import { type LatLng } from "react-native-maps";
+import type { MapCoordinate } from "../core";
 
 export const LOCATION_ACCESS_REQUIRED_MESSAGE =
   "Location access is required to start navigation.";
@@ -27,7 +27,9 @@ export type NavigationSessionStatusValue =
   | "locationPermissionMissing"
   | "unknownError";
 
-export const getLocationCoordinate = (location: LocationObject | null): LatLng | null => {
+export const getLocationCoordinate = (
+  location: LocationObject | null,
+): MapCoordinate | null => {
   if (!location) {
     return null;
   }

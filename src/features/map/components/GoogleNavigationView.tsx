@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import type { MarkerData } from "../hooks/useMapInteractions";
+import type { MarkerData } from "../core";
 import {
   loadGoogleNavigationSdk,
   type GoogleNavigationSdkModule,

@@ -1,5 +1,10 @@
 import "dotenv/config";
 
+const googleMapsAndroidApiKey =
+  process.env.GOOGLE_MAPS_ANDROID_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+const googleMapsIosApiKey =
+  process.env.GOOGLE_MAPS_IOS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+
 export default {
   expo: {
     name: "Sit",
@@ -18,7 +23,7 @@ export default {
       supportsTablet: true,
       bundleIdentifier: "com.sitapp",
       config: {
-        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        googleMapsApiKey: googleMapsIosApiKey,
       },
       infoPlist: {
         NSPhotoLibraryUsageDescription:
@@ -28,7 +33,7 @@ export default {
     android: {
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY,
+          apiKey: googleMapsAndroidApiKey,
         },
       },
       adaptiveIcon: {
@@ -54,7 +59,6 @@ export default {
       APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID,
       APPWRITE_USER_COLLECTION_ID: process.env.APPWRITE_USER_COLLECTION_ID,
       APPWRITE_MARKERS_COLLECTION_ID: process.env.APPWRITE_MARKERS_COLLECTION_ID,
-      GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
       ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     },

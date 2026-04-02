@@ -1,18 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { View, Image, Platform, Linking } from "react-native";
-import MapView, {
-  UrlTile,
-  Marker,
-  PROVIDER_GOOGLE,
-  PROVIDER_DEFAULT,
-} from "react-native-maps";
+import { View, Linking } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import ClusteredMapView from "react-native-map-clustering";
 import {
   CircleButton,
-  GoogleNavigationView,
+  GoogleMapSurface,
   InfoWindow,
+  type MapInteractionController,
+  isGoogleNavigationSdkNativeAvailable,
   useMapInteractions,
   useMarkerContext,
   useUserLocation,
@@ -24,10 +19,11 @@ const INITIAL_INFO_WINDOW_HEIGHT = 170;
 
 const HomeApp: React.FC = () => {
   const { setIsMarkerSelected } = useMarkerContext();
-  const mapRef = useRef<MapView | null>(null); // Reference to the MapView
-  const superClusterRef = useRef(null);
+  const mapControllerRef = useRef<MapInteractionController | null>(null);
+  const isNativeGoogleMapAvailable = isGoogleNavigationSdkNativeAvailable();
   const isFocused = useIsFocused();
-  const { location, isPermissionDenied, refreshLocation } = useUserLocation();
+  const { location, isPermissionDenied, isPermissionGranted, refreshLocation } =
+    useUserLocation();
   const {
     markers,
     selectedMarker,
@@ -40,8 +36,6 @@ const HomeApp: React.FC = () => {
     setShowInputBox,
     handleMarkerPress,
     handleMapPress,
-    handleLongPress,
-    handleMarkerDragEnd,
     handleCenterOnUserLocation,
     handleAddMarker,
     handleStartNavigation,
@@ -49,36 +43,11 @@ const HomeApp: React.FC = () => {
     isNavigationActive,
     activeNavigationDestination,
   } = useMapInteractions({
-    mapRef,
+    mapControllerRef,
     location,
     isLocationPermissionDenied: isPermissionDenied,
     onMarkerSelectionChange: setIsMarkerSelected,
   });
-
-  // Define the initial region for the map
-  const initialRegion = {
-    latitude: 54.6872,
-    longitude: 25.2797,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
-
-  // Customizable cluster styles
-  const clusterStyles = {
-    container: {
-      width: 40,
-      height: 40,
-      borderRadius: 30,
-      backgroundColor: "black",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    text: {
-      color: "white",
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-  };
 
   useEffect(() => {
     if (isFocused) {
@@ -97,66 +66,17 @@ const HomeApp: React.FC = () => {
             onAction={() => Linking.openSettings()}
           />
         )}
-        {isNavigationActive && activeNavigationDestination ? (
-          <GoogleNavigationView
-            destination={activeNavigationDestination}
-            onStopNavigation={handleStopNavigation}
-          />
-        ) : (
-          <ClusteredMapView
-            mapRef={(map) => {
-              mapRef.current = map as MapView | null;
-            }}
-            superClusterRef={superClusterRef}
-            provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-            className="flex-1"
-            initialRegion={initialRegion}
-            onPress={handleMapPress}
-            onRegionChangeComplete={() => {}}
-            onClusterPress={() => {}}
-            onMarkersChange={() => {}}
-            onLongPress={(e) => handleLongPress(e.nativeEvent.coordinate)}
-            showsUserLocation={true}
-            showsMyLocationButton={false}
-            clusterColor="black"
-            clusterTextColor="white"
-            // @ts-expect-error Provided by clustering lib
-            minimumClusterSize={5}
-            customClusterStyles={clusterStyles}
-          >
-            <UrlTile
-              urlTemplate="https://tiles.stadiamaps.com/tiles/Stamen_toner/{z}/{x}/{y}.png"
-              maximumZ={19}
-              flipY={false}
-            />
-            {markers.map((marker) => (
-              <Marker
-                key={marker.id}
-                coordinate={marker.coordinate}
-                onPress={() => handleMarkerPress(marker)}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            ))}
-            {userMarker && (
-              <Marker
-                coordinate={userMarker}
-                draggable
-                onDragEnd={(e) => handleMarkerDragEnd(e.nativeEvent.coordinate)}
-                title={"Your Marker"}
-              >
-                <Image
-                  source={require("../../assets/images/custom-marker.png")}
-                  className="w-10 h-10"
-                />
-              </Marker>
-            )}
-          </ClusteredMapView>
-        )}
-        {!isNavigationActive && selectedMarker && (
+        <GoogleMapSurface
+          mapControllerRef={mapControllerRef}
+          markers={markers}
+          draftMarker={userMarker}
+          navigationDestination={activeNavigationDestination}
+          onMarkerPress={handleMarkerPress}
+          onMapPress={handleMapPress}
+          showsUserLocation={isPermissionGranted}
+          onStopNavigation={handleStopNavigation}
+        />
+        {!isNavigationActive && selectedMarker && isNativeGoogleMapAvailable && (
           <InfoWindow
             selectedMarker={selectedMarker}
             initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
@@ -179,7 +99,7 @@ const HomeApp: React.FC = () => {
             containerStyles="absolute bottom-10 left-5 right-5 min-h-[56px]"
             accessibilityLabel="Stop navigation"
           />
-        ) : (
+        ) : isNativeGoogleMapAvailable ? (
           <>
             <CircleButton
               onPress={handleCenterOnUserLocation}
@@ -196,7 +116,7 @@ const HomeApp: React.FC = () => {
               accessibilityLabel="Add marker"
             />
           </>
-        )}
+        ) : null}
       </View>
     </SafeAreaProvider>
   );

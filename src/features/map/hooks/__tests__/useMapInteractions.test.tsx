@@ -1,26 +1,36 @@
-import type { RefObject } from "react";
 import { Alert } from "react-native";
 import { renderHook, act, waitFor } from "@testing-library/react-native";
-import type MapView from "react-native-maps";
+
+import type { MapCameraSnapshot, MapInteractionController } from "../../core";
 
 import useMapInteractions from "../useMapInteractions";
 
-const createMapRef = () => {
-  const animateToRegion = jest.fn();
-  const getMapBoundaries = jest.fn().mockResolvedValue({
-    northEast: { latitude: 54.6882, longitude: 25.2807 },
-    southWest: { latitude: 54.6862, longitude: 25.2787 },
-  });
+const BROWSE_CAMERA: MapCameraSnapshot = {
+  target: { latitude: 54.6872, longitude: 25.2797 },
+  zoom: 14.2,
+  bearing: 0,
+  tilt: 0,
+};
+
+const createMapControllerRef = () => {
+  const captureBrowseCamera = jest.fn().mockResolvedValue(BROWSE_CAMERA);
+  const focusCoordinate = jest.fn();
+  const restoreBrowseCamera = jest.fn();
+  const centerOnCoordinate = jest.fn();
 
   return {
-    mapRef: {
+    mapControllerRef: {
       current: {
-        animateToRegion,
-        getMapBoundaries,
-      } as unknown as MapView,
-    } as RefObject<MapView | null>,
-    animateToRegion,
-    getMapBoundaries,
+        captureBrowseCamera,
+        focusCoordinate,
+        restoreBrowseCamera,
+        centerOnCoordinate,
+      } as MapInteractionController,
+    } as React.MutableRefObject<MapInteractionController | null>,
+    captureBrowseCamera,
+    focusCoordinate,
+    restoreBrowseCamera,
+    centerOnCoordinate,
   };
 };
 
@@ -35,7 +45,7 @@ describe("useMapInteractions", () => {
   });
 
   it("starts navigation for the selected marker and exits marker-details mode", async () => {
-    const mapRef = createMapRef();
+    const mapController = createMapControllerRef();
     const onMarkerSelectionChange = jest.fn();
     const location = {
       coords: {
@@ -46,7 +56,7 @@ describe("useMapInteractions", () => {
 
     const { result } = renderHook(() =>
       useMapInteractions({
-        mapRef: mapRef.mapRef,
+        mapControllerRef: mapController.mapControllerRef,
         location: location as never,
         onMarkerSelectionChange,
       }),
@@ -56,7 +66,7 @@ describe("useMapInteractions", () => {
       result.current.handleMarkerPress(result.current.markers[0]);
     });
 
-    await waitFor(() => expect(mapRef.getMapBoundaries).toHaveBeenCalled());
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
 
     act(() => {
       result.current.handleStartNavigation();
@@ -69,21 +79,17 @@ describe("useMapInteractions", () => {
     expect(result.current.selectedMarker).toBeNull();
     expect(onMarkerSelectionChange).toHaveBeenNthCalledWith(1, true);
     expect(onMarkerSelectionChange).toHaveBeenNthCalledWith(2, false);
-    expect(mapRef.animateToRegion).toHaveBeenCalledWith(
-      expect.objectContaining({
-        latitude: result.current.markers[0].coordinate.latitude,
-        longitude: result.current.markers[0].coordinate.longitude,
-      }),
-      800,
+    expect(mapController.focusCoordinate).toHaveBeenCalledWith(
+      result.current.markers[0].coordinate,
     );
   });
 
   it("shows the required message and does not activate navigation without location access", async () => {
-    const mapRef = createMapRef();
+    const mapController = createMapControllerRef();
 
     const { result } = renderHook(() =>
       useMapInteractions({
-        mapRef: mapRef.mapRef,
+        mapControllerRef: mapController.mapControllerRef,
         location: null,
         isLocationPermissionDenied: true,
       }),
@@ -93,7 +99,7 @@ describe("useMapInteractions", () => {
       result.current.handleMarkerPress(result.current.markers[0]);
     });
 
-    await waitFor(() => expect(mapRef.getMapBoundaries).toHaveBeenCalled());
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
 
     act(() => {
       result.current.handleStartNavigation();
@@ -108,11 +114,11 @@ describe("useMapInteractions", () => {
   });
 
   it("keeps navigation inactive when current location cannot be resolved yet", async () => {
-    const mapRef = createMapRef();
+    const mapController = createMapControllerRef();
 
     const { result } = renderHook(() =>
       useMapInteractions({
-        mapRef: mapRef.mapRef,
+        mapControllerRef: mapController.mapControllerRef,
         location: null,
         isLocationPermissionDenied: false,
       }),
@@ -122,7 +128,7 @@ describe("useMapInteractions", () => {
       result.current.handleMarkerPress(result.current.markers[0]);
     });
 
-    await waitFor(() => expect(mapRef.getMapBoundaries).toHaveBeenCalled());
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
 
     act(() => {
       result.current.handleStartNavigation();
@@ -135,8 +141,8 @@ describe("useMapInteractions", () => {
     expect(result.current.isNavigationActive).toBe(false);
   });
 
-  it("stops navigation and returns the map to the previous region", async () => {
-    const mapRef = createMapRef();
+  it("stops navigation and returns the map to the previous browse camera", async () => {
+    const mapController = createMapControllerRef();
     const location = {
       coords: {
         latitude: 54.6872,
@@ -146,7 +152,7 @@ describe("useMapInteractions", () => {
 
     const { result } = renderHook(() =>
       useMapInteractions({
-        mapRef: mapRef.mapRef,
+        mapControllerRef: mapController.mapControllerRef,
         location: location as never,
       }),
     );
@@ -155,7 +161,7 @@ describe("useMapInteractions", () => {
       result.current.handleMarkerPress(result.current.markers[0]);
     });
 
-    await waitFor(() => expect(mapRef.getMapBoundaries).toHaveBeenCalled());
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
 
     act(() => {
       result.current.handleStartNavigation();
@@ -169,12 +175,46 @@ describe("useMapInteractions", () => {
 
     expect(result.current.isNavigationActive).toBe(false);
     expect(result.current.activeNavigationDestination).toBeNull();
-    const lastAnimateCall = mapRef.animateToRegion.mock.calls.at(-1);
+    expect(mapController.restoreBrowseCamera).toHaveBeenCalledWith(BROWSE_CAMERA);
+  });
 
-    expect(lastAnimateCall?.[1]).toBe(800);
-    expect(lastAnimateCall?.[0].latitude).toBeCloseTo(54.6872);
-    expect(lastAnimateCall?.[0].longitude).toBeCloseTo(25.2797);
-    expect(lastAnimateCall?.[0].latitudeDelta).toBeCloseTo(0.002);
-    expect(lastAnimateCall?.[0].longitudeDelta).toBeCloseTo(0.002);
+  it("keeps marker draft mode active and repositions it from a map tap", () => {
+    const mapController = createMapControllerRef();
+    const location = {
+      coords: {
+        latitude: 54.6872,
+        longitude: 25.2797,
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: location as never,
+      }),
+    );
+
+    act(() => {
+      result.current.handleAddMarker();
+    });
+
+    expect(result.current.showInputBox).toBe(true);
+    expect(result.current.userMarker).toEqual({
+      latitude: 54.6872,
+      longitude: 25.2797,
+    });
+
+    act(() => {
+      result.current.handleMapPress({
+        latitude: 54.6881,
+        longitude: 25.2815,
+      });
+    });
+
+    expect(result.current.showInputBox).toBe(true);
+    expect(result.current.userMarker).toEqual({
+      latitude: 54.6881,
+      longitude: 25.2815,
+    });
   });
 });
