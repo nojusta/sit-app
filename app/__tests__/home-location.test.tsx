@@ -6,6 +6,7 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import HomeApp from "../(tabs)/home";
 
 const setIsMarkerSelected = jest.fn();
+const setIsNavigationActive = jest.fn();
 const handleCenterOnUserLocation = jest.fn();
 const handleAddMarker = jest.fn();
 const refreshLocation = jest.fn();
@@ -148,6 +149,7 @@ describe("home location permission flow", () => {
 
     useMarkerContext.mockReturnValue({
       setIsMarkerSelected,
+      setIsNavigationActive,
     });
 
     useMapInteractions.mockReturnValue({

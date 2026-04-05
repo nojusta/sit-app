@@ -15,6 +15,7 @@ export interface MapInteractionController {
   focusCoordinate: (coordinate: MapCoordinate) => void;
   restoreBrowseCamera: (camera: MapCameraSnapshot) => void;
   centerOnCoordinate: (coordinate: MapCoordinate) => void;
+  centerOnUserLocation: () => Promise<boolean>;
 }
 
 export type MarkerData = {

@@ -17,6 +17,7 @@ const createMapControllerRef = () => {
   const focusCoordinate = jest.fn();
   const restoreBrowseCamera = jest.fn();
   const centerOnCoordinate = jest.fn();
+  const centerOnUserLocation = jest.fn().mockResolvedValue(true);
 
   return {
     mapControllerRef: {
@@ -25,12 +26,14 @@ const createMapControllerRef = () => {
         focusCoordinate,
         restoreBrowseCamera,
         centerOnCoordinate,
+        centerOnUserLocation,
       } as MapInteractionController,
     } as React.MutableRefObject<MapInteractionController | null>,
     captureBrowseCamera,
     focusCoordinate,
     restoreBrowseCamera,
     centerOnCoordinate,
+    centerOnUserLocation,
   };
 };
 
@@ -216,5 +219,54 @@ describe("useMapInteractions", () => {
       latitude: 54.6881,
       longitude: 25.2815,
     });
+  });
+
+  it("centers on the live native map location when available", async () => {
+    const mapController = createMapControllerRef();
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: null,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.handleCenterOnUserLocation();
+    });
+
+    expect(mapController.centerOnUserLocation).toHaveBeenCalled();
+    expect(mapController.centerOnCoordinate).not.toHaveBeenCalled();
+    expect(Alert.alert).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the app location when the native map location is not ready yet", async () => {
+    const mapController = createMapControllerRef();
+    mapController.centerOnUserLocation.mockResolvedValue(false);
+
+    const location = {
+      coords: {
+        latitude: 54.6872,
+        longitude: 25.2797,
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: location as never,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.handleCenterOnUserLocation();
+    });
+
+    expect(mapController.centerOnUserLocation).toHaveBeenCalled();
+    expect(mapController.centerOnCoordinate).toHaveBeenCalledWith({
+      latitude: 54.6872,
+      longitude: 25.2797,
+    });
+    expect(Alert.alert).not.toHaveBeenCalled();
   });
 });

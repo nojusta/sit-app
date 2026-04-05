@@ -41,19 +41,17 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 const TabLayout: React.FC = () => {
   const { loading, isLogged } = useAuthContext();
   const tabLayoutTranslateY = useRef(new Animated.Value(0)).current;
-  const { isMarkerSelected } = useMarkerContext();
+  const { isMarkerSelected, isNavigationActive } = useMarkerContext();
+  const shouldSlideTabBar = isMarkerSelected && !isNavigationActive;
+  const shouldHideTabBar = isNavigationActive;
 
   useEffect(() => {
     Animated.timing(tabLayoutTranslateY, {
-      toValue: isMarkerSelected ? 84 : 0, // Adjust this value based on the height of your TabLayout
+      toValue: shouldSlideTabBar ? 84 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [isMarkerSelected, tabLayoutTranslateY]);
-
-  useEffect(() => {
-    console.log("Marker selected state:", isMarkerSelected);
-  }, [isMarkerSelected]);
+  }, [shouldSlideTabBar, tabLayoutTranslateY]);
 
   if (!loading && !isLogged) {
     return <Redirect href="/sign-in" />;
@@ -67,6 +65,7 @@ const TabLayout: React.FC = () => {
           tabBarInactiveTintColor: "#9BA1A6", // Medium gray for inactive tab
           tabBarShowLabel: false,
           tabBarStyle: {
+            display: shouldHideTabBar ? "none" : "flex",
             backgroundColor: "#2D2D2D", // Dark gray background
             borderTopWidth: 1,
             borderTopColor: "#3C3C3C", // Slightly darker gray border

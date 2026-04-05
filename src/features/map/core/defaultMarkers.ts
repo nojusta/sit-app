@@ -31,4 +31,10 @@ export const DEFAULT_MARKERS: MarkerData[] = [
     title: "Gate of Dawn",
     description: "A city gate of Vilnius and a prominent landmark",
   },
+  {
+    id: 6,
+    coordinate: { latitude: 54.68695, longitude: 25.28035 },
+    title: "Navigation Test Bench",
+    description: "Temporary test marker near Kudirka Square for navigation checks",
+  },
 ];

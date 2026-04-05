@@ -1,0 +1,164 @@
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
+index e12b860..018df62 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
+@@ -20,6 +20,59 @@
+ 
+ using namespace JS::NativeNavAutoModule;
+ 
++static UIImage *LoadMarkerImage(NSString *imgPath) {
++  if (!imgPath || ![imgPath isKindOfClass:[NSString class]]) {
++    return nil;
++  }
++
++  NSString *trimmedPath =
++      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
++  if (trimmedPath.length == 0) {
++    return nil;
++  }
++
++  NSMutableOrderedSet<NSString *> *candidates = [NSMutableOrderedSet orderedSet];
++  NSArray<NSString *> *rawCandidates = @[
++    trimmedPath,
++    trimmedPath.stringByDeletingPathExtension,
++    trimmedPath.lastPathComponent,
++    trimmedPath.lastPathComponent.stringByDeletingPathExtension
++  ];
++
++  for (NSString *candidate in rawCandidates) {
++    if (candidate.length > 0) {
++      [candidates addObject:candidate];
++    }
++  }
++
++  for (NSString *candidate in candidates) {
++    UIImage *icon =
++        [UIImage imageNamed:candidate
++                   inBundle:NSBundle.mainBundle
++      compatibleWithTraitCollection:nil];
++    if (!icon) {
++      icon = [UIImage imageNamed:candidate];
++    }
++    if (icon) {
++      return icon;
++    }
++
++    NSString *extension = candidate.pathExtension;
++    NSString *resourceName = candidate.stringByDeletingPathExtension;
++    NSString *resourcePath = [NSBundle.mainBundle pathForResource:resourceName
++                                                          ofType:extension.length > 0 ? extension
++                                                                                     : nil];
++    if (resourcePath.length > 0) {
++      icon = [UIImage imageWithContentsOfFile:resourcePath];
++      if (icon) {
++        return icon;
++      }
++    }
++  }
++
++  return nil;
++}
++
+ @implementation NavAutoModule
+ 
+ RCT_EXPORT_MODULE(NavAutoModule);
+@@ -145,7 +198,7 @@ - (void)addMarker:(MarkerOptionsSpec &)options
+       NSString *imgPath = optionsCopy.imgPath();
+       UIImage *icon = nil;
+       if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
+-        icon = [UIImage imageNamed:imgPath];
++        icon = LoadMarkerImage(imgPath);
+         if (!icon) {
+           reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
+           return;
+@@ -321,7 +374,7 @@ - (void)addGroundOverlay:(GroundOverlayOptionsSpec &)options
+     dispatch_async(dispatch_get_main_queue(), ^{
+       NSString *imgPath = optionsCopy.imgPath();
+       UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
+-                          ? [UIImage imageNamed:imgPath]
++                          ? LoadMarkerImage(imgPath)
+                           : nil;
+ 
+       if (!icon) {
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
+index b80d4f5..14b14a9 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
+@@ -30,6 +30,59 @@
+   return dict;
+ }
+ 
++static UIImage *LoadMarkerImage(NSString *imgPath) {
++  if (!imgPath || ![imgPath isKindOfClass:[NSString class]]) {
++    return nil;
++  }
++
++  NSString *trimmedPath =
++      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
++  if (trimmedPath.length == 0) {
++    return nil;
++  }
++
++  NSMutableOrderedSet<NSString *> *candidates = [NSMutableOrderedSet orderedSet];
++  NSArray<NSString *> *rawCandidates = @[
++    trimmedPath,
++    trimmedPath.stringByDeletingPathExtension,
++    trimmedPath.lastPathComponent,
++    trimmedPath.lastPathComponent.stringByDeletingPathExtension
++  ];
++
++  for (NSString *candidate in rawCandidates) {
++    if (candidate.length > 0) {
++      [candidates addObject:candidate];
++    }
++  }
++
++  for (NSString *candidate in candidates) {
++    UIImage *icon =
++        [UIImage imageNamed:candidate
++                   inBundle:NSBundle.mainBundle
++      compatibleWithTraitCollection:nil];
++    if (!icon) {
++      icon = [UIImage imageNamed:candidate];
++    }
++    if (icon) {
++      return icon;
++    }
++
++    NSString *extension = candidate.pathExtension;
++    NSString *resourceName = candidate.stringByDeletingPathExtension;
++    NSString *resourcePath = [NSBundle.mainBundle pathForResource:resourceName
++                                                          ofType:extension.length > 0 ? extension
++                                                                                     : nil];
++    if (resourcePath.length > 0) {
++      icon = [UIImage imageWithContentsOfFile:resourcePath];
++      if (icon) {
++        return icon;
++      }
++    }
++  }
++
++  return nil;
++}
++
+ @implementation NavViewModule
+ 
+ RCT_EXPORT_MODULE();
+@@ -148,7 +201,7 @@ - (void)addMarker:(NSString *)nativeID
+       NSString *imgPath = optionsCopy.imgPath();
+       UIImage *icon = nil;
+       if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
+-        icon = [UIImage imageNamed:imgPath];
++        icon = LoadMarkerImage(imgPath);
+         if (!icon) {
+           reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
+           return;
+@@ -288,7 +341,7 @@ - (void)addGroundOverlay:(NSString *)nativeID
+     dispatch_async(dispatch_get_main_queue(), ^{
+       NSString *imgPath = optionsCopy.imgPath();
+       UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
+-                          ? [UIImage imageNamed:imgPath]
++                          ? LoadMarkerImage(imgPath)
+                           : nil;
+ 
+       if (!icon) {

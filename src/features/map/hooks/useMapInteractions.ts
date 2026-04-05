@@ -84,12 +84,23 @@ const useMapInteractions = ({
     }
   };
 
-  const handleCenterOnUserLocation = () => {
-    if (currentLocationCoordinate && mapControllerRef.current) {
-      mapControllerRef.current.centerOnCoordinate(currentLocationCoordinate);
-    } else {
-      Alert.alert("Location not available", "Unable to get your current location.");
+  const handleCenterOnUserLocation = async () => {
+    const controller = mapControllerRef.current;
+
+    if (controller) {
+      const centeredOnNativeLocation = await controller.centerOnUserLocation();
+
+      if (centeredOnNativeLocation) {
+        return;
+      }
     }
+
+    if (currentLocationCoordinate && controller) {
+      controller.centerOnCoordinate(currentLocationCoordinate);
+      return;
+    }
+
+    Alert.alert("Location not available", "Unable to get your current location.");
   };
 
   const handleAddMarker = () => {

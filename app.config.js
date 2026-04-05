@@ -4,6 +4,7 @@ const googleMapsAndroidApiKey =
   process.env.GOOGLE_MAPS_ANDROID_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
 const googleMapsIosApiKey =
   process.env.GOOGLE_MAPS_IOS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+const easProjectId = "d8af9980-ef85-4e27-9fa1-5045e54b9f8a";
 
 export default {
   expo: {
@@ -48,11 +49,26 @@ export default {
       output: "static",
       favicon: "./assets/images/favicon.png",
     },
-    plugins: ["expo-router", "expo-font", "expo-video"],
+    plugins: [
+      "expo-router",
+      "expo-font",
+      "expo-video",
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            deploymentTarget: "16.0",
+          },
+        },
+      ],
+    ],
     experiments: {
       typedRoutes: true,
     },
     extra: {
+      eas: {
+        projectId: easProjectId,
+      },
       APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
       APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID,
       APPWRITE_STORAGE_ID: process.env.APPWRITE_STORAGE_ID,

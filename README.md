@@ -43,7 +43,18 @@ cp .env.example .env
 
 3. Fill in the required Appwrite values in `.env`.
 
-4. If native dependencies changed, regenerate native projects:
+4. For the long-term Google-native map stack, prefer separate platform keys:
+
+```bash
+GOOGLE_CLOUD_PROJECT_ID=<your-gcp-project-id>
+GOOGLE_CLOUD_BILLING_ACCOUNT_ID=<your-billing-account-id>
+GOOGLE_MAPS_ANDROID_API_KEY=<android-key>
+GOOGLE_MAPS_IOS_API_KEY=<ios-key>
+GOOGLE_MAPS_ANDROID_PACKAGE_NAME=com.sitapp
+GOOGLE_MAPS_IOS_BUNDLE_ID=com.sitapp
+```
+
+5. If native dependencies changed, regenerate native projects:
 
 ```bash
 npx expo prebuild
@@ -158,6 +169,63 @@ You can start the MCP server directly with:
 ```bash
 npm run mcp:appwrite
 ```
+
+## Codex Google Maps MCP
+
+This repo also includes a local Google Maps / Google Cloud MCP server for setup automation. It is meant for infrastructure tasks such as enabling Google mobile map services, creating restricted API keys, and creating budget guardrails. It is not the runtime map implementation.
+
+### Setup
+
+1. Install and authenticate the Google Cloud CLI:
+
+```bash
+gcloud auth login
+```
+
+2. Add the Google Cloud / mobile app values you want Codex to use to `.env`:
+
+```bash
+GOOGLE_CLOUD_PROJECT_ID=<your-gcp-project-id>
+GOOGLE_CLOUD_BILLING_ACCOUNT_ID=<your-billing-account-id>
+GOOGLE_MAPS_ANDROID_PACKAGE_NAME=com.sitapp
+GOOGLE_MAPS_IOS_BUNDLE_ID=com.sitapp
+GOOGLE_MAPS_ANDROID_DEBUG_SHA1=<debug-sha1>
+GOOGLE_MAPS_ANDROID_RELEASE_SHA1=<release-sha1>
+GOOGLE_MAPS_MONTHLY_BUDGET_AMOUNT=20
+GOOGLE_MAPS_BUDGET_CURRENCY=EUR
+```
+
+If `gcloud` is installed in a nonstandard location and is not on your shell `PATH`, you can also set:
+
+```bash
+GCLOUD_BIN=/full/path/to/gcloud
+```
+
+3. Reload the editor so the workspace MCP config in `.vscode/mcp.json` is picked up.
+
+### What it can do
+
+The local server in `scripts/google-maps-mcp.js` exposes tools for:
+
+- checking `gcloud` install/auth/project state
+- listing billing accounts
+- linking the repo project to billing
+- enabling the Google Android/iOS mobile map services
+- creating Android and iOS restricted API keys
+- creating a monthly budget guardrail
+- bootstrapping the repo setup in one tool call when the required env is present
+
+### Local test
+
+You can start the MCP server directly with:
+
+```bash
+npm run mcp:google-maps
+```
+
+## Google Native Map Migration
+
+The long-term architecture plan for the map rewrite is documented in [docs/architecture/google-native-map-migration.md](/Users/nojukas123/Documents/vscode/sit-app/docs/architecture/google-native-map-migration.md).
 
 ## Git hooks
 

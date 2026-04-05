@@ -7,17 +7,23 @@ import GoogleMapSurface from "../GoogleMapSurface";
 const mockClearMapView = jest.fn();
 const mockAddMarker = jest.fn();
 const mockGetCameraPosition = jest.fn();
+const mockGetMyLocation = jest.fn();
 const mockMoveCamera = jest.fn();
 const mockSetNavigationUIEnabled = jest.fn();
 const mockAreTermsAccepted = jest.fn();
 const mockShowTermsAndConditionsDialog = jest.fn();
 const mockInit = jest.fn();
+const mockCleanup = jest.fn();
 const mockSetDestination = jest.fn();
 const mockStartGuidance = jest.fn();
+const mockStartUpdatingLocation = jest.fn();
 const mockStopGuidance = jest.fn();
 const mockClearDestinations = jest.fn();
 const mockLoadGoogleNavigationSdk = jest.fn();
 let mockArrivalHandler: ((event: { isFinalDestination?: boolean }) => void) | null = null;
+let mockLocationChangedHandler:
+  | ((location: { lat: number; lng: number; speed: number; time: number }) => void)
+  | null = null;
 
 let latestMapCallbacks: {
   onMarkerClick?: (marker: { id: string }) => void;
@@ -48,6 +54,7 @@ describe("GoogleMapSurface", () => {
     jest.clearAllMocks();
     latestMapCallbacks = {};
     mockArrivalHandler = null;
+    mockLocationChangedHandler = null;
     jest.spyOn(console, "error").mockImplementation(() => {});
     jest.spyOn(console, "warn").mockImplementation(() => {});
 
@@ -59,13 +66,28 @@ describe("GoogleMapSurface", () => {
       bearing: 5,
       tilt: 25,
     });
+    mockGetMyLocation.mockResolvedValue({
+      lat: 54.6869,
+      lng: 25.2801,
+      speed: 0,
+      time: 0,
+    });
     mockMoveCamera.mockResolvedValue(undefined);
     mockSetNavigationUIEnabled.mockResolvedValue(undefined);
     mockAreTermsAccepted.mockResolvedValue(true);
     mockShowTermsAndConditionsDialog.mockResolvedValue(true);
     mockInit.mockResolvedValue("ok");
+    mockCleanup.mockResolvedValue(undefined);
     mockSetDestination.mockResolvedValue("OK");
     mockStartGuidance.mockResolvedValue(undefined);
+    mockStartUpdatingLocation.mockImplementation(async () => {
+      mockLocationChangedHandler?.({
+        lat: 54.6869,
+        lng: 25.2801,
+        speed: 0,
+        time: 0,
+      });
+    });
     mockStopGuidance.mockResolvedValue(undefined);
     mockClearDestinations.mockResolvedValue(undefined);
 
@@ -75,6 +97,38 @@ describe("GoogleMapSurface", () => {
       ),
       TaskRemovedBehavior: {
         CONTINUE_SERVICE: "CONTINUE_SERVICE",
+      },
+      MapView: ({
+        onMapReady,
+        onMapClick,
+        onMarkerClick,
+        onMapViewControllerCreated,
+      }: {
+        onMapReady?: () => void;
+        onMapClick?: (coordinate: { lat: number; lng: number }) => void;
+        onMarkerClick?: (marker: { id: string }) => void;
+        onMapViewControllerCreated?: (controller: unknown) => void;
+      }) => {
+        const React = require("react");
+        const { View } = require("react-native");
+
+        React.useEffect(() => {
+          onMapViewControllerCreated?.({
+            clearMapView: mockClearMapView,
+            addMarker: mockAddMarker,
+            getCameraPosition: mockGetCameraPosition,
+            getMyLocation: mockGetMyLocation,
+            moveCamera: mockMoveCamera,
+          });
+          onMapReady?.();
+        }, [onMapReady, onMapViewControllerCreated]);
+
+        latestMapCallbacks = {
+          onMapClick,
+          onMarkerClick,
+        };
+
+        return <View testID="google-browse-map-surface" />;
       },
       NavigationView: ({
         onMapReady,
@@ -97,6 +151,7 @@ describe("GoogleMapSurface", () => {
             clearMapView: mockClearMapView,
             addMarker: mockAddMarker,
             getCameraPosition: mockGetCameraPosition,
+            getMyLocation: mockGetMyLocation,
             moveCamera: mockMoveCamera,
           });
           onNavigationViewControllerCreated?.({
@@ -129,13 +184,21 @@ describe("GoogleMapSurface", () => {
           areTermsAccepted: mockAreTermsAccepted,
           showTermsAndConditionsDialog: mockShowTermsAndConditionsDialog,
           init: mockInit,
+          cleanup: mockCleanup,
           setDestination: mockSetDestination,
           startGuidance: mockStartGuidance,
+          startUpdatingLocation: mockStartUpdatingLocation,
           stopGuidance: mockStopGuidance,
           clearDestinations: mockClearDestinations,
+          simulator: {
+            simulateLocation: jest.fn(),
+          },
         },
         setOnArrival: (handler: typeof mockArrivalHandler) => {
           mockArrivalHandler = handler;
+        },
+        setOnLocationChanged: (handler: typeof mockLocationChangedHandler) => {
+          mockLocationChangedHandler = handler ?? null;
         },
       }),
     });
@@ -155,6 +218,7 @@ describe("GoogleMapSurface", () => {
         markers={MARKERS}
         draftMarker={{ latitude: 54.6881, longitude: 25.2815 }}
         navigationDestination={null}
+        currentLocation={null}
         showsUserLocation
         onMarkerPress={onMarkerPress}
         onMapPress={onMapPress}
@@ -165,15 +229,24 @@ describe("GoogleMapSurface", () => {
     await waitFor(() => expect(mockClearMapView).toHaveBeenCalled());
     expect(mockAddMarker).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ id: "marker-1" }),
+      expect.objectContaining({
+        id: "marker-1",
+        imgPath: expect.any(String),
+      }),
     );
     expect(mockAddMarker).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ id: "marker-2" }),
+      expect.objectContaining({
+        id: "marker-2",
+        imgPath: expect.any(String),
+      }),
     );
     expect(mockAddMarker).toHaveBeenNthCalledWith(
       3,
-      expect.objectContaining({ id: "draft-marker" }),
+      expect.objectContaining({
+        id: "draft-marker",
+        imgPath: expect.any(String),
+      }),
     );
 
     act(() => {
@@ -204,6 +277,7 @@ describe("GoogleMapSurface", () => {
         markers={MARKERS}
         draftMarker={null}
         navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
         showsUserLocation
         onMarkerPress={jest.fn()}
         onMapPress={jest.fn()}
@@ -219,6 +293,7 @@ describe("GoogleMapSurface", () => {
         markers={MARKERS}
         draftMarker={null}
         navigationDestination={MARKERS[1]}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
         showsUserLocation
         onMarkerPress={jest.fn()}
         onMapPress={jest.fn()}
@@ -250,5 +325,42 @@ describe("GoogleMapSurface", () => {
     await waitFor(() => expect(onStopNavigation).toHaveBeenCalled());
     expect(mockStopGuidance).toHaveBeenCalled();
     expect(mockClearDestinations).toHaveBeenCalled();
+  });
+
+  it("centers on the live Google map location through the shared controller", async () => {
+    const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
+      current: null,
+    };
+
+    render(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => expect(mapControllerRef.current).not.toBeNull());
+
+    await act(async () => {
+      const centered = await mapControllerRef.current?.centerOnUserLocation();
+      expect(centered).toBe(true);
+    });
+
+    expect(mockGetMyLocation).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(mockMoveCamera).toHaveBeenLastCalledWith({
+        target: { lat: 54.6869, lng: 25.2801 },
+        zoom: 17.5,
+        bearing: 5,
+        tilt: 25,
+      }),
+    );
   });
 });

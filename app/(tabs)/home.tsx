@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { View, Linking } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   CircleButton,
   GoogleMapSurface,
@@ -18,12 +18,22 @@ import { CustomButton, NoticeBanner } from "@/shared/components";
 const INITIAL_INFO_WINDOW_HEIGHT = 170;
 
 const HomeApp: React.FC = () => {
-  const { setIsMarkerSelected } = useMarkerContext();
+  const { setIsMarkerSelected, setIsNavigationActive } = useMarkerContext();
   const mapControllerRef = useRef<MapInteractionController | null>(null);
   const isNativeGoogleMapAvailable = isGoogleNavigationSdkNativeAvailable();
   const isFocused = useIsFocused();
   const { location, isPermissionDenied, isPermissionGranted, refreshLocation } =
     useUserLocation();
+  const currentLocation = useMemo(
+    () =>
+      location
+        ? {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          }
+        : null,
+    [location],
+  );
   const {
     markers,
     selectedMarker,
@@ -55,6 +65,14 @@ const HomeApp: React.FC = () => {
     }
   }, [isFocused, refreshLocation]);
 
+  useEffect(() => {
+    setIsNavigationActive(isNavigationActive);
+
+    return () => {
+      setIsNavigationActive(false);
+    };
+  }, [isNavigationActive, setIsNavigationActive]);
+
   return (
     <SafeAreaProvider>
       <View className="flex-1">
@@ -71,6 +89,7 @@ const HomeApp: React.FC = () => {
           markers={markers}
           draftMarker={userMarker}
           navigationDestination={activeNavigationDestination}
+          currentLocation={currentLocation}
           onMarkerPress={handleMarkerPress}
           onMapPress={handleMapPress}
           showsUserLocation={isPermissionGranted}
@@ -93,12 +112,18 @@ const HomeApp: React.FC = () => {
           />
         )}
         {isNavigationActive ? (
-          <CustomButton
-            title="Stop Navigation"
-            handlePress={handleStopNavigation}
-            containerStyles="absolute bottom-10 left-5 right-5 min-h-[56px]"
-            accessibilityLabel="Stop navigation"
-          />
+          <SafeAreaView
+            edges={["bottom"]}
+            className="absolute bottom-0 left-0 right-0 px-5 pb-4"
+            pointerEvents="box-none"
+          >
+            <CustomButton
+              title="Stop Navigation"
+              handlePress={handleStopNavigation}
+              containerStyles="min-h-[56px]"
+              accessibilityLabel="Stop navigation"
+            />
+          </SafeAreaView>
         ) : isNativeGoogleMapAvailable ? (
           <>
             <CircleButton
