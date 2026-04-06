@@ -27,8 +27,15 @@ export default {
         googleMapsApiKey: googleMapsIosApiKey,
       },
       infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          "Allow SIT to access your location for map and navigation features.",
+        NSLocationAlwaysAndWhenInUseUsageDescription:
+          "Allow SIT to keep your navigation active while the app is in use.",
+        NSLocationAlwaysUsageDescription:
+          "Allow SIT to keep your navigation active while the app is in use.",
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to update your profile picture.",
+        UIBackgroundModes: ["location"],
       },
     },
     android: {

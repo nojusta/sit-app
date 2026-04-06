@@ -19,6 +19,7 @@ const mockStartGuidance = jest.fn();
 const mockStartUpdatingLocation = jest.fn();
 const mockStopGuidance = jest.fn();
 const mockClearDestinations = jest.fn();
+const mockStopLocationSimulation = jest.fn();
 const mockLoadGoogleNavigationSdk = jest.fn();
 let mockArrivalHandler: ((event: { isFinalDestination?: boolean }) => void) | null = null;
 let mockLocationChangedHandler:
@@ -90,6 +91,7 @@ describe("GoogleMapSurface", () => {
     });
     mockStopGuidance.mockResolvedValue(undefined);
     mockClearDestinations.mockResolvedValue(undefined);
+    mockStopLocationSimulation.mockReset();
 
     mockLoadGoogleNavigationSdk.mockReturnValue({
       NavigationProvider: ({ children }: { children: React.ReactNode }) => (
@@ -190,8 +192,10 @@ describe("GoogleMapSurface", () => {
           startUpdatingLocation: mockStartUpdatingLocation,
           stopGuidance: mockStopGuidance,
           clearDestinations: mockClearDestinations,
+          setBackgroundLocationUpdatesEnabled: jest.fn(),
           simulator: {
             simulateLocation: jest.fn(),
+            stopLocationSimulation: mockStopLocationSimulation,
           },
         },
         setOnArrival: (handler: typeof mockArrivalHandler) => {
@@ -200,6 +204,8 @@ describe("GoogleMapSurface", () => {
         setOnLocationChanged: (handler: typeof mockLocationChangedHandler) => {
           mockLocationChangedHandler = handler ?? null;
         },
+        setOnNavigationReady: jest.fn(),
+        setLogDebugInfo: jest.fn(),
       }),
     });
   });

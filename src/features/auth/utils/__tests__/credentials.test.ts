@@ -31,21 +31,29 @@ describe("credentials helpers", () => {
   });
 
   it("rejects invalid registration input", () => {
-    expect(validateRegistrationForm({ email: "", password: "" })).toBe(
-      "Please fill in email and password.",
+    expect(validateRegistrationForm({ username: "", email: "", password: "" })).toBe(
+      "Please fill in display name, email and password.",
     );
     expect(
-      validateRegistrationForm({ email: "invalid-email", password: "password123" }),
+      validateRegistrationForm({
+        username: "Demo User",
+        email: "invalid-email",
+        password: "password123",
+      }),
     ).toBe("Please enter a valid email address.");
     expect(
-      validateRegistrationForm({ email: "demo@example.com", password: "short" }),
+      validateRegistrationForm({
+        username: "Demo User",
+        email: "demo@example.com",
+        password: "short",
+      }),
     ).toBe("Password must be at least 8 characters long.");
   });
 
   it("accepts valid registration input", () => {
     expect(
       validateRegistrationForm({
-        username: "",
+        username: "Demo User",
         email: "demo@example.com",
         password: "password123",
       }),

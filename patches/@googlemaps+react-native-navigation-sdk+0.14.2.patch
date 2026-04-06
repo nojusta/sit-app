@@ -162,3 +162,87 @@ index b80d4f5..14b14a9 100644
                            : nil;
  
        if (!icon) {
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js b/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
+index 199386f..a21a0f1 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
+@@ -35,6 +35,7 @@ const getNavigationViewController = nativeID => {
+         await _NativeNavViewModule.default.showRouteOverview(nativeID);
+       } catch (error) {
+         console.error('Error calling showRouteOverview:', error);
++        throw error;
+       }
+     },
+     setNavigationUIEnabled: async enabled => {
+@@ -42,6 +43,7 @@ const getNavigationViewController = nativeID => {
+         await _NativeNavViewModule.default.setNavigationUIEnabled(nativeID, enabled);
+       } catch (error) {
+         console.error('Error calling setNavigationUIEnabled:', error);
++        throw error;
+       }
+     },
+     setFollowingPerspective: async perspective => {
+@@ -49,6 +51,7 @@ const getNavigationViewController = nativeID => {
+         await _NativeNavViewModule.default.setFollowingPerspective(nativeID, perspective);
+       } catch (error) {
+         console.error('Error calling setFollowingPerspective:', error);
++        throw error;
+       }
+     }
+   };
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/lib/module/navigation/navigationView/navigationViewController.js b/node_modules/@googlemaps/react-native-navigation-sdk/lib/module/navigation/navigationView/navigationViewController.js
+index bcd3f9c..4742293 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/lib/module/navigation/navigationView/navigationViewController.js
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/lib/module/navigation/navigationView/navigationViewController.js
+@@ -31,6 +31,7 @@ export const getNavigationViewController = nativeID => {
+         await NavViewModule.showRouteOverview(nativeID);
+       } catch (error) {
+         console.error('Error calling showRouteOverview:', error);
++        throw error;
+       }
+     },
+     setNavigationUIEnabled: async enabled => {
+@@ -38,6 +39,7 @@ export const getNavigationViewController = nativeID => {
+         await NavViewModule.setNavigationUIEnabled(nativeID, enabled);
+       } catch (error) {
+         console.error('Error calling setNavigationUIEnabled:', error);
++        throw error;
+       }
+     },
+     setFollowingPerspective: async perspective => {
+@@ -45,6 +47,7 @@ export const getNavigationViewController = nativeID => {
+         await NavViewModule.setFollowingPerspective(nativeID, perspective);
+       } catch (error) {
+         console.error('Error calling setFollowingPerspective:', error);
++        throw error;
+       }
+     }
+   };
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
+index 7e78105..969b0a9 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
+@@ -32,6 +32,7 @@ export const getNavigationViewController = (
+         await NavViewModule.showRouteOverview(nativeID);
+       } catch (error) {
+         console.error('Error calling showRouteOverview:', error);
++        throw error;
+       }
+     },
+     setNavigationUIEnabled: async (enabled: boolean) => {
+@@ -39,6 +40,7 @@ export const getNavigationViewController = (
+         await NavViewModule.setNavigationUIEnabled(nativeID, enabled);
+       } catch (error) {
+         console.error('Error calling setNavigationUIEnabled:', error);
++        throw error;
+       }
+     },
+     setFollowingPerspective: async (perspective: CameraPerspective) => {
+@@ -46,6 +48,7 @@ export const getNavigationViewController = (
+         await NavViewModule.setFollowingPerspective(nativeID, perspective);
+       } catch (error) {
+         console.error('Error calling setFollowingPerspective:', error);
++        throw error;
+       }
+     },
+   };
