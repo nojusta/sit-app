@@ -80,6 +80,67 @@ index e12b860..018df62 100644
                            : nil;
  
        if (!icon) {
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
+index cac635d..4243650 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
+@@ -21,6 +21,7 @@
+ 
+ #import <GoogleMaps/GoogleMaps.h>
+ #import <React/RCTConversions.h>
++#import <React/UIView+React.h>
+ #import <react/renderer/components/RNNavigationSdkSpec/ComponentDescriptors.h>
+ #import <react/renderer/components/RNNavigationSdkSpec/EventEmitters.h>
+ #import <react/renderer/components/RNNavigationSdkSpec/Props.h>
+@@ -58,6 +59,23 @@ - (void)dealloc {
+   [self unregisterView];
+ }
+ 
++- (void)willMoveToWindow:(UIWindow *)newWindow {
++  [super willMoveToWindow:newWindow];
++
++  if (newWindow == nil && _viewController.parentViewController != nil) {
++    [_viewController willMoveToParentViewController:nil];
++    [_viewController removeFromParentViewController];
++  }
++}
++
++- (void)didMoveToWindow {
++  [super didMoveToWindow];
++
++  if (self.window != nil && _viewController != nil) {
++    [self reactAddControllerToClosestParent:_viewController];
++  }
++}
++
+ - (void)unregisterView {
+   const auto &currentProps = *std::static_pointer_cast<NavViewProps const>(_props);
+ 
+@@ -132,6 +150,10 @@ - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &
+       [_viewController.view.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
+     ]];
+ 
++    if (self.window != nil) {
++      [self reactAddControllerToClosestParent:_viewController];
++    }
++
+     // Register view controller with nativeID in the registry
+     NSString *nativeIDString = [NSString stringWithUTF8String:newViewProps.nativeID.c_str()];
+     [NavViewModule viewControllersRegistry][nativeIDString] = _viewController;
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
+index 059e5d5..188913b 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
+@@ -269,6 +269,9 @@ - (void)dealloc {
+ }
+ 
+ - (void)mapViewDidTapRecenterButton:(GMSMapView *)mapView {
++  if (_mapView != nil) {
++    _mapView.cameraMode = GMSNavigationCameraModeFollowing;
++  }
+   [_viewCallbacks handleRecenterButtonClick];
+ }
+ 
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 index b80d4f5..14b14a9 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
