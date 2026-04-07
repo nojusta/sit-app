@@ -12,6 +12,7 @@ import type {
   MapInteractionController,
   MarkerData,
 } from "../../core";
+import { ActionDialog, CustomButton } from "@/shared/components";
 import {
   loadGoogleNavigationSdk,
   type GoogleNavigationSdkModule,
@@ -62,6 +63,12 @@ const NAVIGATION_START_TIMEOUT_MS = 15000;
 const NAVIGATION_LOCATION_TIMEOUT_MS = 4000;
 const NAVIGATION_VIEW_RETRY_DELAY_MS = 250;
 const NAVIGATION_VIEW_RETRY_ATTEMPTS = 4;
+const STOP_BUTTON_RIGHT_OFFSET = 16;
+const STOP_BUTTON_BOTTOM_OFFSET = Platform.select({
+  ios: 108,
+  android: 100,
+  default: 100,
+});
 const CUSTOM_MARKER_IMAGE_CANDIDATES =
   Platform.select({
     ios: ["CustomMarker", "custom-marker", "custom-marker.png"],
@@ -136,6 +143,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "#374151",
     textAlign: "center",
+  },
+  stopNavigationOverlay: {
+    position: "absolute",
+    right: STOP_BUTTON_RIGHT_OFFSET,
+    bottom: STOP_BUTTON_BOTTOM_OFFSET,
+    zIndex: 10,
   },
 });
 
@@ -386,6 +399,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const markerLookupRef = useRef<Map<string, MarkerData>>(new Map());
   const [isMapReady, setIsMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
+  const [isStopDialogVisible, setIsStopDialogVisible] = useState(false);
 
   const navigationSessionOk = NavigationSessionStatus.OK;
   const routeOk = RouteStatus.OK;
@@ -615,6 +629,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
       void clearActiveNavigation();
     }
   }, [clearActiveNavigation, isNavigationActive]);
+
+  useEffect(() => {
+    if (!isNavigationActive) {
+      setIsStopDialogVisible(false);
+    }
+  }, [isNavigationActive]);
 
   useEffect(() => {
     if (!isNavigationActive || !isPreparingNavigation) {
@@ -923,6 +943,19 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     walkingTravelMode,
   ]);
 
+  const handleStopNavigationRequest = useCallback(() => {
+    setIsStopDialogVisible(true);
+  }, []);
+
+  const handleDismissStopDialog = useCallback(() => {
+    setIsStopDialogVisible(false);
+  }, []);
+
+  const handleConfirmStopNavigation = useCallback(() => {
+    setIsStopDialogVisible(false);
+    onStopNavigationRef.current();
+  }, []);
+
   return (
     <View style={styles.container}>
       <NavigationView
@@ -982,6 +1015,31 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           </View>
         </View>
       ) : null}
+      {isNavigationActive && !isPreparingNavigation ? (
+        <View pointerEvents="box-none" style={styles.stopNavigationOverlay}>
+          <CustomButton
+            title="Cancel Navigation"
+            handlePress={handleStopNavigationRequest}
+            variant="danger"
+            containerStyles="self-center min-h-[44px] rounded-full px-4"
+            textStyles="text-base"
+            accessibilityLabel="Stop navigation"
+          />
+        </View>
+      ) : null}
+      <ActionDialog
+        visible={isStopDialogVisible}
+        title="Stop navigation?"
+        description="You can start guidance again from the marker whenever you need it."
+        confirmLabel="Cancel Navigation"
+        cancelLabel="Keep Navigation"
+        onConfirm={handleConfirmStopNavigation}
+        onCancel={handleDismissStopDialog}
+        confirmVariant="danger"
+        cancelVariant="ghost"
+        confirmAccessibilityLabel="Confirm stop navigation"
+        cancelAccessibilityLabel="Keep navigation"
+      />
     </View>
   );
 };

@@ -1,3 +1,4 @@
+export { default as ActionDialog } from "./ActionDialog";
 export { Collapsible } from "./Collapsible";
 export { default as CustomButton } from "./CustomButton";
 export { default as EmptyState } from "./EmptyState";

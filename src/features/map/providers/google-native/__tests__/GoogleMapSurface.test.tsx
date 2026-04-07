@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import type { MapInteractionController, MarkerData } from "../../../core";
 import GoogleMapSurface from "../GoogleMapSurface";
@@ -36,6 +36,15 @@ let latestNavigationViewProps: {
 
 jest.mock("../../../utils/googleNavigationSdk", () => ({
   loadGoogleNavigationSdk: () => mockLoadGoogleNavigationSdk(),
+}));
+
+jest.mock("react-native-safe-area-context", () => ({
+  useSafeAreaInsets: () => ({
+    top: 0,
+    bottom: 12,
+    left: 0,
+    right: 0,
+  }),
 }));
 
 const MARKERS: MarkerData[] = [
@@ -341,6 +350,53 @@ describe("GoogleMapSurface", () => {
     await waitFor(() => expect(onStopNavigation).toHaveBeenCalled());
     expect(mockStopGuidance).toHaveBeenCalled();
     expect(mockClearDestinations).toHaveBeenCalled();
+  });
+
+  it("confirms before stopping navigation from the in-map exit button", async () => {
+    const onStopNavigation = jest.fn();
+    const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
+      current: null,
+    };
+
+    const { rerender } = render(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await waitFor(() => expect(mapControllerRef.current).not.toBeNull());
+
+    rerender(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={MARKERS[0]}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await waitFor(() => expect(mockStartGuidance).toHaveBeenCalled());
+
+    fireEvent.press(screen.getByRole("button", { name: "Stop navigation" }));
+
+    expect(screen.getByText("Stop navigation?")).toBeTruthy();
+
+    fireEvent.press(screen.getByRole("button", { name: "Confirm stop navigation" }));
+
+    expect(onStopNavigation).toHaveBeenCalled();
   });
 
   it("centers on the live Google map location through the shared controller", async () => {

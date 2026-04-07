@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { View, Linking } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   CircleButton,
   GoogleMapSurface,
@@ -13,7 +13,7 @@ import {
   useUserLocation,
 } from "@/features/map";
 import { MarkerInputBox } from "@/features/markers";
-import { CustomButton, NoticeBanner } from "@/shared/components";
+import { NoticeBanner } from "@/shared/components";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 170;
 
@@ -111,20 +111,7 @@ const HomeApp: React.FC = () => {
             setShowInputBox={setShowInputBox}
           />
         )}
-        {isNavigationActive ? (
-          <SafeAreaView
-            edges={["bottom"]}
-            className="absolute bottom-0 left-0 right-0 px-5 pb-4"
-            pointerEvents="box-none"
-          >
-            <CustomButton
-              title="Stop Navigation"
-              handlePress={handleStopNavigation}
-              containerStyles="min-h-[56px]"
-              accessibilityLabel="Stop navigation"
-            />
-          </SafeAreaView>
-        ) : isNativeGoogleMapAvailable ? (
+        {!isNavigationActive && isNativeGoogleMapAvailable ? (
           <>
             <CircleButton
               onPress={handleCenterOnUserLocation}

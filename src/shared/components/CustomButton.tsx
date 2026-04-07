@@ -6,6 +6,8 @@ import {
 } from "react-native";
 import React from "react";
 
+export type CustomButtonVariant = "primary" | "danger" | "ghost";
+
 interface CustomButtonProps {
   title: string;
   handlePress: (event?: GestureResponderEvent) => void;
@@ -14,6 +16,7 @@ interface CustomButtonProps {
   isLoading?: boolean;
   disabled?: boolean;
   accessibilityLabel?: string;
+  variant?: CustomButtonVariant;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -24,14 +27,29 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   isLoading,
   disabled = false,
   accessibilityLabel,
+  variant = "primary",
 }) => {
   const isDisabled = Boolean(isLoading || disabled);
+  const containerVariantStyles =
+    variant === "danger"
+      ? "bg-red-600 border border-red-700"
+      : variant === "ghost"
+        ? "bg-gray-100 border border-gray-200"
+        : "bg-secondary-200";
+  const textVariantStyles =
+    variant === "danger"
+      ? "text-white"
+      : variant === "ghost"
+        ? "text-gray-700"
+        : "text-primary";
+  const indicatorColor =
+    variant === "danger" ? "#FFFFFF" : variant === "ghost" ? "#374151" : "#1F2937";
 
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`bg-secondary-200 rounded-xl min-h-[62px] flex flex-row justify-center items-center ${containerStyles} ${
+      className={`${containerVariantStyles} rounded-xl min-h-[62px] px-4 flex flex-row justify-center items-center ${containerStyles} ${
         isDisabled ? "opacity-50" : ""
       }`}
       disabled={isDisabled}
@@ -39,12 +57,14 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       accessibilityState={{ disabled: isDisabled }}
       accessibilityLabel={accessibilityLabel ?? title}
     >
-      <Text className={`text-primary font-psemibold text-lg ${textStyles}`}>{title}</Text>
+      <Text className={`${textVariantStyles} font-psemibold text-lg ${textStyles}`}>
+        {title}
+      </Text>
 
       {isLoading && (
         <ActivityIndicator
           animating={isLoading}
-          color="#fff"
+          color={indicatorColor}
           size="small"
           className="ml-2"
         />

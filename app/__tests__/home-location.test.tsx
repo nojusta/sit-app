@@ -321,13 +321,8 @@ describe("home location permission flow", () => {
     ).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Add marker" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Center on my location" })).toBeNull();
-
-    const stopNavigationButton = screen.getByRole("button", {
-      name: "Stop navigation",
-    });
-
-    fireEvent.press(stopNavigationButton);
-    expect(handleStopNavigation).toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Stop navigation" })).toBeNull();
+    expect(handleStopNavigation).not.toHaveBeenCalled();
   });
 
   it("passes the selected marker into start navigation from the marker sheet", () => {
