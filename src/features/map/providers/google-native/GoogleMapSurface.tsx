@@ -65,9 +65,9 @@ const NAVIGATION_VIEW_RETRY_DELAY_MS = 250;
 const NAVIGATION_VIEW_RETRY_ATTEMPTS = 4;
 const STOP_BUTTON_RIGHT_OFFSET = 16;
 const STOP_BUTTON_BOTTOM_OFFSET = Platform.select({
-  ios: 108,
-  android: 100,
-  default: 100,
+  ios: 125,
+  android: 117,
+  default: 117,
 });
 const CUSTOM_MARKER_IMAGE_CANDIDATES =
   Platform.select({
@@ -897,7 +897,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
 
         guidanceStartedRef.current = true;
-        setIsPreparingNavigation(false);
 
         const navigationViewController = navigationViewControllerRef.current;
         if (navigationViewController) {
@@ -914,6 +913,13 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
             }
           }
         }
+
+        if (!isActive) {
+          return;
+        }
+
+        await delay(NAVIGATION_VIEW_RETRY_DELAY_MS);
+        setIsPreparingNavigation(false);
       } catch (error) {
         if (__DEV__) {
           console.error("Failed to start Google navigation.", error);
@@ -1021,7 +1027,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
             title="Cancel Navigation"
             handlePress={handleStopNavigationRequest}
             variant="danger"
-            containerStyles="self-center min-h-[44px] rounded-full px-4"
+            containerStyles="self-center min-h-[44px] rounded-full border-2 border-red-900 px-4"
             textStyles="text-base"
             accessibilityLabel="Stop navigation"
           />
@@ -1029,7 +1035,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
       ) : null}
       <ActionDialog
         visible={isStopDialogVisible}
-        title="Stop navigation?"
+        title="Are you sure?"
         description="You can start guidance again from the marker whenever you need it."
         confirmLabel="Cancel Navigation"
         cancelLabel="Keep Navigation"

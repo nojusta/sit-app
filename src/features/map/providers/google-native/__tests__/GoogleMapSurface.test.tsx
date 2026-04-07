@@ -389,10 +389,13 @@ describe("GoogleMapSurface", () => {
     );
 
     await waitFor(() => expect(mockStartGuidance).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Stop navigation" })).toBeTruthy(),
+    );
 
     fireEvent.press(screen.getByRole("button", { name: "Stop navigation" }));
 
-    expect(screen.getByText("Stop navigation?")).toBeTruthy();
+    expect(screen.getByText("Are you sure?")).toBeTruthy();
 
     fireEvent.press(screen.getByRole("button", { name: "Confirm stop navigation" }));
 
