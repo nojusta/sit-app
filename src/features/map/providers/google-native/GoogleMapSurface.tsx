@@ -936,6 +936,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         myLocationEnabled={showsUserLocation}
         myLocationButtonEnabled={false}
         recenterButtonEnabled={isNavigationActive}
+        reportIncidentButtonEnabled={false}
         trafficEnabled
         compassEnabled
         speedometerEnabled={Platform.OS === "android" && isNavigationActive}

@@ -30,6 +30,9 @@ let latestMapCallbacks: {
   onMarkerClick?: (marker: { id: string }) => void;
   onMapClick?: (coordinate: { lat: number; lng: number }) => void;
 } = {};
+let latestNavigationViewProps: {
+  reportIncidentButtonEnabled?: boolean;
+} = {};
 
 jest.mock("../../../utils/googleNavigationSdk", () => ({
   loadGoogleNavigationSdk: () => mockLoadGoogleNavigationSdk(),
@@ -54,6 +57,7 @@ describe("GoogleMapSurface", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     latestMapCallbacks = {};
+    latestNavigationViewProps = {};
     mockArrivalHandler = null;
     mockLocationChangedHandler = null;
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -138,12 +142,14 @@ describe("GoogleMapSurface", () => {
         onMarkerClick,
         onMapViewControllerCreated,
         onNavigationViewControllerCreated,
+        reportIncidentButtonEnabled,
       }: {
         onMapReady?: () => void;
         onMapClick?: (coordinate: { lat: number; lng: number }) => void;
         onMarkerClick?: (marker: { id: string }) => void;
         onMapViewControllerCreated?: (controller: unknown) => void;
         onNavigationViewControllerCreated?: (controller: unknown) => void;
+        reportIncidentButtonEnabled?: boolean;
       }) => {
         const React = require("react");
         const { View } = require("react-native");
@@ -165,6 +171,9 @@ describe("GoogleMapSurface", () => {
         latestMapCallbacks = {
           onMapClick,
           onMarkerClick,
+        };
+        latestNavigationViewProps = {
+          reportIncidentButtonEnabled,
         };
 
         return <View testID="google-map-surface" />;
@@ -321,6 +330,7 @@ describe("GoogleMapSurface", () => {
         },
       }),
     );
+    expect(latestNavigationViewProps.reportIncidentButtonEnabled).toBe(false);
     await waitFor(() => expect(mockSetNavigationUIEnabled).toHaveBeenCalledWith(true));
     await waitFor(() => expect(mockStartGuidance).toHaveBeenCalled());
 
