@@ -63,6 +63,7 @@ const NAVIGATION_START_TIMEOUT_MS = 15000;
 const NAVIGATION_LOCATION_TIMEOUT_MS = 4000;
 const NAVIGATION_VIEW_RETRY_DELAY_MS = 250;
 const NAVIGATION_VIEW_RETRY_ATTEMPTS = 4;
+const NAVIGATION_UI_DISABLED = 1;
 const STOP_BUTTON_RIGHT_OFFSET = 16;
 const STOP_BUTTON_BOTTOM_OFFSET = Platform.select({
   ios: 125,
@@ -79,6 +80,12 @@ const CUSTOM_MARKER_IMAGE_CANDIDATES =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  navigationSurfaceOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  navigationSurfaceHidden: {
+    opacity: 0,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -378,6 +385,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   navigationSdk,
 }) => {
   const {
+    MapView,
     NavigationSessionStatus,
     NavigationView,
     RouteStatus,
@@ -391,7 +399,8 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     setOnLocationChanged,
     setOnNavigationReady,
   } = useNavigation();
-  const nativeControllerRef = useRef<GoogleMapViewController | null>(null);
+  const browseMapControllerRef = useRef<GoogleMapViewController | null>(null);
+  const navigationMapControllerRef = useRef<GoogleMapViewController | null>(null);
   const navigationViewControllerRef = useRef<GoogleNavigationViewController | null>(null);
   const parentMapControllerRef = useRef(mapControllerRef);
   const navigationControllerRef = useRef(navigationController);
@@ -402,26 +411,45 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const isLocationSimulationActiveRef = useRef(false);
   const latestNavigationLocationRef = useRef<GoogleLatLng | null>(null);
   const previousNavigationModeRef = useRef<boolean | null>(null);
+  const hasAttemptedInitialCleanupRef = useRef(false);
   const markerLookupRef = useRef<Map<string, MarkerData>>(new Map());
-  const [isMapReady, setIsMapReady] = useState(false);
+  const [isBrowseMapReady, setIsBrowseMapReady] = useState(false);
+  const [isNavigationMapReady, setIsNavigationMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
   const [isStopDialogVisible, setIsStopDialogVisible] = useState(false);
-  const [isMapControllerReady, setIsMapControllerReady] = useState(false);
-  const [isNavigationControllerReady, setIsNavigationControllerReady] = useState(false);
+  const [isBrowseMapControllerReady, setIsBrowseMapControllerReady] = useState(false);
+  const [isNavigationMapControllerReady, setIsNavigationMapControllerReady] =
+    useState(false);
+  const [isNavigationViewControllerReady, setIsNavigationViewControllerReady] =
+    useState(false);
 
   const navigationSessionOk = NavigationSessionStatus.OK;
   const routeOk = RouteStatus.OK;
   const walkingTravelMode = TravelMode.WALKING;
   const isNavigationActive = navigationDestination !== null;
+  const isNavigationSurfaceVisible = isNavigationActive || isPreparingNavigation;
+  const isVisibleSurfaceReady = isNavigationSurfaceVisible
+    ? isNavigationMapReady
+    : isBrowseMapReady;
 
   parentMapControllerRef.current = mapControllerRef;
   navigationControllerRef.current = navigationController;
   onStopNavigationRef.current = onStopNavigation;
 
+  const resetNavigationSessionState = useCallback(() => {
+    navigationSessionInitializedRef.current = false;
+    routePreparedRef.current = false;
+    guidanceStartedRef.current = false;
+    latestNavigationLocationRef.current = null;
+    isLocationSimulationActiveRef.current = false;
+  }, []);
+
   const clearActiveNavigation = useCallback(
-    async (options?: { destroySession?: boolean }) => {
+    async (options?: { destroySession?: boolean; hideNavigationUi?: boolean }) => {
       const destroySession = options?.destroySession ?? false;
+      const hideNavigationUi = options?.hideNavigationUi ?? true;
       const activeNavigationController = navigationControllerRef.current;
+      const navigationViewController = navigationViewControllerRef.current;
 
       if (isLocationSimulationActiveRef.current) {
         try {
@@ -435,11 +463,21 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
       }
 
-      if (!navigationSessionInitializedRef.current) {
-        routePreparedRef.current = false;
-        guidanceStartedRef.current = false;
-        latestNavigationLocationRef.current = null;
-        return;
+      if (hideNavigationUi && navigationViewController) {
+        try {
+          await retryTransientNativeCommand(
+            () => navigationViewController.setNavigationUIEnabled(false),
+            isNoViewControllerError,
+          );
+        } catch (error) {
+          if (
+            __DEV__ &&
+            !isNoViewControllerError(error) &&
+            !isNavigatorNotReadyError(error)
+          ) {
+            console.warn("Failed to disable Google navigation UI.", error);
+          }
+        }
       }
 
       if (guidanceStartedRef.current) {
@@ -462,7 +500,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
       }
 
-      if (destroySession) {
+      if (destroySession || navigationSessionInitializedRef.current) {
         try {
           await activeNavigationController.cleanup();
         } catch (error) {
@@ -470,15 +508,11 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
             console.warn("Failed to clean up the Google navigation session.", error);
           }
         }
-
-        navigationSessionInitializedRef.current = false;
       }
 
-      routePreparedRef.current = false;
-      guidanceStartedRef.current = false;
-      latestNavigationLocationRef.current = null;
+      resetNavigationSessionState();
     },
-    [],
+    [resetNavigationSessionState],
   );
 
   const waitForNavigationLocation = useCallback(async (timeoutMs: number) => {
@@ -612,7 +646,8 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   useEffect(() => {
     return () => {
       parentMapControllerRef.current.current = null;
-      nativeControllerRef.current = null;
+      browseMapControllerRef.current = null;
+      navigationMapControllerRef.current = null;
       navigationViewControllerRef.current = null;
       void clearActiveNavigation({ destroySession: true });
     };
@@ -627,17 +662,21 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
     if (isNavigationActive) {
       setIsPreparingNavigation(true);
-    } else {
-      setIsPreparingNavigation(false);
-      markerLookupRef.current = new Map();
+      return;
     }
+
+    setIsPreparingNavigation(false);
+    setIsStopDialogVisible(false);
   }, [isNavigationActive]);
 
   useEffect(() => {
-    if (!isNavigationActive) {
-      setIsStopDialogVisible(false);
+    if (isNavigationActive || hasAttemptedInitialCleanupRef.current) {
+      return;
     }
-  }, [isNavigationActive]);
+
+    hasAttemptedInitialCleanupRef.current = true;
+    void clearActiveNavigation({ destroySession: true, hideNavigationUi: false });
+  }, [clearActiveNavigation, isNavigationActive]);
 
   useEffect(() => {
     if (!isNavigationActive || !isPreparingNavigation) {
@@ -658,10 +697,10 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
   useEffect(() => {
     if (
-      !isMapReady ||
-      !isMapControllerReady ||
-      !nativeControllerRef.current ||
-      isNavigationActive
+      !isBrowseMapReady ||
+      !isBrowseMapControllerReady ||
+      !browseMapControllerRef.current ||
+      isNavigationSurfaceVisible
     ) {
       return;
     }
@@ -670,7 +709,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
     const syncMarkers = async () => {
       try {
-        const controller = nativeControllerRef.current;
+        const controller = browseMapControllerRef.current;
 
         if (!controller) {
           return;
@@ -741,19 +780,19 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   }, [
     addMarkerWithFallback,
     draftMarker,
-    isMapControllerReady,
-    isMapReady,
-    isNavigationActive,
+    isBrowseMapControllerReady,
+    isBrowseMapReady,
+    isNavigationSurfaceVisible,
     markers,
   ]);
 
   useEffect(() => {
     if (
       !isNavigationActive ||
-      !isMapReady ||
-      !isMapControllerReady ||
-      !isNavigationControllerReady ||
-      !nativeControllerRef.current ||
+      !isNavigationMapReady ||
+      !isNavigationMapControllerReady ||
+      !isNavigationViewControllerReady ||
+      !navigationMapControllerRef.current ||
       !navigationViewControllerRef.current
     ) {
       return;
@@ -778,10 +817,15 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
     const startNavigation = async () => {
       try {
-        const controller = nativeControllerRef.current;
+        const navigationMapController = navigationMapControllerRef.current;
+        const navigationViewController = navigationViewControllerRef.current;
         const activeNavigationController = navigationControllerRef.current;
 
-        if (!controller || !navigationDestination) {
+        if (
+          !navigationMapController ||
+          !navigationViewController ||
+          !navigationDestination
+        ) {
           return;
         }
 
@@ -842,12 +886,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
             await waitForNavigationLocation(1200);
           }
         }
-
-        await retryTransientNativeCommand(
-          () => Promise.resolve(controller.clearMapView()),
-          isNoViewControllerError,
-        );
-        markerLookupRef.current = new Map();
 
         const requestRoute = () =>
           withTimeout(
@@ -925,6 +963,18 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
         guidanceStartedRef.current = true;
 
+        try {
+          await retryTransientNativeCommand(
+            () => navigationViewController.setNavigationUIEnabled(true),
+            isNoViewControllerError,
+            NAVIGATION_VIEW_RETRY_ATTEMPTS * 2,
+          );
+        } catch (error) {
+          if (__DEV__ && !isNoViewControllerError(error)) {
+            console.warn("Failed to enable Google navigation UI.", error);
+          }
+        }
+
         if (!isActive) {
           return;
         }
@@ -949,11 +999,11 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     };
   }, [
     clearActiveNavigation,
-    isMapControllerReady,
-    isMapReady,
-    isNavigationActive,
-    isNavigationControllerReady,
     currentLocation,
+    isNavigationActive,
+    isNavigationMapControllerReady,
+    isNavigationMapReady,
+    isNavigationViewControllerReady,
     navigationDestination,
     navigationSessionOk,
     routeOk,
@@ -977,32 +1027,23 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
   return (
     <View style={styles.container}>
-      <NavigationView
+      <MapView
         style={styles.container}
         initialCameraPosition={{
           target: toGoogleLatLng(INITIAL_CAMERA.target),
           zoom: INITIAL_CAMERA.zoom,
         }}
-        myLocationEnabled={!isNavigationActive && showsUserLocation}
+        myLocationEnabled={showsUserLocation}
         myLocationButtonEnabled={false}
-        recenterButtonEnabled={isNavigationActive}
-        reportIncidentButtonEnabled={false}
         trafficEnabled
         compassEnabled
-        speedometerEnabled={Platform.OS === "android" && isNavigationActive}
         onMapReady={() => {
-          setIsMapReady(true);
+          setIsBrowseMapReady(true);
         }}
         onMapClick={(coordinate) => {
-          if (!isNavigationActive) {
-            onMapPress(toMapCoordinate(coordinate));
-          }
+          onMapPress(toMapCoordinate(coordinate));
         }}
         onMarkerClick={(marker: GoogleMarker) => {
-          if (isNavigationActive) {
-            return;
-          }
-
           const selectedMarker = markerLookupRef.current.get(marker.id);
 
           if (selectedMarker) {
@@ -1010,16 +1051,46 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           }
         }}
         onMapViewControllerCreated={(controller) => {
-          nativeControllerRef.current = controller;
-          setIsMapControllerReady(true);
+          browseMapControllerRef.current = controller;
+          setIsBrowseMapControllerReady(true);
           mapControllerRef.current = createMapInteractionController(controller);
         }}
-        onNavigationViewControllerCreated={(controller) => {
-          navigationViewControllerRef.current = controller;
-          setIsNavigationControllerReady(true);
-        }}
       />
-      {!isMapReady || isPreparingNavigation ? (
+      <View
+        pointerEvents={isNavigationSurfaceVisible ? "auto" : "none"}
+        style={[
+          styles.navigationSurfaceOverlay,
+          !isNavigationSurfaceVisible ? styles.navigationSurfaceHidden : null,
+        ]}
+      >
+        <NavigationView
+          style={styles.container}
+          initialCameraPosition={{
+            target: toGoogleLatLng(INITIAL_CAMERA.target),
+            zoom: INITIAL_CAMERA.zoom,
+          }}
+          navigationUIEnabledPreference={NAVIGATION_UI_DISABLED}
+          myLocationEnabled={false}
+          myLocationButtonEnabled={false}
+          recenterButtonEnabled
+          reportIncidentButtonEnabled={false}
+          trafficEnabled
+          compassEnabled
+          speedometerEnabled={Platform.OS === "android"}
+          onMapReady={() => {
+            setIsNavigationMapReady(true);
+          }}
+          onMapViewControllerCreated={(controller) => {
+            navigationMapControllerRef.current = controller;
+            setIsNavigationMapControllerReady(true);
+          }}
+          onNavigationViewControllerCreated={(controller) => {
+            navigationViewControllerRef.current = controller;
+            setIsNavigationViewControllerReady(true);
+          }}
+        />
+      </View>
+      {!isVisibleSurfaceReady || isPreparingNavigation ? (
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingCard}>
             <Text style={styles.loadingText}>

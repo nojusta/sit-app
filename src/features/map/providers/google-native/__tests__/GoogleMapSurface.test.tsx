@@ -26,7 +26,7 @@ let mockLocationChangedHandler:
   | ((location: { lat: number; lng: number; speed: number; time: number }) => void)
   | null = null;
 
-let latestMapCallbacks: {
+let latestBrowseMapCallbacks: {
   onMarkerClick?: (marker: { id: string }) => void;
   onMapClick?: (coordinate: { lat: number; lng: number }) => void;
 } = {};
@@ -66,7 +66,7 @@ const MARKERS: MarkerData[] = [
 describe("GoogleMapSurface", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    latestMapCallbacks = {};
+    latestBrowseMapCallbacks = {};
     latestNavigationViewProps = {};
     mockArrivalHandler = null;
     mockLocationChangedHandler = null;
@@ -139,7 +139,7 @@ describe("GoogleMapSurface", () => {
           onMapReady?.();
         }, [onMapReady, onMapViewControllerCreated]);
 
-        latestMapCallbacks = {
+        latestBrowseMapCallbacks = {
           onMapClick,
           onMarkerClick,
         };
@@ -148,8 +148,8 @@ describe("GoogleMapSurface", () => {
       },
       NavigationView: ({
         onMapReady,
-        onMapClick,
-        onMarkerClick,
+        onMapClick: _onMapClick,
+        onMarkerClick: _onMarkerClick,
         onMapViewControllerCreated,
         onNavigationViewControllerCreated,
         reportIncidentButtonEnabled,
@@ -180,10 +180,6 @@ describe("GoogleMapSurface", () => {
           onMapReady?.();
         }, [onMapReady, onMapViewControllerCreated, onNavigationViewControllerCreated]);
 
-        latestMapCallbacks = {
-          onMapClick,
-          onMarkerClick,
-        };
         latestNavigationViewProps = {
           reportIncidentButtonEnabled,
           myLocationEnabled,
@@ -276,13 +272,13 @@ describe("GoogleMapSurface", () => {
     );
 
     act(() => {
-      latestMapCallbacks.onMarkerClick?.({ id: "marker-2" });
+      latestBrowseMapCallbacks.onMarkerClick?.({ id: "marker-2" });
     });
 
     expect(onMarkerPress).toHaveBeenCalledWith(MARKERS[1]);
 
     act(() => {
-      latestMapCallbacks.onMapClick?.({ lat: 54.689, lng: 25.284 });
+      latestBrowseMapCallbacks.onMapClick?.({ lat: 54.689, lng: 25.284 });
     });
 
     expect(onMapPress).toHaveBeenCalledWith({
