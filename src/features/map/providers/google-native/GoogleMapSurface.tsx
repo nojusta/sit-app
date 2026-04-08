@@ -338,6 +338,13 @@ const createMapInteractionController = (
   centerOnUserLocation: async () => {
     try {
       const location = await controller.getMyLocation();
+      if (
+        !location ||
+        typeof location.lat !== "number" ||
+        typeof location.lng !== "number"
+      ) {
+        return false;
+      }
 
       await animateCamera(controller, {
         target: {
@@ -371,7 +378,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   navigationSdk,
 }) => {
   const {
-    NavigationUIEnabledPreference,
     NavigationSessionStatus,
     NavigationView,
     RouteStatus,
@@ -400,6 +406,8 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const [isMapReady, setIsMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
   const [isStopDialogVisible, setIsStopDialogVisible] = useState(false);
+  const [isMapControllerReady, setIsMapControllerReady] = useState(false);
+  const [isNavigationControllerReady, setIsNavigationControllerReady] = useState(false);
 
   const navigationSessionOk = NavigationSessionStatus.OK;
   const routeOk = RouteStatus.OK;
@@ -414,7 +422,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     async (options?: { destroySession?: boolean }) => {
       const destroySession = options?.destroySession ?? false;
       const activeNavigationController = navigationControllerRef.current;
-      const navigationViewController = navigationViewControllerRef.current;
 
       if (isLocationSimulationActiveRef.current) {
         try {
@@ -425,22 +432,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           }
         } finally {
           isLocationSimulationActiveRef.current = false;
-        }
-      }
-
-      if (
-        navigationViewController &&
-        (routePreparedRef.current || guidanceStartedRef.current)
-      ) {
-        try {
-          await retryTransientNativeCommand(
-            () => navigationViewController.setNavigationUIEnabled(false),
-            isNoViewControllerError,
-          );
-        } catch (error) {
-          if (__DEV__ && !isNoViewControllerError(error)) {
-            console.warn("Failed to disable Google navigation UI.", error);
-          }
         }
       }
 
@@ -504,6 +495,19 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     return false;
   }, []);
 
+  const finalizeNavigationExit = useCallback(
+    async (options?: { destroySession?: boolean; message?: string }) => {
+      if (options?.message) {
+        Alert.alert(NAVIGATION_UNAVAILABLE_TITLE, options.message);
+      }
+
+      await clearActiveNavigation({ destroySession: options?.destroySession ?? false });
+      setIsPreparingNavigation(false);
+      onStopNavigationRef.current();
+    },
+    [clearActiveNavigation],
+  );
+
   const addMarkerWithFallback = useCallback(
     async (
       controller: GoogleMapViewController,
@@ -557,15 +561,14 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   useEffect(() => {
     setOnArrival((arrivalEvent) => {
       if (arrivalEvent.isFinalDestination ?? true) {
-        void clearActiveNavigation();
-        onStopNavigationRef.current();
+        void finalizeNavigationExit({ destroySession: true });
       }
     });
 
     return () => {
       setOnArrival(null);
     };
-  }, [clearActiveNavigation, setOnArrival]);
+  }, [finalizeNavigationExit, setOnArrival]);
 
   useEffect(() => {
     setOnLocationChanged((location) => {
@@ -626,9 +629,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
       setIsPreparingNavigation(true);
     } else {
       setIsPreparingNavigation(false);
-      void clearActiveNavigation();
+      markerLookupRef.current = new Map();
     }
-  }, [clearActiveNavigation, isNavigationActive]);
+  }, [isNavigationActive]);
 
   useEffect(() => {
     if (!isNavigationActive) {
@@ -642,22 +645,24 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     }
 
     const timeoutId = setTimeout(() => {
-      Alert.alert(
-        NAVIGATION_UNAVAILABLE_TITLE,
-        "Navigation took too long to start. Please try again.",
-      );
-      void clearActiveNavigation();
-      setIsPreparingNavigation(false);
-      onStopNavigationRef.current();
+      void finalizeNavigationExit({
+        destroySession: true,
+        message: "Navigation took too long to start. Please try again.",
+      });
     }, NAVIGATION_START_TIMEOUT_MS + 5000);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [clearActiveNavigation, isNavigationActive, isPreparingNavigation]);
+  }, [finalizeNavigationExit, isNavigationActive, isPreparingNavigation]);
 
   useEffect(() => {
-    if (!isMapReady || !nativeControllerRef.current || isNavigationActive) {
+    if (
+      !isMapReady ||
+      !isMapControllerReady ||
+      !nativeControllerRef.current ||
+      isNavigationActive
+    ) {
       return;
     }
 
@@ -733,26 +738,42 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     return () => {
       isActive = false;
     };
-  }, [addMarkerWithFallback, draftMarker, isMapReady, isNavigationActive, markers]);
+  }, [
+    addMarkerWithFallback,
+    draftMarker,
+    isMapControllerReady,
+    isMapReady,
+    isNavigationActive,
+    markers,
+  ]);
 
   useEffect(() => {
-    if (!isNavigationActive || !isMapReady || !nativeControllerRef.current) {
+    if (
+      !isNavigationActive ||
+      !isMapReady ||
+      !isMapControllerReady ||
+      !isNavigationControllerReady ||
+      !nativeControllerRef.current ||
+      !navigationViewControllerRef.current
+    ) {
       return;
     }
 
     let isActive = true;
 
-    const stopAndExit = (message?: string) => {
+    const stopAndExit = async (message?: string) => {
+      await clearActiveNavigation({ destroySession: true });
+
+      if (!isActive) {
+        return;
+      }
+
       if (message) {
         Alert.alert(NAVIGATION_UNAVAILABLE_TITLE, message);
       }
 
-      void clearActiveNavigation();
-
-      if (isActive) {
-        setIsPreparingNavigation(false);
-        onStopNavigationRef.current();
-      }
+      setIsPreparingNavigation(false);
+      onStopNavigationRef.current();
     };
 
     const startNavigation = async () => {
@@ -779,7 +800,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
 
         if (!accepted) {
-          stopAndExit(
+          await stopAndExit(
             "Navigation cannot start until the Google navigation terms are accepted.",
           );
           return;
@@ -797,7 +818,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           }
 
           if (sessionStatus !== navigationSessionOk) {
-            stopAndExit(getNavigationSessionStatusMessage(sessionStatus));
+            await stopAndExit(getNavigationSessionStatusMessage(sessionStatus));
             return;
           }
 
@@ -821,6 +842,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
             await waitForNavigationLocation(1200);
           }
         }
+
+        await retryTransientNativeCommand(
+          () => Promise.resolve(controller.clearMapView()),
+          isNoViewControllerError,
+        );
+        markerLookupRef.current = new Map();
 
         const requestRoute = () =>
           withTimeout(
@@ -874,7 +901,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
 
         if (routeStatus !== routeOk) {
-          stopAndExit(getRouteStatusMessage(routeStatus));
+          await stopAndExit(getRouteStatusMessage(routeStatus));
           return;
         }
 
@@ -898,22 +925,6 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
         guidanceStartedRef.current = true;
 
-        const navigationViewController = navigationViewControllerRef.current;
-        if (navigationViewController) {
-          try {
-            await delay(NAVIGATION_VIEW_RETRY_DELAY_MS);
-            await retryTransientNativeCommand(
-              () => navigationViewController.setNavigationUIEnabled(true),
-              isNoViewControllerError,
-              NAVIGATION_VIEW_RETRY_ATTEMPTS * 5,
-            );
-          } catch (error) {
-            if (__DEV__) {
-              console.warn("Failed to enable Google navigation UI.", error);
-            }
-          }
-        }
-
         if (!isActive) {
           return;
         }
@@ -926,7 +937,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }
 
         if (isActive) {
-          stopAndExit("Unable to start navigation right now. Please try again.");
+          await stopAndExit("Unable to start navigation right now. Please try again.");
         }
       }
     };
@@ -938,8 +949,10 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     };
   }, [
     clearActiveNavigation,
+    isMapControllerReady,
     isMapReady,
     isNavigationActive,
+    isNavigationControllerReady,
     currentLocation,
     navigationDestination,
     navigationSessionOk,
@@ -959,27 +972,27 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
   const handleConfirmStopNavigation = useCallback(() => {
     setIsStopDialogVisible(false);
-    onStopNavigationRef.current();
-  }, []);
+    void finalizeNavigationExit({ destroySession: true });
+  }, [finalizeNavigationExit]);
 
   return (
     <View style={styles.container}>
       <NavigationView
-        key="google-navigation-surface"
         style={styles.container}
         initialCameraPosition={{
           target: toGoogleLatLng(INITIAL_CAMERA.target),
           zoom: INITIAL_CAMERA.zoom,
         }}
-        navigationUIEnabledPreference={NavigationUIEnabledPreference.DISABLED}
-        myLocationEnabled={showsUserLocation}
+        myLocationEnabled={!isNavigationActive && showsUserLocation}
         myLocationButtonEnabled={false}
         recenterButtonEnabled={isNavigationActive}
         reportIncidentButtonEnabled={false}
         trafficEnabled
         compassEnabled
         speedometerEnabled={Platform.OS === "android" && isNavigationActive}
-        onMapReady={() => setIsMapReady(true)}
+        onMapReady={() => {
+          setIsMapReady(true);
+        }}
         onMapClick={(coordinate) => {
           if (!isNavigationActive) {
             onMapPress(toMapCoordinate(coordinate));
@@ -998,10 +1011,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }}
         onMapViewControllerCreated={(controller) => {
           nativeControllerRef.current = controller;
+          setIsMapControllerReady(true);
           mapControllerRef.current = createMapInteractionController(controller);
         }}
         onNavigationViewControllerCreated={(controller) => {
           navigationViewControllerRef.current = controller;
+          setIsNavigationControllerReady(true);
         }}
       />
       {!isMapReady || isPreparingNavigation ? (

@@ -32,6 +32,7 @@ let latestMapCallbacks: {
 } = {};
 let latestNavigationViewProps: {
   reportIncidentButtonEnabled?: boolean;
+  myLocationEnabled?: boolean;
 } = {};
 
 jest.mock("../../../utils/googleNavigationSdk", () => ({
@@ -152,6 +153,7 @@ describe("GoogleMapSurface", () => {
         onMapViewControllerCreated,
         onNavigationViewControllerCreated,
         reportIncidentButtonEnabled,
+        myLocationEnabled,
       }: {
         onMapReady?: () => void;
         onMapClick?: (coordinate: { lat: number; lng: number }) => void;
@@ -159,6 +161,7 @@ describe("GoogleMapSurface", () => {
         onMapViewControllerCreated?: (controller: unknown) => void;
         onNavigationViewControllerCreated?: (controller: unknown) => void;
         reportIncidentButtonEnabled?: boolean;
+        myLocationEnabled?: boolean;
       }) => {
         const React = require("react");
         const { View } = require("react-native");
@@ -183,12 +186,10 @@ describe("GoogleMapSurface", () => {
         };
         latestNavigationViewProps = {
           reportIncidentButtonEnabled,
+          myLocationEnabled,
         };
 
         return <View testID="google-map-surface" />;
-      },
-      NavigationUIEnabledPreference: {
-        DISABLED: "disabled",
       },
       NavigationSessionStatus: {
         OK: "ok",
@@ -229,6 +230,7 @@ describe("GoogleMapSurface", () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -289,7 +291,7 @@ describe("GoogleMapSurface", () => {
     });
   });
 
-  it("keeps one Google surface and starts guidance when navigation becomes active", async () => {
+  it("switches to navigation view and starts guidance when navigation becomes active", async () => {
     const onStopNavigation = jest.fn();
     const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
       current: null,
@@ -340,7 +342,7 @@ describe("GoogleMapSurface", () => {
       }),
     );
     expect(latestNavigationViewProps.reportIncidentButtonEnabled).toBe(false);
-    await waitFor(() => expect(mockSetNavigationUIEnabled).toHaveBeenCalledWith(true));
+    expect(latestNavigationViewProps.myLocationEnabled).toBe(false);
     await waitFor(() => expect(mockStartGuidance).toHaveBeenCalled());
 
     act(() => {
@@ -399,7 +401,7 @@ describe("GoogleMapSurface", () => {
 
     fireEvent.press(screen.getByRole("button", { name: "Confirm stop navigation" }));
 
-    expect(onStopNavigation).toHaveBeenCalled();
+    await waitFor(() => expect(onStopNavigation).toHaveBeenCalled());
   });
 
   it("centers on the live Google map location through the shared controller", async () => {
@@ -436,6 +438,75 @@ describe("GoogleMapSurface", () => {
         bearing: 5,
         tilt: 25,
       }),
+    );
+  });
+
+  it("restores browse markers after navigation startup times out", async () => {
+    jest.useFakeTimers();
+
+    const onStopNavigation = jest.fn();
+    const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
+      current: null,
+    };
+
+    const { rerender } = render(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await waitFor(() => expect(mockAddMarker).toHaveBeenCalledTimes(2));
+
+    mockInit.mockImplementation(() => new Promise(() => {}));
+
+    rerender(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={MARKERS[0]}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await act(async () => {
+      jest.advanceTimersByTime(20500);
+    });
+
+    await waitFor(() => expect(onStopNavigation).toHaveBeenCalled());
+
+    rerender(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(
+        mockAddMarker.mock.calls.filter(
+          ([options]: [{ id: string }]) => options.id === "marker-1",
+        ).length,
+      ).toBeGreaterThan(1),
     );
   });
 });

@@ -81,7 +81,7 @@ index e12b860..018df62 100644
  
        if (!icon) {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
-index cac635d..4243650 100644
+index cac635d..dfd6fb8 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavView.mm
 @@ -21,6 +21,7 @@
@@ -127,11 +127,29 @@ index cac635d..4243650 100644
      // Register view controller with nativeID in the registry
      NSString *nativeIDString = [NSString stringWithUTF8String:newViewProps.nativeID.c_str()];
      [NavViewModule viewControllersRegistry][nativeIDString] = _viewController;
+@@ -334,7 +356,7 @@ - (void)handleMarkerInfoWindowTapped:(GMSMarker *)marker {
+       marker.title != nil ? [marker.title UTF8String] : "",
+       marker.opacity,
+       marker.rotation,
+-      [marker.snippet UTF8String],
++      marker.snippet != nil ? [marker.snippet UTF8String] : "",
+       (int)marker.zIndex};
+   self.eventEmitter.onMarkerInfoWindowTapped(result);
+ }
+@@ -346,7 +368,7 @@ - (void)handleMarkerClick:(GMSMarker *)marker {
+       marker.title != nil ? [marker.title UTF8String] : "",
+       marker.opacity,
+       marker.rotation,
+-      [marker.snippet UTF8String],
++      marker.snippet != nil ? [marker.snippet UTF8String] : "",
+       (int)marker.zIndex};
+   self.eventEmitter.onMarkerClick(result);
+ }
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
-index 059e5d5..188913b 100644
+index 059e5d5..683f6aa 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
-@@ -269,6 +269,9 @@ - (void)dealloc {
+@@ -269,10 +269,16 @@ - (void)dealloc {
  }
  
  - (void)mapViewDidTapRecenterButton:(GMSMapView *)mapView {
@@ -141,6 +159,23 @@ index 059e5d5..188913b 100644
    [_viewCallbacks handleRecenterButtonClick];
  }
  
+ - (void)mapView:(GMSMapView *)mapView didTapInfoWindowOfMarker:(GMSMarker *)marker {
++  if (_mapViewType != NULL && *_mapViewType == NAVIGATION && _mapView.navigationEnabled) {
++    return;
++  }
+   [_viewCallbacks handleMarkerInfoWindowTapped:marker];
+ }
+ 
+@@ -282,6 +288,9 @@ - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D
+ }
+ 
+ - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
++  if (_mapViewType != NULL && *_mapViewType == NAVIGATION && _mapView.navigationEnabled) {
++    return YES;
++  }
+   [_viewCallbacks handleMarkerClick:marker];
+   return FALSE;
+ }
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 index b80d4f5..14b14a9 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
@@ -279,6 +314,19 @@ index bcd3f9c..4742293 100644
        }
      }
    };
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/react-native-navigation-sdk.podspec b/node_modules/@googlemaps/react-native-navigation-sdk/react-native-navigation-sdk.podspec
+index 15da789..9961987 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/react-native-navigation-sdk.podspec
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/react-native-navigation-sdk.podspec
+@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
+   s.public_header_files = "ios/**/*.h"
+ 
+   s.dependency "React-Core"
+-  s.dependency "GoogleNavigation", "10.10.0"
++  s.dependency "GoogleNavigation", "9.4.0"
+ 
+   install_modules_dependencies(s)
+ end
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
 index 7e78105..969b0a9 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
