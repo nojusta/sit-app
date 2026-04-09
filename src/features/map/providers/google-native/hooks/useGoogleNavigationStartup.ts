@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import type {
   MapViewController as GoogleMapViewController,
@@ -85,12 +85,22 @@ const useGoogleNavigationStartup = ({
   waitForNavigationLocation,
   walkingTravelMode,
 }: UseGoogleNavigationStartupOptions) => {
+  const currentLocationRef = useRef(currentLocation);
+  const startupInFlightRef = useRef(false);
+
+  useEffect(() => {
+    currentLocationRef.current = currentLocation;
+  }, [currentLocation]);
+
   useEffect(() => {
     if (
       !isNavigationActive ||
       !isNavigationMapReady ||
       !isNavigationMapControllerReady ||
       !isNavigationViewControllerReady ||
+      startupInFlightRef.current ||
+      routePreparedRef.current ||
+      guidanceStartedRef.current ||
       !navigationMapControllerRef.current ||
       !navigationViewControllerRef.current
     ) {
@@ -128,6 +138,7 @@ const useGoogleNavigationStartup = ({
           return;
         }
 
+        startupInFlightRef.current = true;
         setIsPreparingNavigation(true);
         latestNavigationLocationRef.current = null;
         routePreparedRef.current = false;
@@ -217,7 +228,7 @@ const useGoogleNavigationStartup = ({
 
         if (
           isRouteLocationPendingStatus(routeStatus) &&
-          (currentLocation || latestNavigationLocationRef.current)
+          (currentLocationRef.current || latestNavigationLocationRef.current)
         ) {
           if (!latestNavigationLocationRef.current) {
             usedLocationSimulation = simulateNavigationLocationFromCurrentPosition();
@@ -288,6 +299,8 @@ const useGoogleNavigationStartup = ({
         if (isActive) {
           await stopAndExit("Unable to start navigation right now. Please try again.");
         }
+      } finally {
+        startupInFlightRef.current = false;
       }
     };
 
@@ -298,7 +311,6 @@ const useGoogleNavigationStartup = ({
     };
   }, [
     clearActiveNavigation,
-    currentLocation,
     guidanceStartedRef,
     isLocationSimulationActiveRef,
     isNavigationActive,

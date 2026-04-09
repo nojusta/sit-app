@@ -525,4 +525,49 @@ describe("GoogleMapSurface", () => {
       ).toBeGreaterThan(1),
     );
   });
+
+  it("does not restart navigation when current location refreshes during guidance", async () => {
+    const onStopNavigation = jest.fn();
+    const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
+      current: null,
+    };
+
+    const { rerender } = render(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={MARKERS[0]}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await waitFor(() => expect(mockSetDestination).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mockStartGuidance).toHaveBeenCalledTimes(1));
+
+    rerender(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={MARKERS[0]}
+        currentLocation={{ latitude: 54.6878, longitude: 25.2804 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={onStopNavigation}
+      />,
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(mockSetDestination).toHaveBeenCalledTimes(1);
+    expect(mockStartGuidance).toHaveBeenCalledTimes(1);
+  });
 });

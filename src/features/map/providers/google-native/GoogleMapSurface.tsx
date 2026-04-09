@@ -78,6 +78,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const guidanceStartedRef = useRef(false);
   const isLocationSimulationActiveRef = useRef(false);
   const latestNavigationLocationRef = useRef<GoogleLatLng | null>(null);
+  const currentLocationRef = useRef(currentLocation);
   const previousNavigationModeRef = useRef<boolean | null>(null);
   const hasAttemptedInitialCleanupRef = useRef(false);
   const markerLookupRef = useRef<Map<string, MarkerData>>(new Map());
@@ -111,6 +112,10 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   parentMapControllerRef.current = mapControllerRef;
   navigationControllerRef.current = navigationController;
   onStopNavigationRef.current = onStopNavigation;
+
+  useEffect(() => {
+    currentLocationRef.current = currentLocation;
+  }, [currentLocation]);
 
   const resetNavigationSessionState = useCallback(() => {
     navigationSessionInitializedRef.current = false;
@@ -258,15 +263,17 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   );
 
   const simulateNavigationLocationFromCurrentPosition = useCallback(() => {
-    if (!allowsDevNavigationSimulation || !currentLocation) {
+    const latestCurrentLocation = currentLocationRef.current;
+
+    if (!allowsDevNavigationSimulation || !latestCurrentLocation) {
       return false;
     }
 
     navigationControllerRef.current.simulator.simulateLocation(
-      toGoogleLatLng(currentLocation),
+      toGoogleLatLng(latestCurrentLocation),
     );
     return true;
-  }, [allowsDevNavigationSimulation, currentLocation]);
+  }, [allowsDevNavigationSimulation]);
 
   useGoogleNavigationBindings({
     browseMapControllerRef,
