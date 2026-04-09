@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from "react-native";
-import type {
+import {
   Marker as GoogleMarker,
+  MapColorScheme,
   MapViewController as GoogleMapViewController,
+  NavigationNightMode,
   NavigationViewController as GoogleNavigationViewController,
 } from "@googlemaps/react-native-navigation-sdk";
 
@@ -57,8 +59,6 @@ const INITIAL_CAMERA: MapCameraSnapshot = {
 const FOCUS_ZOOM = 16.5;
 const CENTER_ZOOM = 17.5;
 const DRAFT_MARKER_ID = "draft-marker";
-const CAMERA_ANIMATION_DURATION_MS = 360;
-const CAMERA_ANIMATION_STEPS = 6;
 const NAVIGATION_START_TIMEOUT_MS = 15000;
 const NAVIGATION_LOCATION_TIMEOUT_MS = 4000;
 const NAVIGATION_VIEW_RETRY_DELAY_MS = 250;
@@ -248,9 +248,6 @@ const retryTransientNativeCommand = async <T,>(
   throw lastError;
 };
 
-const interpolateValue = (start: number, end: number, progress: number) =>
-  start + (end - start) * progress;
-
 const toMapCameraSnapshot = (
   camera: Awaited<ReturnType<GoogleMapViewController["getCameraPosition"]>>,
 ): MapCameraSnapshot => ({
@@ -261,7 +258,14 @@ const toMapCameraSnapshot = (
 });
 
 const animateCamera = async (
-  controller: GoogleMapViewController,
+  controller: GoogleMapViewController & {
+    animateCamera?: (cameraPosition: {
+      target: GoogleLatLng;
+      zoom?: number;
+      bearing?: number;
+      tilt?: number;
+    }) => Promise<void> | void;
+  },
   destination: {
     target: GoogleLatLng;
     zoom?: number;
@@ -270,48 +274,16 @@ const animateCamera = async (
   },
 ) => {
   try {
-    const currentCamera = await controller.getCameraPosition();
-
-    for (let step = 1; step <= CAMERA_ANIMATION_STEPS; step += 1) {
-      const progress = step / CAMERA_ANIMATION_STEPS;
-
-      await controller.moveCamera({
-        target: {
-          lat: interpolateValue(
-            currentCamera.target.lat,
-            destination.target.lat,
-            progress,
-          ),
-          lng: interpolateValue(
-            currentCamera.target.lng,
-            destination.target.lng,
-            progress,
-          ),
-        },
-        zoom:
-          destination.zoom !== undefined
-            ? interpolateValue(
-                currentCamera.zoom ?? destination.zoom,
-                destination.zoom,
-                progress,
-              )
-            : currentCamera.zoom,
-        bearing:
-          destination.bearing !== undefined
-            ? interpolateValue(currentCamera.bearing ?? 0, destination.bearing, progress)
-            : currentCamera.bearing,
-        tilt:
-          destination.tilt !== undefined
-            ? interpolateValue(currentCamera.tilt ?? 0, destination.tilt, progress)
-            : currentCamera.tilt,
-      });
-
-      if (step < CAMERA_ANIMATION_STEPS) {
-        await delay(CAMERA_ANIMATION_DURATION_MS / CAMERA_ANIMATION_STEPS);
-      }
+    if (typeof controller.animateCamera === "function") {
+      await controller.animateCamera(destination);
+      return;
     }
-  } catch {
+  } catch {}
+
+  try {
     await controller.moveCamera(destination);
+  } catch {
+    // Ignore browse camera animation failures to avoid breaking marker/current-location taps.
   }
 };
 
@@ -428,6 +400,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const walkingTravelMode = TravelMode.WALKING;
   const isNavigationActive = navigationDestination !== null;
   const isNavigationSurfaceVisible = isNavigationActive || isPreparingNavigation;
+  const shouldRenderNavigationSurface =
+    Platform.OS === "ios" || isNavigationSurfaceVisible;
+  const androidMapColorScheme =
+    Platform.OS === "android" ? MapColorScheme.LIGHT : undefined;
+  const androidNavigationNightMode =
+    Platform.OS === "android" ? NavigationNightMode.FORCE_DAY : undefined;
   const isVisibleSurfaceReady = isNavigationSurfaceVisible
     ? isNavigationMapReady
     : isBrowseMapReady;
@@ -677,6 +655,18 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     hasAttemptedInitialCleanupRef.current = true;
     void clearActiveNavigation({ destroySession: true, hideNavigationUi: false });
   }, [clearActiveNavigation, isNavigationActive]);
+
+  useEffect(() => {
+    if (shouldRenderNavigationSurface) {
+      return;
+    }
+
+    navigationMapControllerRef.current = null;
+    navigationViewControllerRef.current = null;
+    setIsNavigationMapReady(false);
+    setIsNavigationMapControllerReady(false);
+    setIsNavigationViewControllerReady(false);
+  }, [shouldRenderNavigationSurface]);
 
   useEffect(() => {
     if (!isNavigationActive || !isPreparingNavigation) {
@@ -1033,6 +1023,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           target: toGoogleLatLng(INITIAL_CAMERA.target),
           zoom: INITIAL_CAMERA.zoom,
         }}
+        mapColorScheme={androidMapColorScheme}
         myLocationEnabled={showsUserLocation}
         myLocationButtonEnabled={false}
         trafficEnabled
@@ -1056,40 +1047,44 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           mapControllerRef.current = createMapInteractionController(controller);
         }}
       />
-      <View
-        pointerEvents={isNavigationSurfaceVisible ? "auto" : "none"}
-        style={[
-          styles.navigationSurfaceOverlay,
-          !isNavigationSurfaceVisible ? styles.navigationSurfaceHidden : null,
-        ]}
-      >
-        <NavigationView
-          style={styles.container}
-          initialCameraPosition={{
-            target: toGoogleLatLng(INITIAL_CAMERA.target),
-            zoom: INITIAL_CAMERA.zoom,
-          }}
-          navigationUIEnabledPreference={NAVIGATION_UI_DISABLED}
-          myLocationEnabled={false}
-          myLocationButtonEnabled={false}
-          recenterButtonEnabled
-          reportIncidentButtonEnabled={false}
-          trafficEnabled
-          compassEnabled
-          speedometerEnabled={Platform.OS === "android"}
-          onMapReady={() => {
-            setIsNavigationMapReady(true);
-          }}
-          onMapViewControllerCreated={(controller) => {
-            navigationMapControllerRef.current = controller;
-            setIsNavigationMapControllerReady(true);
-          }}
-          onNavigationViewControllerCreated={(controller) => {
-            navigationViewControllerRef.current = controller;
-            setIsNavigationViewControllerReady(true);
-          }}
-        />
-      </View>
+      {shouldRenderNavigationSurface ? (
+        <View
+          pointerEvents={isNavigationSurfaceVisible ? "auto" : "none"}
+          style={[
+            styles.navigationSurfaceOverlay,
+            !isNavigationSurfaceVisible ? styles.navigationSurfaceHidden : null,
+          ]}
+        >
+          <NavigationView
+            style={styles.container}
+            initialCameraPosition={{
+              target: toGoogleLatLng(INITIAL_CAMERA.target),
+              zoom: INITIAL_CAMERA.zoom,
+            }}
+            mapColorScheme={androidMapColorScheme}
+            navigationNightMode={androidNavigationNightMode}
+            navigationUIEnabledPreference={NAVIGATION_UI_DISABLED}
+            myLocationEnabled={false}
+            myLocationButtonEnabled={false}
+            recenterButtonEnabled
+            reportIncidentButtonEnabled={false}
+            trafficEnabled
+            compassEnabled
+            speedometerEnabled={Platform.OS === "android"}
+            onMapReady={() => {
+              setIsNavigationMapReady(true);
+            }}
+            onMapViewControllerCreated={(controller) => {
+              navigationMapControllerRef.current = controller;
+              setIsNavigationMapControllerReady(true);
+            }}
+            onNavigationViewControllerCreated={(controller) => {
+              navigationViewControllerRef.current = controller;
+              setIsNavigationViewControllerReady(true);
+            }}
+          />
+        </View>
+      ) : null}
       {!isVisibleSurfaceReady || isPreparingNavigation ? (
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingCard}>

@@ -9,6 +9,7 @@ const mockAddMarker = jest.fn();
 const mockGetCameraPosition = jest.fn();
 const mockGetMyLocation = jest.fn();
 const mockMoveCamera = jest.fn();
+const mockAnimateCamera = jest.fn();
 const mockSetNavigationUIEnabled = jest.fn();
 const mockAreTermsAccepted = jest.fn();
 const mockShowTermsAndConditionsDialog = jest.fn();
@@ -88,6 +89,7 @@ describe("GoogleMapSurface", () => {
       time: 0,
     });
     mockMoveCamera.mockResolvedValue(undefined);
+    mockAnimateCamera.mockResolvedValue(undefined);
     mockSetNavigationUIEnabled.mockResolvedValue(undefined);
     mockAreTermsAccepted.mockResolvedValue(true);
     mockShowTermsAndConditionsDialog.mockResolvedValue(true);
@@ -134,6 +136,7 @@ describe("GoogleMapSurface", () => {
             addMarker: mockAddMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
+            animateCamera: mockAnimateCamera,
             moveCamera: mockMoveCamera,
           });
           onMapReady?.();
@@ -172,6 +175,7 @@ describe("GoogleMapSurface", () => {
             addMarker: mockAddMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
+            animateCamera: mockAnimateCamera,
             moveCamera: mockMoveCamera,
           });
           onNavigationViewControllerCreated?.({
@@ -428,11 +432,9 @@ describe("GoogleMapSurface", () => {
 
     expect(mockGetMyLocation).toHaveBeenCalled();
     await waitFor(() =>
-      expect(mockMoveCamera).toHaveBeenLastCalledWith({
+      expect(mockAnimateCamera).toHaveBeenLastCalledWith({
         target: { lat: 54.6869, lng: 25.2801 },
         zoom: 17.5,
-        bearing: 5,
-        tilt: 25,
       }),
     );
   });

@@ -6,18 +6,12 @@ const manifest2Extra = Constants.manifest2?.extra?.expoClient?.extra ?? {};
 const expoExtra =
   Constants.expoConfig?.extra ?? Constants.manifest?.extra ?? manifest2Extra ?? {};
 
-const {
-  APPWRITE_ENDPOINT,
-  APPWRITE_PROJECT_ID,
-  APPWRITE_STORAGE_ID,
-  APPWRITE_MARKERS_COLLECTION_ID,
-} = expoExtra;
+const { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_STORAGE_ID } = expoExtra;
 
 export const appwriteConfig = {
   endpoint: APPWRITE_ENDPOINT,
   projectId: APPWRITE_PROJECT_ID,
   storageId: APPWRITE_STORAGE_ID,
-  markersCollectionId: APPWRITE_MARKERS_COLLECTION_ID,
 };
 
 const client = new Client();

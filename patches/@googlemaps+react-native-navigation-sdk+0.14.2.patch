@@ -1,3 +1,57 @@
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
+index 8a10394..15f69e6 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
+@@ -49,6 +49,8 @@ import java.util.Map;
+ import java.util.concurrent.Executors;
+ 
+ public class MapViewController implements INavigationViewControllerProperties {
++  private static final int CAMERA_ANIMATION_DURATION_MS = 320;
++
+   private GoogleMap mGoogleMap;
+   private Supplier<Activity> activitySupplier;
+   private INavigationViewCallback mNavigationViewCallback;
+@@ -811,10 +813,10 @@ public class MapViewController implements INavigationViewControllerProperties {
+ 
+   public void animateCamera(Map<String, Object> map) {
+     if (mGoogleMap != null) {
+-      int zoom = CollectionUtil.getInt("zoom", map, 0);
+-      int tilt = CollectionUtil.getInt("tilt", map, 0);
+-      int bearing = CollectionUtil.getInt("bearing", map, 0);
+-      int animationDuration = CollectionUtil.getInt("duration", map, 0);
++      float zoom = (float) CollectionUtil.getDouble("zoom", map, 0);
++      float tilt = (float) CollectionUtil.getDouble("tilt", map, 0);
++      float bearing = (float) CollectionUtil.getDouble("bearing", map, 0);
++      int animationDuration = CAMERA_ANIMATION_DURATION_MS;
+ 
+       CameraPosition cameraPosition =
+           new CameraPosition.Builder()
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java
+index 6cd6f27..7b0827e 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java
+@@ -261,6 +261,21 @@ public class NavViewModule extends NativeNavViewModuleSpec {
+         });
+   }
+ 
++  @Override
++  public void animateCamera(String nativeID, ReadableMap cameraPosition, final Promise promise) {
++    UiThreadUtil.runOnUiThread(
++        () -> {
++          IMapViewFragment fragment = mNavViewManager.getFragmentByNativeId(nativeID);
++          if (fragment == null) {
++            promise.reject(JsErrors.NO_MAP_ERROR_CODE, JsErrors.NO_MAP_ERROR_MESSAGE);
++            return;
++          }
++
++          fragment.getMapController().animateCamera(cameraPosition.toHashMap());
++          promise.resolve(null);
++        });
++  }
++
+   @Override
+   public void showRouteOverview(String nativeID, final Promise promise) {
+     UiThreadUtil.runOnUiThread(
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
 index e12b860..018df62 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
@@ -145,11 +199,33 @@ index cac635d..dfd6fb8 100644
        (int)marker.zIndex};
    self.eventEmitter.onMarkerClick(result);
  }
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.h b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.h
+index 796c3a0..706cdcf 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.h
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.h
+@@ -110,6 +110,9 @@ typedef void (^OnArrayResult)(NSArray *_Nullable result);
+ - (void)setPadding:(UIEdgeInsets)insets;
+ - (void)setMinZoomLevel:(float)minLevel maxZoom:(float)maxLevel;
+ - (void)animateCamera:(GMSCameraUpdate *)update result:(OnBooleanResult)completionBlock;
++- (void)animateToCameraPosition:(GMSCameraPosition *)position
++                       duration:(CFTimeInterval)duration
++                         result:(OnBooleanResult)completionBlock;
+ @property(nonatomic, assign) BOOL isNavigationView;
+ 
+ /**
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
-index 059e5d5..683f6aa 100644
+index 059e5d5..57939d1 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
-@@ -269,10 +269,16 @@ - (void)dealloc {
+@@ -16,6 +16,7 @@
+ 
+ #import "NavViewController.h"
+ #import <GoogleNavigation/GoogleNavigation.h>
++#import <QuartzCore/QuartzCore.h>
+ #import <React/RCTLog.h>
+ #import <UserNotifications/UserNotifications.h>
+ #import "CustomTypes.h"
+@@ -269,10 +270,16 @@ - (void)dealloc {
  }
  
  - (void)mapViewDidTapRecenterButton:(GMSMapView *)mapView {
@@ -166,7 +242,7 @@ index 059e5d5..683f6aa 100644
    [_viewCallbacks handleMarkerInfoWindowTapped:marker];
  }
  
-@@ -282,6 +288,9 @@ - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D
+@@ -282,6 +289,9 @@ - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D
  }
  
  - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
@@ -176,8 +252,37 @@ index 059e5d5..683f6aa 100644
    [_viewCallbacks handleMarkerClick:marker];
    return FALSE;
  }
+@@ -960,6 +970,28 @@ - (void)animateCamera:(GMSCameraUpdate *)update result:(OnBooleanResult)completi
+   }
+ }
+ 
++- (void)animateToCameraPosition:(GMSCameraPosition *)position
++                       duration:(CFTimeInterval)duration
++                         result:(OnBooleanResult)completionBlock {
++  GMSMapLayer *mapLayer = (GMSMapLayer *)_mapView.layer;
++
++  [CATransaction begin];
++  [CATransaction setAnimationDuration:duration];
++  if (completionBlock) {
++    [CATransaction setCompletionBlock:^{
++      completionBlock(YES);
++    }];
++  }
++
++  mapLayer.cameraLatitude = position.target.latitude;
++  mapLayer.cameraLongitude = position.target.longitude;
++  mapLayer.cameraZoomLevel = position.zoom;
++  mapLayer.cameraBearing = position.bearing;
++  mapLayer.cameraViewingAngle = position.viewingAngle;
++
++  [CATransaction commit];
++}
++
+ - (NSArray<NSDictionary *> *)getMarkers {
+   NSMutableArray<NSDictionary *> *result = [[NSMutableArray alloc] init];
+   for (NSString *key in _markerMap) {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
-index b80d4f5..14b14a9 100644
+index b80d4f5..127898c 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 @@ -30,6 +30,59 @@
@@ -258,6 +363,66 @@ index b80d4f5..14b14a9 100644
                            : nil;
  
        if (!icon) {
+@@ -373,7 +426,10 @@ - (void)moveCamera:(NSString *)nativeID
+   CameraPositionSpec positionCopy(cameraPosition);
+   if (viewController) {
+     dispatch_async(dispatch_get_main_queue(), ^{
+-      GMSMutableCameraPosition *position = [[GMSMutableCameraPosition alloc] init];
++      GMSMutableCameraPosition *position = [[viewController mapView].camera mutableCopy];
++      if (position == nil) {
++        position = [[GMSMutableCameraPosition alloc] init];
++      }
+ 
+       if (positionCopy.target().has_value()) {
+         auto target = positionCopy.target().value();
+@@ -400,6 +456,47 @@ - (void)moveCamera:(NSString *)nativeID
+   }
+ }
+ 
++- (void)animateCamera:(NSString *)nativeID
++       cameraPosition:(CameraPositionSpec &)cameraPosition
++              resolve:(RCTPromiseResolveBlock)resolve
++               reject:(RCTPromiseRejectBlock)reject {
++  NavViewController *viewController = [self getViewControllerForNativeID:nativeID];
++  CameraPositionSpec positionCopy(cameraPosition);
++  if (viewController) {
++    dispatch_async(dispatch_get_main_queue(), ^{
++      GMSMutableCameraPosition *position = [[viewController mapView].camera mutableCopy];
++      if (position == nil) {
++        position = [[GMSMutableCameraPosition alloc] init];
++      }
++
++      if (positionCopy.target().has_value()) {
++        auto target = positionCopy.target().value();
++        position.target = CLLocationCoordinate2DMake(target.lat(), target.lng());
++      }
++
++      if (positionCopy.zoom().has_value()) {
++        position.zoom = positionCopy.zoom().value();
++      }
++
++      if (positionCopy.bearing().has_value()) {
++        position.bearing = positionCopy.bearing().value();
++      }
++
++      if (positionCopy.tilt().has_value()) {
++        position.viewingAngle = positionCopy.tilt().value();
++      }
++
++      [viewController animateToCameraPosition:position
++                                     duration:0.32
++                                       result:^(__unused BOOL result) {
++                                         resolve(@YES);
++                                       }];
++    });
++  } else {
++    reject(@"NO_VIEW_CONTROLLER", @"No view controller found for the specified nativeID", nil);
++  }
++}
++
+ - (void)getCameraPosition:(NSString *)nativeID
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js b/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
 index 199386f..a21a0f1 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
@@ -327,6 +492,54 @@ index 15da789..9961987 100644
  
    install_modules_dependencies(s)
  end
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/mapViewController.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/mapViewController.ts
+index 04f6e93..4c4d547 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/mapViewController.ts
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/mapViewController.ts
+@@ -195,6 +195,10 @@ export const getMapViewController = (nativeID: string): MapViewController => {
+       return await NavViewModule.moveCamera(nativeID, cameraPosition);
+     },
+ 
++    animateCamera: async (cameraPosition: CameraPosition) => {
++      return await NavViewModule.animateCamera(nativeID, cameraPosition);
++    },
++
+     setPadding: async _padding => {
+       console.warn('setPadding should be set via props in new architecture');
+     },
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/types.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/types.ts
+index 59ea599..37e7685 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/types.ts
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/src/maps/mapView/types.ts
+@@ -378,6 +378,13 @@ export interface MapViewController {
+    */
+   moveCamera(cameraPosition: CameraPosition): void;
+ 
++  /**
++   * Animate the camera to a new position based on the object given.
++   *
++   * @param cameraPosition - Defines the position the camera will take with the animation.
++   */
++  animateCamera(cameraPosition: CameraPosition): void;
++
+   /**
+    * Sets padding to the map.
+    *
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/native/NativeNavViewModule.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/native/NativeNavViewModule.ts
+index 7828d96..0a0b718 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/src/native/NativeNavViewModule.ts
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/src/native/NativeNavViewModule.ts
+@@ -140,6 +140,10 @@ export interface Spec extends TurboModule {
+     options: GroundOverlayOptionsSpec
+   ): Promise<GroundOverlay>;
+   setFollowingPerspective(nativeID: string, perspective: Int32): Promise<void>;
++  animateCamera(
++    nativeID: string,
++    cameraPosition: CameraPositionSpec
++  ): Promise<void>;
+   moveCamera(
+     nativeID: string,
+     cameraPosition: CameraPositionSpec
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts b/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
 index 7e78105..969b0a9 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/src/navigation/navigationView/navigationViewController.ts
