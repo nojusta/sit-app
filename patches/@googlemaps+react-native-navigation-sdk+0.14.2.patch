@@ -9,6 +9,17 @@ diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/
 new file mode 100644
 index 0000000..3fb8a15
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/36103cf9a37cacf7d0b9ae9b15b02c1a/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/results.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/transformed/classes/classes_dex/classes.dex b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..340fbce
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/transformed/classes/classes_dex/classes.dex differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/f950f02e433bd11527b9d07e3e12130f/results.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/f950f02e433bd11527b9d07e3e12130f/results.bin
 new file mode 100644
 index 0000000..0d259dd
@@ -6739,7 +6750,7 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
 new file mode 100644
-index 0000000..d65d61b
+index 0000000..f3ef33c
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
 new file mode 100644
@@ -6891,7 +6902,7 @@ index 0000000..c8b73df
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/JsErrors.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class
 new file mode 100644
-index 0000000..17a1a8b
+index 0000000..516e5e1
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewFragment$NavViewEvent.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewFragment$NavViewEvent.class
 new file mode 100644
@@ -6967,19 +6978,19 @@ index 0000000..9991228
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavModule.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$1.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$1.class
 new file mode 100644
-index 0000000..bd685b2
+index 0000000..02712f3
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$1.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$2.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$2.class
 new file mode 100644
-index 0000000..f019782
+index 0000000..fa12d83
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$2.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$NavViewEvent.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$NavViewEvent.class
 new file mode 100644
-index 0000000..fbf50f2
+index 0000000..3afd9bf
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment$NavViewEvent.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment.class
 new file mode 100644
-index 0000000..41e2ce7
+index 0000000..8b3f1bc
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewFragment.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewManager$1.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/NavViewManager$1.class
 new file mode 100644
@@ -7179,7 +7190,7 @@ index 0000000..579a7a7
 \ No newline at end of file
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
 new file mode 100644
-index 0000000..e0ea211
+index 0000000..74972a8
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
 new file mode 100644
@@ -7250,7 +7261,7 @@ index 0000000..44fb591
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/INavViewFragment.class.uniqueId5 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10
 new file mode 100644
-index 0000000..6235f18
+index 0000000..17a1a8b
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId18 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId18
 new file mode 100644
@@ -7314,19 +7325,19 @@ index 0000000..9991228
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId9 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1
 new file mode 100644
-index 0000000..eb938ea
+index 0000000..bd685b2
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17
 new file mode 100644
-index 0000000..10d8c36
+index 0000000..f019782
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22
 new file mode 100644
-index 0000000..f71636d
+index 0000000..fbf50f2
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8
 new file mode 100644
-index 0000000..7597500
+index 0000000..41e2ce7
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId6 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId6
 new file mode 100644
@@ -7350,7 +7361,7 @@ index 0000000..186f95d
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/ViewPropertiesSink.class.uniqueId27 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
 new file mode 100644
-index 0000000..d393ddb
+index 0000000..bd1a0f0
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
 index 8a10394..e1a0903 100644
@@ -7429,8 +7440,21 @@ index 8a10394..e1a0903 100644
    }
  
    public void resetMinMaxZoomLevel() {
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java
+index fc154e5..8909c1f 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java
+@@ -76,6 +76,8 @@ public class MapViewFragment extends SupportMapFragment
+ 
+           // Setup map listeners with the provided callback
+           mMapViewController.setupMapListeners(MapViewFragment.this);
++          NavViewManager.getInstance(reactContext)
++              .applyBufferedControllerPropertiesAndClearSink(viewTag, MapViewFragment.this);
+           applyMapColorSchemeToMap();
+ 
+           emitEvent("onMapReady", null);
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewFragment.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewFragment.java
-index 16c734b..922c5ac 100644
+index 16c734b..1f34845 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewFragment.java
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewFragment.java
 @@ -14,10 +14,13 @@
@@ -7473,6 +7497,71 @@ index 16c734b..922c5ac 100644
  
      setNavigationUiEnabled(NavModule.getInstance().getNavigator() != null);
  
+@@ -83,6 +105,8 @@ public class NavViewFragment extends SupportNavigationFragment
+ 
+           // Setup map listeners with the provided callback
+           mMapViewController.setupMapListeners(NavViewFragment.this);
++          NavViewManager.getInstance(reactContext)
++              .applyBufferedControllerPropertiesAndClearSink(viewTag, NavViewFragment.this);
+           applyMapColorSchemeToMap();
+           applyNightModePreference();
+ 
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewManager.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewManager.java
+index 0090ae1..9cef67e 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewManager.java
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewManager.java
+@@ -365,20 +365,30 @@ public class NavViewManager extends SimpleViewManager<FrameLayout>
+   }
+ 
+   /**
+-   * Apply buffered properties from the unified sink to both fragment and controller, then discard
+-   * the sink. This should be called once when the fragment is ready.
++   * Apply buffered fragment properties as soon as the fragment exists, but keep controller props
++   * buffered until the async GoogleMap callback has created the controller.
+    */
+-  private void applyBufferedPropertiesAndClearSinks(int viewId, IMapViewFragment fragment) {
+-    ViewPropertiesSink sink = propertySinkMap.remove(viewId);
++  private void applyBufferedFragmentProperties(int viewId, IMapViewFragment fragment) {
++    ViewPropertiesSink sink = propertySinkMap.get(viewId);
+     if (sink != null) {
+-      // Apply fragment-level properties
+       sink.applyToFragment(fragment);
++    }
++  }
+ 
+-      // Apply controller-level properties
+-      if (fragment.getMapController() != null) {
+-        sink.applyToController(fragment.getMapController());
+-      }
++  /**
++   * Apply buffered controller properties once the map controller is actually ready, then discard
++   * the sink.
++   */
++  public void applyBufferedControllerPropertiesAndClearSink(
++      int viewId, IMapViewFragment fragment) {
++    MapViewController controller = fragment.getMapController();
++    if (controller == null) {
++      return;
++    }
+ 
++    ViewPropertiesSink sink = propertySinkMap.remove(viewId);
++    if (sink != null) {
++      sink.applyToController(controller);
+       sink.clear();
+     }
+   }
+@@ -827,8 +837,9 @@ public class NavViewManager extends SimpleViewManager<FrameLayout>
+     mapOptionsCache.remove(viewId);
+     fragmentMap.put(viewId, new WeakReference<>(mapViewFragment));
+ 
+-    // Apply any buffered properties that arrived before fragment was created
+-    applyBufferedPropertiesAndClearSinks(viewId, mapViewFragment);
++    // Apply any buffered fragment properties now. Controller properties are applied later from the
++    // fragment's async getMapAsync callback once the controller exists.
++    applyBufferedFragmentProperties(viewId, mapViewFragment);
+ 
+     // Start per-frame layout loop to keep fragment sized correctly.
+     startLayoutLoop(view);
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java
 index 6cd6f27..7b0827e 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/NavViewModule.java
