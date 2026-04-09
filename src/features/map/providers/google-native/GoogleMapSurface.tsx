@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from "react-native";
+import * as Device from "expo-device";
 import {
   Marker as GoogleMarker,
   MapColorScheme,
@@ -406,6 +407,8 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     Platform.OS === "android" ? MapColorScheme.LIGHT : undefined;
   const androidNavigationNightMode =
     Platform.OS === "android" ? NavigationNightMode.FORCE_DAY : undefined;
+  const allowsDevNavigationSimulation =
+    __DEV__ && Platform.OS === "ios" && !Device.isDevice;
   const isVisibleSurfaceReady = isNavigationSurfaceVisible
     ? isNavigationMapReady
     : isBrowseMapReady;
@@ -560,7 +563,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   );
 
   const simulateNavigationLocationFromCurrentPosition = useCallback(() => {
-    if (!__DEV__ || !currentLocation) {
+    if (!allowsDevNavigationSimulation || !currentLocation) {
       return false;
     }
 
@@ -568,7 +571,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
       toGoogleLatLng(currentLocation),
     );
     return true;
-  }, [currentLocation]);
+  }, [allowsDevNavigationSimulation, currentLocation]);
 
   useEffect(() => {
     setOnArrival((arrivalEvent) => {

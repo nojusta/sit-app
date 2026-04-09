@@ -40,6 +40,24 @@ jest.mock("../../../utils/googleNavigationSdk", () => ({
   loadGoogleNavigationSdk: () => mockLoadGoogleNavigationSdk(),
 }));
 
+jest.mock("@googlemaps/react-native-navigation-sdk", () => ({
+  Marker: function MockGoogleMarker() {
+    return null;
+  },
+  MapColorScheme: {
+    LIGHT: 1,
+  },
+  MapViewController: function MockMapViewController() {
+    return null;
+  },
+  NavigationNightMode: {
+    FORCE_DAY: 1,
+  },
+  NavigationViewController: function MockNavigationViewController() {
+    return null;
+  },
+}));
+
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({
     top: 0,
