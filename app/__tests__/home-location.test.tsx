@@ -103,11 +103,28 @@ jest.mock("@/shared/components", () => {
 
 jest.mock("@/features/map", () => {
   const React = require("react");
-  const { Text } = require("react-native");
-  const actual = jest.requireActual("@/features/map");
+  const { Text, TouchableOpacity } = require("react-native");
 
   return {
-    ...actual,
+    CircleButton: ({
+      onPress,
+      disabled,
+      accessibilityLabel,
+    }: {
+      onPress?: () => void;
+      disabled?: boolean;
+      accessibilityLabel?: string;
+    }) => (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityState={{ disabled }}
+      >
+        <Text>{accessibilityLabel}</Text>
+      </TouchableOpacity>
+    ),
     GoogleMapSurface: ({
       navigationDestination,
     }: {
