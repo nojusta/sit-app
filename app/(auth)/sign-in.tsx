@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   View,
   Image,
   Text,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -76,9 +76,10 @@ const SignIn = () => {
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <View
-            className="w-full flex justify-center h-full px-4 my-6"
+            className="w-full flex justify-center px-4 my-6"
             style={{
               minHeight: Dimensions.get("window").height - 100,
+              paddingBottom: Platform.OS === "android" ? 24 : 0,
             }}
           >
             <Image

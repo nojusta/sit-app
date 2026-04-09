@@ -53,8 +53,12 @@ const validateEmailAndPassword = (values: LoginFormValues): string | null => {
   return null;
 };
 
-export const validateRegistrationForm = (values: RegistrationFormValues): string | null =>
-  validateEmailAndPassword(values);
+export const validateRegistrationForm = (
+  values: RegistrationFormValues,
+): string | null =>
+  values.username?.trim()
+    ? validateEmailAndPassword(values)
+    : "Please fill in display name, email and password.";
 
 export const validateLoginForm = (values: LoginFormValues): string | null => {
   const email = normalizeEmail(values.email);

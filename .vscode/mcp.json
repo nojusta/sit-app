@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "appwrite": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["./scripts/appwrite-mcp.js"]
+    },
+    "google-maps": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["./scripts/google-maps-mcp.js"]
+    }
+  }
+}

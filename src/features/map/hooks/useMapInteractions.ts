@@ -1,183 +1,188 @@
-import { useState } from "react";
+import { useMemo, useReducer } from "react";
 import { Alert } from "react-native";
-import MapView, { LatLng, Region } from "react-native-maps";
 import { LocationObject } from "expo-location";
-
-export type MarkerData = {
-  id: number;
-  coordinate: LatLng;
-  title: string;
-  description: string;
-  imageUri?: string;
-};
+import {
+  type MapCoordinate,
+  type MapInteractionController,
+  createInitialMapSessionState,
+  DEFAULT_MARKERS,
+  mapSessionReducer,
+  selectIsNavigationActive,
+  type MarkerData,
+} from "../core";
+import {
+  getLocationCoordinate,
+  LOCATION_ACCESS_REQUIRED_MESSAGE,
+} from "../utils/navigation";
 
 interface UseMapInteractionsOptions {
-  mapRef: React.RefObject<MapView | null>;
+  mapControllerRef: React.RefObject<MapInteractionController | null>;
   location: LocationObject | null;
+  isLocationPermissionDenied?: boolean;
   onMarkerSelectionChange?: (selected: boolean) => void;
 }
 
-const DEFAULT_MARKERS: MarkerData[] = [
-  {
-    id: 1,
-    coordinate: { latitude: 54.6868, longitude: 25.2799 },
-    title: "Kudirka Square",
-    description: "Benches, skaters, and a statue of Vincas Kudirka",
-  },
-  {
-    id: 2,
-    coordinate: { latitude: 54.6839, longitude: 25.2875 },
-    title: "Cathedral Square",
-    description: "Main square of the Vilnius Old Town",
-  },
-  {
-    id: 3,
-    coordinate: { latitude: 54.685, longitude: 25.292 },
-    title: "Gediminas' Tower",
-    description: "The remaining part of the Upper Castle in Vilnius",
-  },
-  {
-    id: 4,
-    coordinate: { latitude: 54.682, longitude: 25.2797 },
-    title: "Vilnius University",
-    description: "One of the oldest universities in Northern Europe",
-  },
-  {
-    id: 5,
-    coordinate: { latitude: 54.6781, longitude: 25.2858 },
-    title: "Gate of Dawn",
-    description: "A city gate of Vilnius and a prominent landmark",
-  },
-];
-
 const useMapInteractions = ({
-  mapRef,
+  mapControllerRef,
   location,
+  isLocationPermissionDenied = false,
   onMarkerSelectionChange,
 }: UseMapInteractionsOptions) => {
-  const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
-  const [lastRegion, setLastRegion] = useState<Region | null>(null);
-  const [userMarker, setUserMarker] = useState<Region | null>(null);
-  const [markerName, setMarkerName] = useState<string>("");
-  const [markerInfo, setMarkerInfo] = useState<string>("");
-  const [showInputBox, setShowInputBox] = useState<boolean>(false);
+  const [session, dispatch] = useReducer(
+    mapSessionReducer,
+    undefined,
+    createInitialMapSessionState,
+  );
+  const currentLocationCoordinate = useMemo(
+    () => getLocationCoordinate(location),
+    [location],
+  );
+  const isNavigationActive = selectIsNavigationActive(session);
 
   const handleMarkerPress = (marker: MarkerData) => {
-    if (mapRef.current) {
-      mapRef.current
-        .getMapBoundaries()
-        .then((boundaries) => {
-          const currentRegion = {
-            latitude: (boundaries.northEast.latitude + boundaries.southWest.latitude) / 2,
-            longitude:
-              (boundaries.northEast.longitude + boundaries.southWest.longitude) / 2,
-            latitudeDelta: Math.abs(
-              boundaries.northEast.latitude - boundaries.southWest.latitude,
-            ),
-            longitudeDelta: Math.abs(
-              boundaries.northEast.longitude - boundaries.southWest.longitude,
-            ),
-          };
-          setLastRegion(currentRegion);
+    if (isNavigationActive) {
+      return;
+    }
+
+    if (mapControllerRef.current) {
+      mapControllerRef.current
+        .captureBrowseCamera()
+        .then((camera) => {
+          if (camera) {
+            dispatch({ type: "captureBrowseCamera", payload: camera });
+          }
         })
         .catch((error) => {
           if (__DEV__) {
             console.warn(
-              "Failed to capture map boundaries before focusing marker.",
+              "Failed to capture current map camera before focusing marker.",
               error,
             );
           }
         });
     }
 
-    setSelectedMarker(marker);
+    dispatch({ type: "selectMarker", payload: marker });
     onMarkerSelectionChange?.(true);
-    mapRef.current?.animateToRegion(
-      {
-        ...marker.coordinate,
-        latitudeDelta: 0.002,
-        longitudeDelta: 0.002,
-      },
-      800,
-    );
+    mapControllerRef.current?.focusCoordinate(marker.coordinate);
   };
 
-  const handleMapPress = () => {
-    if (selectedMarker || userMarker || showInputBox) {
-      setSelectedMarker(null);
-      setUserMarker(null);
-      setShowInputBox(false);
+  const handleMapPress = (coordinate?: MapCoordinate) => {
+    if ((session.draftMarker || session.isMarkerInputVisible) && coordinate) {
+      dispatch({ type: "setDraftMarker", payload: coordinate });
+      dispatch({ type: "setMarkerInputVisible", payload: true });
       onMarkerSelectionChange?.(false);
-      if (lastRegion) {
-        mapRef.current?.animateToRegion(lastRegion, 800);
+      return;
+    }
+
+    if (session.selectedMarker || session.draftMarker || session.isMarkerInputVisible) {
+      dispatch({ type: "dismissTransientUi" });
+      onMarkerSelectionChange?.(false);
+      if (session.browseCamera && !isNavigationActive) {
+        mapControllerRef.current?.restoreBrowseCamera(session.browseCamera);
       }
     }
   };
 
-  const handleCenterOnUserLocation = () => {
-    if (location && mapRef.current) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        },
-        1000,
-      );
-    } else {
-      Alert.alert("Location not available", "Unable to get your current location.");
+  const handleCenterOnUserLocation = async () => {
+    const controller = mapControllerRef.current;
+
+    if (controller) {
+      const centeredOnNativeLocation = await controller.centerOnUserLocation();
+
+      if (centeredOnNativeLocation) {
+        return;
+      }
     }
+
+    if (currentLocationCoordinate && controller) {
+      controller.centerOnCoordinate(currentLocationCoordinate);
+      return;
+    }
+
+    Alert.alert("Location not available", "Unable to get your current location.");
   };
 
   const handleAddMarker = () => {
-    if (location) {
-      setUserMarker({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+    if (currentLocationCoordinate) {
+      dispatch({
+        type: "setDraftMarker",
+        payload: currentLocationCoordinate,
       });
+      dispatch({ type: "setMarkerInputVisible", payload: true });
     } else {
       Alert.alert("Location not available", "Unable to get your current location.");
     }
   };
 
-  const handleLongPress = (coordinate: LatLng) => {
-    setUserMarker({
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
+  const handleLongPress = (coordinate: MapCoordinate) => {
+    dispatch({
+      type: "setDraftMarker",
+      payload: coordinate,
     });
-    setShowInputBox(true);
+    dispatch({ type: "setMarkerInputVisible", payload: true });
   };
 
-  const handleMarkerDragEnd = (coordinate: LatLng) => {
-    setUserMarker({
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
+  const handleMarkerDragEnd = (coordinate: MapCoordinate) => {
+    dispatch({
+      type: "setDraftMarker",
+      payload: coordinate,
     });
+  };
+
+  const handleStartNavigation = (marker: MarkerData | null = session.selectedMarker) => {
+    if (!marker) {
+      return;
+    }
+
+    if (isLocationPermissionDenied) {
+      Alert.alert("Location access required", LOCATION_ACCESS_REQUIRED_MESSAGE);
+      return;
+    }
+
+    if (!currentLocationCoordinate) {
+      Alert.alert(
+        "Location unavailable",
+        "Unable to determine your current location. Please try again.",
+      );
+      return;
+    }
+
+    dispatch({ type: "startNavigation", payload: marker });
+    onMarkerSelectionChange?.(false);
+  };
+
+  const handleStopNavigation = () => {
+    dispatch({ type: "stopNavigation" });
+
+    if (session.browseCamera) {
+      mapControllerRef.current?.restoreBrowseCamera(session.browseCamera);
+    }
   };
 
   return {
     markers: DEFAULT_MARKERS,
-    selectedMarker,
-    userMarker,
-    markerName,
-    markerInfo,
-    showInputBox,
-    setMarkerName,
-    setMarkerInfo,
-    setShowInputBox,
+    selectedMarker: session.selectedMarker,
+    userMarker: session.draftMarker,
+    markerName: session.markerDraftFields.name,
+    markerInfo: session.markerDraftFields.info,
+    showInputBox: session.isMarkerInputVisible,
+    setMarkerName: (value: string) =>
+      dispatch({ type: "setMarkerDraftName", payload: value }),
+    setMarkerInfo: (value: string) =>
+      dispatch({ type: "setMarkerDraftInfo", payload: value }),
+    setShowInputBox: (value: boolean) =>
+      dispatch({ type: "setMarkerInputVisible", payload: value }),
     handleMarkerPress,
     handleMapPress,
     handleLongPress,
     handleMarkerDragEnd,
     handleCenterOnUserLocation,
     handleAddMarker,
+    handleStartNavigation,
+    handleStopNavigation,
+    isNavigationActive,
+    activeNavigationDestination: session.navigationDestination,
   };
 };
 

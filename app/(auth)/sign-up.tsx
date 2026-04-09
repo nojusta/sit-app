@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   View,
   Text,
   Image,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
@@ -94,10 +94,11 @@ const SignUp = () => {
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <View
-            className="w-full flex justify-center h-full px-4 my-6"
+            className="w-full flex justify-center px-4 my-6"
             style={{
               minHeight: Dimensions.get("window").height - 100,
               marginTop: 5,
+              paddingBottom: Platform.OS === "android" ? 24 : 0,
             }}
           >
             <Image
@@ -113,7 +114,7 @@ const SignUp = () => {
             <FormField
               title="Display name"
               value={form.username}
-              placeholder="Optional"
+              placeholder="Enter your display name"
               handleChangeText={(e) => setForm({ ...form, username: e })}
               otherStyles="mt-10"
             />

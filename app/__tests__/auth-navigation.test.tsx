@@ -75,7 +75,10 @@ describe("auth screen flows", () => {
 
     render(<SignUp />);
 
-    fireEvent.changeText(screen.getByPlaceholderText("Optional"), "  Jonas  ");
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your display name"),
+      "  Jonas  ",
+    );
     fireEvent.changeText(
       screen.getByPlaceholderText("Enter your email"),
       "  JONAS@Example.com ",
@@ -104,6 +107,10 @@ describe("auth screen flows", () => {
 
     render(<SignUp />);
 
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your display name"),
+      "Taken User",
+    );
     fireEvent.changeText(
       screen.getByPlaceholderText("Enter your email"),
       " TAKEN@Example.com ",
@@ -208,6 +215,29 @@ describe("auth screen flows", () => {
 
     expect(mockedSignIn).not.toHaveBeenCalled();
     expect(replace).not.toHaveBeenCalled();
+  });
+
+  it("blocks sign-up before the request when the display name is missing", async () => {
+    render(<SignUp />);
+
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your email"),
+      "demo@example.com",
+    );
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Enter your password"),
+      "password123",
+    );
+    fireEvent.press(screen.getByText("Sign Up"));
+
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        "Error",
+        "Please fill in display name, email and password.",
+      ),
+    );
+
+    expect(mockedCreateUser).not.toHaveBeenCalled();
   });
 
   it("shows a technical error when sign-in fails for a non-auth reason", async () => {

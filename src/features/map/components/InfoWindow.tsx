@@ -8,11 +8,11 @@ import {
   Dimensions,
   Easing,
   Image,
-  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CustomButton } from "@/shared/components";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 100;
+const INITIAL_INFO_WINDOW_HEIGHT = 170;
 
 type MarkerDetails = {
   title: string;
@@ -23,11 +23,13 @@ type MarkerDetails = {
 interface InfoWindowProps {
   selectedMarker: MarkerDetails | null;
   initialHeight?: number;
+  onStartNavigation?: () => void;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
   selectedMarker,
   initialHeight = INITIAL_INFO_WINDOW_HEIGHT,
+  onStartNavigation,
 }) => {
   const [infoWindowHeight] = useState(new Animated.Value(initialHeight));
   const [infoWindowBottom] = useState(new Animated.Value(-initialHeight));
@@ -120,31 +122,40 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
           {...panResponder.panHandlers}
         >
           <View style={styles.infoContent}>
-            <View style={styles.titleContainer}>
+            <View style={styles.headerSection}>
               <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
+              <CustomButton
+                title="Start Navigation"
+                handlePress={() => onStartNavigation?.()}
+                containerStyles="w-full mt-4 min-h-[48px]"
+                textStyles="text-base"
+                accessibilityLabel="Start navigation"
+              />
             </View>
-            <View style={[styles.imageBox, { marginTop: isExpanded ? 0 : "20%" }]}>
-              {visibleMarker.imageUri ? (
-                <Image
-                  source={{ uri: visibleMarker.imageUri }}
-                  style={styles.infoImage}
-                />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <Text style={styles.imagePlaceholderText}>No image available</Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.ratingContainer}>
-              <View style={styles.ratingBox}>
-                <Text style={styles.ratingText}>Rating: ★★★★☆</Text>
+            <View
+              pointerEvents={isExpanded ? "auto" : "none"}
+              style={[styles.detailsSection, { opacity: isExpanded ? 1 : 0 }]}
+            >
+              <View style={styles.imageBox}>
+                {visibleMarker.imageUri ? (
+                  <Image
+                    source={{ uri: visibleMarker.imageUri }}
+                    style={styles.infoImage}
+                  />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Text style={styles.imagePlaceholderText}>No image available</Text>
+                  </View>
+                )}
               </View>
-              <TouchableOpacity style={styles.rateButton}>
-                <Text style={styles.rateButtonText}>Rate</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.descriptionBox}>
-              <Text style={styles.infoDescription}>{visibleMarker.description}</Text>
+              <View style={styles.ratingContainer}>
+                <View style={styles.ratingBox}>
+                  <Text style={styles.ratingText}>Rating: ★★★★☆</Text>
+                </View>
+              </View>
+              <View style={styles.descriptionBox}>
+                <Text style={styles.infoDescription}>{visibleMarker.description}</Text>
+              </View>
             </View>
           </View>
         </Animated.View>
@@ -179,8 +190,10 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-  titleContainer: {
-    height: INITIAL_INFO_WINDOW_HEIGHT - 30,
+  headerSection: {
+    width: "100%",
+    paddingTop: 20,
+    paddingBottom: 16,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -189,9 +202,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  detailsSection: {
+    width: "100%",
+    alignItems: "center",
+  },
   imageBox: {
-    width: 350,
-    height: 350,
+    width: "100%",
+    maxWidth: 350,
+    height: 280,
     borderRadius: 10,
     backgroundColor: "#f0f0f0",
     justifyContent: "center",
@@ -218,7 +236,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
     width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   ratingBox: {
@@ -228,19 +246,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  rateButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-  },
-  rateButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   descriptionBox: {
     marginTop: 10,
+    marginBottom: 24,
     padding: 10,
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
