@@ -231,10 +231,18 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         position: GoogleLatLng;
         title?: string;
         snippet?: string;
+        imgPath?: string | null;
         draggable?: boolean;
+        zIndex?: number;
       },
     ) => {
-      const iconCandidates = [...CUSTOM_MARKER_IMAGE_CANDIDATES, undefined];
+      const { imgPath: _imgPath, ...markerOptions } = marker;
+      const iconCandidates =
+        marker.imgPath === null
+          ? [undefined]
+          : marker.imgPath
+            ? [marker.imgPath]
+            : [...CUSTOM_MARKER_IMAGE_CANDIDATES, undefined];
       let lastError: unknown;
 
       for (const iconCandidate of iconCandidates) {
@@ -242,7 +250,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           return await retryTransientNativeCommand(
             () =>
               controller.addMarker({
-                ...marker,
+                ...markerOptions,
                 ...(iconCandidate ? { imgPath: iconCandidate } : {}),
               }),
             isNoViewControllerError,

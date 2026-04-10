@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { View, Linking, Alert } from "react-native";
+import { View, Linking, Alert, InteractionManager, Keyboard } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   launchCamera,
@@ -26,10 +26,15 @@ import { useAppwrite } from "@/shared/hooks";
 import { NoticeBanner } from "@/shared/components";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 170;
+const markerPickerOptions = {
+  mediaType: "photo" as const,
+  selectionLimit: 1 as const,
+};
 
 const HomeApp: React.FC = () => {
   const { isLogged, user } = useAuthContext();
-  const { setIsMarkerSelected, setIsNavigationActive } = useMarkerContext();
+  const { setIsMarkerSelected, setIsNavigationActive, setIsPlacementActive } =
+    useMarkerContext();
   const mapControllerRef = useRef<MapInteractionController | null>(null);
   const isNativeGoogleMapAvailable = isGoogleNavigationSdkNativeAvailable();
   const isFocused = useIsFocused();
@@ -87,25 +92,64 @@ const HomeApp: React.FC = () => {
     onMarkerSelectionChange: setIsMarkerSelected,
   });
 
-  const handleMarkerPhotoChange = (response: ImagePickerResponse) => {
-    if (response.didCancel) {
-      return;
-    }
+  const handleMarkerPhotoChange = useCallback(
+    (response: ImagePickerResponse) => {
+      if (response.errorCode) {
+        Alert.alert(
+          "Photo unavailable",
+          response.errorMessage || "The selected image could not be opened.",
+        );
+        return;
+      }
 
-    const file = response.assets?.[0];
+      if (response.didCancel) {
+        return;
+      }
 
-    if (!file?.uri) {
-      Alert.alert("Photo unavailable", "The selected image could not be read.");
-      return;
-    }
+      const file = response.assets?.[0];
 
-    setMarkerPhoto({
-      uri: file.uri,
-      name: file.fileName || `marker-${Date.now()}.jpg`,
-      type: file.type || "image/jpeg",
-      size: file.fileSize || 0,
-    });
-  };
+      if (!file?.uri) {
+        Alert.alert("Photo unavailable", "The selected image could not be read.");
+        return;
+      }
+
+      setMarkerPhoto({
+        uri: file.uri,
+        name: file.fileName || `marker-${Date.now()}.jpg`,
+        type: file.type || "image/jpeg",
+        size: file.fileSize,
+      });
+    },
+    [setMarkerPhoto],
+  );
+
+  const launchMarkerPicker = useCallback(
+    (mode: "camera" | "library") => {
+      Keyboard.dismiss();
+
+      InteractionManager.runAfterInteractions(() => {
+        try {
+          if (mode === "camera") {
+            launchCamera(
+              { ...markerPickerOptions, saveToPhotos: false },
+              handleMarkerPhotoChange,
+            );
+            return;
+          }
+
+          launchImageLibrary(markerPickerOptions, handleMarkerPhotoChange);
+        } catch (error) {
+          Alert.alert(
+            "Photo unavailable",
+            error instanceof Error
+              ? error.message
+              : "The image picker could not be opened.",
+          );
+        }
+      });
+    },
+    [handleMarkerPhotoChange],
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -120,6 +164,15 @@ const HomeApp: React.FC = () => {
       setIsNavigationActive(false);
     };
   }, [isNavigationActive, setIsNavigationActive]);
+
+  useEffect(() => {
+    const isPlacementFlowActive = isPlacementMode || isCreationModalVisible;
+    setIsPlacementActive(isPlacementFlowActive);
+
+    return () => {
+      setIsPlacementActive(false);
+    };
+  }, [isCreationModalVisible, isPlacementMode, setIsPlacementActive]);
 
   return (
     <SafeAreaProvider>
@@ -153,49 +206,40 @@ const HomeApp: React.FC = () => {
         />
         {isPlacementMode && userMarker && !isCreationModalVisible ? (
           <MarkerPlacementCard
-            coordinate={userMarker}
             onCancel={handleCancelPlacement}
             onConfirm={handleConfirmPlacement}
           />
         ) : null}
-        {!isNavigationActive && selectedMarker && isNativeGoogleMapAvailable && (
-          <InfoWindow
-            selectedMarker={selectedMarker}
-            initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
-            onStartNavigation={() => handleStartNavigation(selectedMarker)}
-          />
-        )}
+        {!isNavigationActive &&
+          !isPlacementMode &&
+          !isCreationModalVisible &&
+          selectedMarker &&
+          isNativeGoogleMapAvailable && (
+            <InfoWindow
+              selectedMarker={selectedMarker}
+              initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
+              onStartNavigation={() => handleStartNavigation(selectedMarker)}
+            />
+          )}
         <MarkerCreationModal
           visible={isCreationModalVisible}
-          coordinateLabel={
-            userMarker
-              ? `${userMarker.latitude.toFixed(5)}, ${userMarker.longitude.toFixed(5)}`
-              : ""
-          }
           title={markerName}
           description={markerInfo}
           photo={markerPhoto}
           isSubmitting={isSubmittingMarker}
           onTitleChange={setMarkerName}
           onDescriptionChange={setMarkerInfo}
-          onTakePhoto={() =>
-            launchCamera(
-              { mediaType: "photo", saveToPhotos: false },
-              handleMarkerPhotoChange,
-            )
-          }
-          onChooseFromLibrary={() =>
-            launchImageLibrary(
-              { mediaType: "photo", selectionLimit: 1 },
-              handleMarkerPhotoChange,
-            )
-          }
+          onTakePhoto={() => launchMarkerPicker("camera")}
+          onChooseFromLibrary={() => launchMarkerPicker("library")}
           onRemovePhoto={() => setMarkerPhoto(null)}
           onBack={handleCloseCreationModal}
           onCancel={handleCancelPlacement}
           onSubmit={handleSubmitMarker}
         />
-        {!isNavigationActive && isNativeGoogleMapAvailable ? (
+        {!isNavigationActive &&
+        !isPlacementMode &&
+        !isCreationModalVisible &&
+        isNativeGoogleMapAvailable ? (
           <>
             <CircleButton
               onPress={handleCenterOnUserLocation}

@@ -7,6 +7,7 @@ import HomeApp from "../(tabs)/home";
 
 const setIsMarkerSelected = jest.fn();
 const setIsNavigationActive = jest.fn();
+const setIsPlacementActive = jest.fn();
 const handleCenterOnUserLocation = jest.fn();
 const handleAddMarker = jest.fn();
 const handleConfirmPlacement = jest.fn();
@@ -174,6 +175,8 @@ describe("home location permission flow", () => {
 
     useAppwrite.mockReturnValue({
       data: [],
+      loading: false,
+      refreshing: false,
       error: null,
       refetch: refetchMarkers,
     });
@@ -181,6 +184,7 @@ describe("home location permission flow", () => {
     useMarkerContext.mockReturnValue({
       setIsMarkerSelected,
       setIsNavigationActive,
+      setIsPlacementActive,
     });
 
     useMapInteractions.mockReturnValue({

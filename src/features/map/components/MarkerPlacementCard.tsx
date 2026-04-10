@@ -1,58 +1,54 @@
 import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { CustomButton } from "@/shared/components";
-import type { MapCoordinate } from "../core";
 
 interface MarkerPlacementCardProps {
-  coordinate: MapCoordinate;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-const formatCoordinate = ({ latitude, longitude }: MapCoordinate) =>
-  `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-
 const MarkerPlacementCard: React.FC<MarkerPlacementCardProps> = ({
-  coordinate,
   onCancel,
   onConfirm,
 }) => {
   return (
-    <View pointerEvents="box-none" className="absolute left-4 right-4 top-6 z-20">
-      <View className="rounded-[28px] bg-white px-5 py-5 shadow-sm">
-        <Text className="font-psemibold text-xl text-slate-900">
-          Place a sitting spot
-        </Text>
-        <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
-          Drag the marker to the exact bench or resting point. You can also tap the map to
-          nudge the placement before continuing.
-        </Text>
-
-        <View className="mt-4 rounded-2xl bg-emerald-50 px-4 py-3">
-          <Text className="font-pmedium text-xs uppercase tracking-[1.2px] text-emerald-700">
-            Selected location
+    <View
+      className="absolute inset-0 z-20 justify-end bg-black/28"
+      pointerEvents="box-none"
+    >
+      <SafeAreaView edges={["bottom"]}>
+        <View className="rounded-t-[30px] bg-white px-5 pb-4 pt-4 shadow-sm">
+          <View className="self-center h-1.5 w-14 rounded-full bg-slate-200" />
+          <Text className="mt-4 font-psemibold text-xl text-slate-900">
+            Place a sitting spot
           </Text>
-          <Text className="mt-1 font-psemibold text-base text-slate-900">
-            {formatCoordinate(coordinate)}
+          <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
+            Press and drag the marker onto the exact place, or tap the map to nudge it.
+            When the spot feels right, continue to add the details.
           </Text>
-        </View>
 
-        <View className="mt-5 flex-row gap-3">
-          <CustomButton
-            title="Cancel"
-            handlePress={onCancel}
-            variant="ghost"
-            containerStyles="min-h-[52px] flex-1"
-            textStyles="text-base"
-          />
-          <CustomButton
-            title="Continue"
-            handlePress={onConfirm}
-            containerStyles="min-h-[52px] flex-1"
-            textStyles="text-base"
-          />
+          <View className="mt-5 flex-row">
+            <View className="flex-1 pr-1.5">
+              <CustomButton
+                title="Cancel"
+                handlePress={onCancel}
+                variant="ghost"
+                containerStyles="min-h-[50px]"
+                textStyles="text-base"
+              />
+            </View>
+            <View className="flex-1 pl-1.5">
+              <CustomButton
+                title="Continue"
+                handlePress={onConfirm}
+                containerStyles="min-h-[50px]"
+                textStyles="text-base"
+              />
+            </View>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };

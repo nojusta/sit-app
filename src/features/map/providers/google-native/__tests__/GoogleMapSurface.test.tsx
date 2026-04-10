@@ -299,7 +299,8 @@ describe("GoogleMapSurface", () => {
       3,
       expect.objectContaining({
         id: "draft-marker",
-        imgPath: expect.any(String),
+        draggable: true,
+        zIndex: 1000,
       }),
     );
 

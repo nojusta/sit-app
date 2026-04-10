@@ -61,6 +61,12 @@ Use services for:
 - weather fetching
 - external integrations
 
+### Layout spacing
+
+- Do not place action buttons flush against each other or against sheet edges.
+- For stacked or side-by-side buttons, use explicit spacing in layout wrappers instead of relying on default button padding to create separation.
+- Modal, sheet, and card actions should have clear vertical and horizontal gaps by default.
+
 ### Avoid prop drilling
 
 Do not pass state through many intermediate layers just to reach one child.

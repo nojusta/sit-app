@@ -23,7 +23,7 @@ export type UploadableImage = {
   uri: string;
   name: string;
   type: string;
-  size: number;
+  size?: number;
 };
 
 export type MarkerStatus = "pending_approval" | "approved" | "rejected";
@@ -43,6 +43,7 @@ export interface MarkerRecord {
   authorId: string;
   createdAt: string;
   photoUrl: string | null;
+  photoUrls?: string[];
 }
 
 export interface CreateMarkerInput {
@@ -61,6 +62,7 @@ interface AppwriteMarkerFields {
   author_id: string;
   created_at: string;
   photo_url?: string | null;
+  photo_urls?: string[] | null;
   markerName: string;
   markerInfo: string;
   markerPhoto?: string | null;
@@ -181,6 +183,9 @@ const getStorageId = () => {
   return appwriteConfig.storageId!;
 };
 
+const ensureTrailingSlash = (value: string) =>
+  value.endsWith("/") ? value : `${value}/`;
+
 const getErrorCode = (error: unknown) =>
   typeof error === "object" &&
   error !== null &&
@@ -246,6 +251,14 @@ const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
   authorId: document.author_id,
   createdAt: document.created_at,
   photoUrl: document.photo_url ?? document.markerPhoto ?? null,
+  photoUrls:
+    Array.isArray(document.photo_urls) && document.photo_urls.length > 0
+      ? document.photo_urls
+      : (document.photo_url ?? document.markerPhoto)
+        ? [document.photo_url ?? document.markerPhoto].filter(
+            (value): value is string => typeof value === "string" && value.length > 0,
+          )
+        : [],
 });
 
 const buildMarkerDocumentPermissions = (status: MarkerStatus, authorId: string) => {
@@ -290,13 +303,41 @@ const createStorageFile = async (
   permissions: string[],
 ): Promise<string> => {
   ensureStorageReady();
+  const formData = new FormData();
+  formData.append("fileId", ID.unique());
+  permissions.forEach((permission) => {
+    formData.append("permissions[]", permission);
+  });
+  formData.append("file", {
+    uri: file.uri,
+    name: file.name,
+    type: file.type || "image/jpeg",
+  } as unknown as Blob);
 
-  const response = await getStorageClient().createFile(
-    getStorageId(),
-    ID.unique(),
-    file as unknown as File,
-    permissions,
+  const uploadUrl = new URL(
+    `/storage/buckets/${encodeURIComponent(getStorageId())}/files`,
+    ensureTrailingSlash(appwriteConfig.endpoint!),
   );
+  const uploadResponse = await fetch(uploadUrl.toString(), {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "X-Appwrite-Project": appwriteConfig.projectId!,
+      "X-Appwrite-Response-Format": "1.8.0",
+    },
+    body: formData,
+  });
+  const payload = await uploadResponse.json().catch(() => null);
+
+  if (!uploadResponse.ok || !payload?.$id) {
+    throw new Error(
+      typeof payload?.message === "string"
+        ? payload.message
+        : "Could not upload the selected image.",
+    );
+  }
+
+  const response = payload as Models.File;
   const fileUrl = getStorageClient().getFileView(getStorageId(), response.$id);
 
   return String(fileUrl);
@@ -482,6 +523,7 @@ export async function createMarker({
       author_id: authorId,
       created_at: createdAt,
       photo_url: photoUrl,
+      photo_urls: photoUrl ? [photoUrl] : [],
       markerName: normalizedTitle,
       markerInfo: normalizedDescription,
       markerPhoto: photoUrl,

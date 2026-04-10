@@ -18,7 +18,8 @@ const config = {
 
 const COLLECTION_NAME = "markers";
 const DATABASE_NAME = "db.sitapp";
-const SEED_PATH = path.join(repoRoot, "test-run.json");
+const SEED_PATH = path.join(repoRoot, "test-run-unique.json");
+const PHOTOS_DIR = path.join(repoRoot, "photos-for-markers");
 const MAX_POLL_ATTEMPTS = 30;
 const POLL_DELAY_MS = 1000;
 const REQUEST_TIMEOUT_MS = 15000;
@@ -27,32 +28,17 @@ const markerAttributes = [
   {
     key: "title",
     kind: "string",
-    payload: {
-      key: "title",
-      size: 160,
-      required: true,
-      array: false,
-    },
+    payload: { key: "title", size: 160, required: true, array: false },
   },
   {
     key: "description",
     kind: "string",
-    payload: {
-      key: "description",
-      size: 4000,
-      required: true,
-      array: false,
-    },
+    payload: { key: "description", size: 4000, required: true, array: false },
   },
   {
     key: "location",
     kind: "string",
-    payload: {
-      key: "location",
-      size: 64,
-      required: true,
-      array: false,
-    },
+    payload: { key: "location", size: 64, required: true, array: false },
   },
   {
     key: "status",
@@ -67,30 +53,52 @@ const markerAttributes = [
   {
     key: "author_id",
     kind: "string",
-    payload: {
-      key: "author_id",
-      size: 64,
-      required: true,
-      array: false,
-    },
+    payload: { key: "author_id", size: 64, required: true, array: false },
   },
   {
     key: "created_at",
     kind: "datetime",
-    payload: {
-      key: "created_at",
-      required: true,
-      array: false,
-    },
+    payload: { key: "created_at", required: true, array: false },
   },
   {
     key: "photo_url",
     kind: "url",
-    payload: {
-      key: "photo_url",
-      required: false,
-      array: false,
-    },
+    payload: { key: "photo_url", required: false, array: false },
+  },
+  {
+    key: "photo_urls",
+    kind: "string",
+    payload: { key: "photo_urls", size: 2048, required: false, array: true },
+  },
+  {
+    key: "markerName",
+    kind: "string",
+    payload: { key: "markerName", size: 160, required: true, array: false },
+  },
+  {
+    key: "markerInfo",
+    kind: "string",
+    payload: { key: "markerInfo", size: 4000, required: true, array: false },
+  },
+  {
+    key: "markerPhoto",
+    kind: "url",
+    payload: { key: "markerPhoto", required: false, array: false },
+  },
+  {
+    key: "timestamp",
+    kind: "datetime",
+    payload: { key: "timestamp", required: true, array: false },
+  },
+  {
+    key: "latitude",
+    kind: "float",
+    payload: { key: "latitude", required: true, min: -90, max: 90, array: false },
+  },
+  {
+    key: "longitude",
+    kind: "float",
+    payload: { key: "longitude", required: true, min: -180, max: 180, array: false },
   },
 ];
 
@@ -150,19 +158,33 @@ async function main() {
 
   console.log("Resolving admin seed owner...");
   const adminUser = await resolveAdminUser();
-  console.log("Loading and deduplicating seed data...");
+  console.log("Loading seed data and matching marker photos...");
+  const photoMatches = loadPhotoMatches();
   const seedItems = loadSeedItems();
+  const uploadedPhotosByTitle = new Map();
 
   let created = 0;
   let skipped = 0;
+  let attachedPhotos = 0;
 
-  for (const item of seedItems) {
+  for (const [index, item] of seedItems.entries()) {
     try {
+      const uploadedPhotos = await resolveUploadedPhotosForTitle({
+        adminUserId: adminUser.$id,
+        title: item.title,
+        photoMatches,
+        cache: uploadedPhotosByTitle,
+      });
+
+      attachedPhotos += uploadedPhotos.length;
+
       await createSeedDocument({
         databaseId,
         collectionId,
         adminUserId: adminUser.$id,
         item,
+        photoUrls: uploadedPhotos,
+        index,
       });
       created += 1;
     } catch (error) {
@@ -187,6 +209,7 @@ async function main() {
           total: seedItems.length,
           created,
           skipped,
+          photoAttachments: attachedPhotos,
         },
       },
       null,
@@ -384,11 +407,100 @@ function loadSeedItems() {
   return Array.from(uniqueItems.values());
 }
 
-async function createSeedDocument({ databaseId, collectionId, adminUserId, item }) {
+function loadPhotoMatches() {
+  if (!fs.existsSync(PHOTOS_DIR)) {
+    return new Map();
+  }
+
+  const files = fs
+    .readdirSync(PHOTOS_DIR)
+    .filter((fileName) => /\.(png|jpe?g|webp)$/iu.test(fileName))
+    .sort((left, right) => left.localeCompare(right));
+  const photoMatches = new Map();
+
+  for (const fileName of files) {
+    const normalizedTitle = normalizeTitleKey(fileName);
+    const absolutePath = path.join(PHOTOS_DIR, fileName);
+    const existing = photoMatches.get(normalizedTitle) || [];
+    existing.push(absolutePath);
+    photoMatches.set(normalizedTitle, existing);
+  }
+
+  return photoMatches;
+}
+
+async function resolveUploadedPhotosForTitle({
+  adminUserId,
+  title,
+  photoMatches,
+  cache,
+}) {
+  const normalizedTitle = normalizeTitleKey(title);
+
+  if (cache.has(normalizedTitle)) {
+    return cache.get(normalizedTitle);
+  }
+
+  const matchingFiles = photoMatches.get(normalizedTitle) || [];
+
+  if (matchingFiles.length === 0) {
+    cache.set(normalizedTitle, []);
+    return [];
+  }
+
+  const uploadedUrls = [];
+
+  for (const photoPath of matchingFiles) {
+    const uploadedFile = await uploadMarkerPhoto(photoPath, adminUserId);
+    uploadedUrls.push(buildStorageViewUrl(uploadedFile.$id));
+  }
+
+  cache.set(normalizedTitle, uploadedUrls);
+  return uploadedUrls;
+}
+
+async function uploadMarkerPhoto(photoPath, adminUserId) {
+  const mimeType = getMimeType(photoPath);
+  const fileName = path.basename(photoPath);
+  const fileContent = await fs.promises.readFile(photoPath);
+  const formData = new FormData();
+
+  formData.append("fileId", "unique()");
+  formData.append(
+    "file",
+    new File([new Blob([fileContent], { type: mimeType })], fileName, {
+      type: mimeType,
+      lastModified: Date.now(),
+    }),
+  );
+  formData.append("permissions[]", 'read("guests")');
+  formData.append("permissions[]", 'read("users")');
+  formData.append("permissions[]", `update("user:${adminUserId}")`);
+  formData.append("permissions[]", `delete("user:${adminUserId}")`);
+
+  return appwriteFetch(
+    "POST",
+    `/storage/buckets/${encodeURIComponent(config.bucketId)}/files`,
+    {
+      body: formData,
+      contentType: "multipart/form-data",
+    },
+  );
+}
+
+async function createSeedDocument({
+  databaseId,
+  collectionId,
+  adminUserId,
+  item,
+  photoUrls,
+  index,
+}) {
   const title = String(item.title || "").trim();
   const description = String(item.description || "").trim();
-  const createdAt = new Date().toISOString();
+  const createdAt = new Date(Date.now() - index * 60000).toISOString();
   const location = formatLocation(item.latitude, item.longitude);
+  const primaryPhotoUrl = photoUrls[0] || null;
 
   return appwriteFetch(
     "POST",
@@ -405,10 +517,11 @@ async function createSeedDocument({ databaseId, collectionId, adminUserId, item 
           status: "approved",
           author_id: adminUserId,
           created_at: createdAt,
-          photo_url: null,
+          photo_url: primaryPhotoUrl,
+          photo_urls: photoUrls,
           markerName: title,
           markerInfo: description,
-          markerPhoto: null,
+          markerPhoto: primaryPhotoUrl,
           timestamp: createdAt,
           latitude: item.latitude,
           longitude: item.longitude,
@@ -424,8 +537,43 @@ async function createSeedDocument({ databaseId, collectionId, adminUserId, item 
   );
 }
 
+function buildStorageViewUrl(fileId) {
+  const endpoint = ensureTrailingSlash(config.endpoint);
+  const url = new URL(
+    `storage/buckets/${encodeURIComponent(config.bucketId)}/files/${encodeURIComponent(fileId)}/view`,
+    endpoint,
+  );
+  url.searchParams.set("project", config.projectId);
+  return url.toString();
+}
+
+function normalizeTitleKey(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/\.[^.]+$/u, "")
+    .replace(/\s+\d+$/u, "")
+    .replace(/[\u0300-\u036f]/gu, "")
+    .replace(/[^a-zA-Z0-9]+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
 function formatLocation(latitude, longitude) {
   return `${Number(latitude).toFixed(6)},${Number(longitude).toFixed(6)}`;
+}
+
+function getMimeType(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+
+  if (extension === ".png") {
+    return "image/png";
+  }
+
+  if (extension === ".webp") {
+    return "image/webp";
+  }
+
+  return "image/jpeg";
 }
 
 function isDuplicateLocationError(error) {
@@ -445,7 +593,9 @@ async function appwriteFetch(method, resourcePath, options = {}) {
     "X-Appwrite-Response-Format": "1.8.0",
   };
 
-  if (options.body !== undefined) {
+  if (options.contentType === "multipart/form-data") {
+    // Let fetch set the boundary for multipart uploads.
+  } else if (options.body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -453,7 +603,12 @@ async function appwriteFetch(method, resourcePath, options = {}) {
     method,
     headers,
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body:
+      options.body === undefined
+        ? undefined
+        : options.contentType === "multipart/form-data"
+          ? options.body
+          : JSON.stringify(options.body),
   });
   const text = await response.text();
   const payload = parseJson(text);

@@ -2,7 +2,6 @@ import React from "react";
 import {
   Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   Text,
@@ -10,13 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { type UploadableImage } from "@/services/appwrite";
+import { icons } from "@/shared/constants";
 import { CustomButton } from "@/shared/components";
 
 interface MarkerCreationModalProps {
   visible: boolean;
-  coordinateLabel: string;
   title: string;
   description: string;
   photo: UploadableImage | null;
@@ -33,7 +33,6 @@ interface MarkerCreationModalProps {
 
 const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
   visible,
-  coordinateLabel,
   title,
   description,
   photo,
@@ -47,59 +46,57 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
   onCancel,
   onSubmit,
 }) => {
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onBack}
-      presentationStyle="overFullScreen"
-    >
-      <View className="flex-1 bg-black/50 justify-end">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={24}
-        >
-          <View className="max-h-[92%] rounded-t-[34px] bg-white">
+    <View className="absolute inset-0 z-30 justify-end bg-black/45">
+      <KeyboardAvoidingView
+        className="justify-end"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={16}
+      >
+        <SafeAreaView edges={["bottom"]}>
+          <View className="max-h-[88%] rounded-t-[34px] bg-[#F6F5F1]">
             <ScrollView
               bounces={false}
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
               contentContainerStyle={{
                 paddingHorizontal: 20,
-                paddingTop: 22,
-                paddingBottom: 28,
+                paddingTop: 18,
+                paddingBottom: 24,
               }}
             >
-              <View className="flex-row items-start justify-between gap-4">
-                <View className="flex-1">
+              <View className="self-center h-1.5 w-14 rounded-full bg-slate-300" />
+
+              <View className="mt-4 flex-row items-start justify-between">
+                <View className="mr-4 flex-1">
                   <Text className="font-psemibold text-2xl text-slate-950">
                     Share a new spot
                   </Text>
                   <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
-                    Add enough context so other people know why this place is worth
-                    sitting down for.
+                    Add a short title and useful context so the place is easy to recognize
+                    when it goes through review.
                   </Text>
                 </View>
                 <TouchableOpacity
                   onPress={onBack}
                   accessibilityRole="button"
                   accessibilityLabel="Back to placement"
-                  className="rounded-full bg-slate-100 px-3 py-2"
+                  className="rounded-full bg-white px-3 py-2"
                 >
                   <Text className="font-pmedium text-sm text-slate-700">Back</Text>
                 </TouchableOpacity>
               </View>
 
-              <View className="mt-5 rounded-[26px] bg-slate-950 px-5 py-4">
-                <Text className="font-pmedium text-xs uppercase tracking-[1.2px] text-slate-300">
-                  Locked location
-                </Text>
-                <Text className="mt-1 font-psemibold text-lg text-white">
-                  {coordinateLabel}
+              <View className="mt-5 rounded-[26px] bg-slate-900 px-5 py-4">
+                <Text className="font-psemibold text-base text-white">
+                  New spots are reviewed before they appear on the public map.
                 </Text>
                 <Text className="mt-2 font-pregular text-sm leading-6 text-slate-300">
-                  Submitted spots start in review mode and appear on the public map after
-                  approval.
+                  A photo helps, but title and description are the only required fields.
                 </Text>
               </View>
 
@@ -110,7 +107,7 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
                   onChangeText={onTitleChange}
                   placeholder="Bench near Cathedral"
                   placeholderTextColor="#94A3B8"
-                  className="mt-2 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 font-pmedium text-base text-slate-950"
+                  className="mt-2 rounded-[26px] border border-slate-200 bg-white px-4 py-4 font-pmedium text-base text-slate-950"
                 />
               </View>
 
@@ -123,7 +120,7 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
                   placeholderTextColor="#94A3B8"
                   multiline
                   textAlignVertical="top"
-                  className="mt-2 min-h-[140px] rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 font-pmedium text-base text-slate-950"
+                  className="mt-2 min-h-[148px] rounded-[26px] border border-slate-200 bg-white px-4 py-4 font-pmedium text-base text-slate-950"
                 />
               </View>
 
@@ -133,7 +130,7 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
                   <Text className="font-pregular text-xs text-slate-500">Optional</Text>
                 </View>
 
-                <View className="mt-2 overflow-hidden rounded-[28px] border border-slate-200 bg-slate-50">
+                <View className="mt-2 overflow-hidden rounded-[28px] border border-slate-200 bg-white">
                   {photo ? (
                     <Image
                       source={{ uri: photo.uri }}
@@ -141,69 +138,83 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
                       className="h-52 w-full"
                     />
                   ) : (
-                    <View className="h-52 items-center justify-center bg-emerald-50">
-                      <View className="h-20 w-20 items-center justify-center rounded-full bg-white">
-                        <Text className="font-pbold text-lg text-emerald-700">SIT</Text>
+                    <View className="h-52 items-center justify-center bg-[#EEF6F2] px-8">
+                      <View className="h-18 w-18 items-center justify-center rounded-full bg-white">
+                        <Image
+                          source={icons.upload}
+                          resizeMode="contain"
+                          className="h-8 w-8"
+                          style={{ tintColor: "#0F766E" }}
+                        />
                       </View>
-                      <Text className="mt-4 font-psemibold text-base text-slate-900">
-                        Add a photo if you have one
+                      <Text className="mt-4 text-center font-psemibold text-base text-slate-900">
+                        Add a photo if it helps identify the place
                       </Text>
-                      <Text className="mt-1 px-10 text-center font-pregular text-sm leading-6 text-slate-600">
-                        A quick photo makes the spot easier to recognize in your profile
-                        and during review.
+                      <Text className="mt-2 text-center font-pregular text-sm leading-6 text-slate-600">
+                        A quick photo makes moderation easier and looks better in your
+                        profile gallery later.
                       </Text>
                     </View>
                   )}
                 </View>
 
-                <View className="mt-3 flex-row flex-wrap gap-3">
-                  <CustomButton
-                    title="Take photo"
-                    handlePress={onTakePhoto}
-                    variant="ghost"
-                    containerStyles="min-h-[48px] px-4"
-                    textStyles="text-sm"
-                  />
-                  <CustomButton
-                    title="Choose from library"
-                    handlePress={onChooseFromLibrary}
-                    variant="ghost"
-                    containerStyles="min-h-[48px] px-4"
-                    textStyles="text-sm"
-                  />
-                  {photo ? (
+                <View className="mt-4 flex-row">
+                  <View className="flex-1 pr-1.5">
+                    <CustomButton
+                      title="Take photo"
+                      handlePress={onTakePhoto}
+                      containerStyles="min-h-[48px] rounded-2xl"
+                      textStyles="text-sm"
+                    />
+                  </View>
+                  <View className="flex-1 pl-1.5">
+                    <CustomButton
+                      title="Choose photo"
+                      handlePress={onChooseFromLibrary}
+                      variant="ghost"
+                      containerStyles="min-h-[48px] rounded-2xl bg-[#EEF1F4]"
+                      textStyles="text-sm"
+                    />
+                  </View>
+                </View>
+
+                {photo ? (
+                  <View className="mt-3">
                     <CustomButton
                       title="Remove photo"
                       handlePress={onRemovePhoto}
                       variant="danger"
-                      containerStyles="min-h-[48px] px-4"
+                      containerStyles="min-h-[48px] rounded-2xl"
                       textStyles="text-sm"
                     />
-                  ) : null}
-                </View>
+                  </View>
+                ) : null}
               </View>
 
-              <View className="mt-7 gap-3">
+              <View className="mt-7">
                 <CustomButton
                   title="Submit marker"
                   handlePress={onSubmit}
                   isLoading={isSubmitting}
-                  containerStyles="min-h-[56px]"
+                  containerStyles="min-h-[54px] rounded-2xl"
                   textStyles="text-base"
                 />
+              </View>
+
+              <View className="mt-3">
                 <CustomButton
                   title="Discard draft"
                   handlePress={onCancel}
                   variant="ghost"
-                  containerStyles="min-h-[52px]"
+                  containerStyles="min-h-[50px] rounded-2xl bg-[#EEF1F4]"
                   textStyles="text-base"
                 />
               </View>
             </ScrollView>
           </View>
-        </KeyboardAvoidingView>
-      </View>
-    </Modal>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
