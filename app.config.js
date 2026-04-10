@@ -33,8 +33,10 @@ export default {
           "Allow SIT to keep your navigation active while the app is in use.",
         NSLocationAlwaysUsageDescription:
           "Allow SIT to keep your navigation active while the app is in use.",
+        NSCameraUsageDescription:
+          "Allow SIT to take a photo when you add a new sitting place or update your profile picture.",
         NSPhotoLibraryUsageDescription:
-          "This app needs access to your photo library to update your profile picture.",
+          "Allow SIT to choose photos for new sitting places and profile pictures.",
         UIBackgroundModes: ["location"],
       },
     },
@@ -49,7 +51,7 @@ export default {
         backgroundColor: "#ffffff",
       },
       package: "com.sitapp",
-      permissions: ["READ_EXTERNAL_STORAGE"],
+      permissions: ["CAMERA", "READ_EXTERNAL_STORAGE", "READ_MEDIA_IMAGES"],
     },
     web: {
       bundler: "metro",
@@ -78,6 +80,8 @@ export default {
       },
       APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
       APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID,
+      APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID,
+      APPWRITE_MARKERS_COLLECTION_ID: process.env.APPWRITE_MARKERS_COLLECTION_ID,
       APPWRITE_STORAGE_ID: process.env.APPWRITE_STORAGE_ID,
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
       ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,

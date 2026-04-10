@@ -17,6 +17,7 @@ interface UseBrowseMarkerSyncOptions {
       position: { lat: number; lng: number };
       title?: string;
       snippet?: string;
+      draggable?: boolean;
     },
   ) => Promise<{ id: string }>;
   browseMapControllerRef: React.MutableRefObject<GoogleMapViewController | null>;
@@ -97,6 +98,7 @@ const useBrowseMarkerSync = ({
               position: toGoogleLatLng(draftMarker),
               title: "New marker",
               snippet: "Tap the map to adjust the marker position.",
+              draggable: true,
             });
           } catch (error) {
             if (__DEV__) {

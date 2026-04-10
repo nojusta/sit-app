@@ -12,6 +12,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "mcp:appwrite": "node ./scripts/appwrite-mcp.js",
     "mcp:google-maps": "node ./scripts/google-maps-mcp.js",
+    "appwrite:sync-markers": "node ./scripts/sync-markers-appwrite.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",

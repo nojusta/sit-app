@@ -19,11 +19,15 @@ export interface MapInteractionController {
 }
 
 export type MarkerData = {
-  id: number;
+  id: string;
   coordinate: MapCoordinate;
   title: string;
   description: string;
-  imageUri?: string;
+  location: string;
+  status: "pending_approval" | "approved" | "rejected";
+  authorId: string;
+  createdAt: string;
+  photoUrl?: string | null;
 };
 
 export type MarkerDraftFields = {

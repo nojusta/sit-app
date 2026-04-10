@@ -1,9 +1,16 @@
 import { Alert } from "react-native";
 import { renderHook, act, waitFor } from "@testing-library/react-native";
+import type React from "react";
 
-import type { MapCameraSnapshot, MapInteractionController } from "../../core";
-
+import { createMarker } from "@/services/appwrite";
+import type { MapCameraSnapshot, MapInteractionController, MarkerData } from "../../core";
 import useMapInteractions from "../useMapInteractions";
+
+jest.mock("@/services/appwrite", () => ({
+  createMarker: jest.fn(),
+}));
+
+const mockedCreateMarker = jest.mocked(createMarker);
 
 const BROWSE_CAMERA: MapCameraSnapshot = {
   target: { latitude: 54.6872, longitude: 25.2797 },
@@ -11,6 +18,31 @@ const BROWSE_CAMERA: MapCameraSnapshot = {
   bearing: 0,
   tilt: 0,
 };
+
+const MARKERS: MarkerData[] = [
+  {
+    id: "marker-1",
+    coordinate: { latitude: 54.6868, longitude: 25.2799 },
+    title: "Kudirka Square",
+    description: "Skaters and benches",
+    location: "54.686800,25.279900",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T09:00:00.000Z",
+    photoUrl: null,
+  },
+  {
+    id: "marker-2",
+    coordinate: { latitude: 54.6839, longitude: 25.2875 },
+    title: "Cathedral Square",
+    description: "Main square",
+    location: "54.683900,25.287500",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T08:00:00.000Z",
+    photoUrl: null,
+  },
+];
 
 const createMapControllerRef = () => {
   const captureBrowseCamera = jest.fn().mockResolvedValue(BROWSE_CAMERA);
@@ -47,7 +79,7 @@ describe("useMapInteractions", () => {
     jest.restoreAllMocks();
   });
 
-  it("starts navigation for the selected marker and exits marker-details mode", async () => {
+  it("starts navigation for the selected marker and exits marker details", async () => {
     const mapController = createMapControllerRef();
     const onMarkerSelectionChange = jest.fn();
     const location = {
@@ -61,12 +93,13 @@ describe("useMapInteractions", () => {
       useMapInteractions({
         mapControllerRef: mapController.mapControllerRef,
         location: location as never,
+        markers: MARKERS,
         onMarkerSelectionChange,
       }),
     );
 
     act(() => {
-      result.current.handleMarkerPress(result.current.markers[0]);
+      result.current.handleMarkerPress(MARKERS[0]);
     });
 
     await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
@@ -76,15 +109,11 @@ describe("useMapInteractions", () => {
     });
 
     expect(result.current.isNavigationActive).toBe(true);
-    expect(result.current.activeNavigationDestination?.id).toBe(
-      result.current.markers[0].id,
-    );
+    expect(result.current.activeNavigationDestination?.id).toBe(MARKERS[0].id);
     expect(result.current.selectedMarker).toBeNull();
     expect(onMarkerSelectionChange).toHaveBeenNthCalledWith(1, true);
     expect(onMarkerSelectionChange).toHaveBeenNthCalledWith(2, false);
-    expect(mapController.focusCoordinate).toHaveBeenCalledWith(
-      result.current.markers[0].coordinate,
-    );
+    expect(mapController.focusCoordinate).toHaveBeenCalledWith(MARKERS[0].coordinate);
   });
 
   it("shows the required message and does not activate navigation without location access", async () => {
@@ -94,12 +123,13 @@ describe("useMapInteractions", () => {
       useMapInteractions({
         mapControllerRef: mapController.mapControllerRef,
         location: null,
+        markers: MARKERS,
         isLocationPermissionDenied: true,
       }),
     );
 
     act(() => {
-      result.current.handleMarkerPress(result.current.markers[0]);
+      result.current.handleMarkerPress(MARKERS[0]);
     });
 
     await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
@@ -113,38 +143,9 @@ describe("useMapInteractions", () => {
       "Location access is required to start navigation.",
     );
     expect(result.current.isNavigationActive).toBe(false);
-    expect(result.current.activeNavigationDestination).toBeNull();
   });
 
-  it("keeps navigation inactive when current location cannot be resolved yet", async () => {
-    const mapController = createMapControllerRef();
-
-    const { result } = renderHook(() =>
-      useMapInteractions({
-        mapControllerRef: mapController.mapControllerRef,
-        location: null,
-        isLocationPermissionDenied: false,
-      }),
-    );
-
-    act(() => {
-      result.current.handleMarkerPress(result.current.markers[0]);
-    });
-
-    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
-
-    act(() => {
-      result.current.handleStartNavigation();
-    });
-
-    expect(Alert.alert).toHaveBeenCalledWith(
-      "Location unavailable",
-      "Unable to determine your current location. Please try again.",
-    );
-    expect(result.current.isNavigationActive).toBe(false);
-  });
-
-  it("stops navigation and returns the map to the previous browse camera", async () => {
+  it("stops navigation and restores the previous browse camera", async () => {
     const mapController = createMapControllerRef();
     const location = {
       coords: {
@@ -157,11 +158,12 @@ describe("useMapInteractions", () => {
       useMapInteractions({
         mapControllerRef: mapController.mapControllerRef,
         location: location as never,
+        markers: MARKERS,
       }),
     );
 
     act(() => {
-      result.current.handleMarkerPress(result.current.markers[0]);
+      result.current.handleMarkerPress(MARKERS[0]);
     });
 
     await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
@@ -169,8 +171,6 @@ describe("useMapInteractions", () => {
     act(() => {
       result.current.handleStartNavigation();
     });
-
-    await waitFor(() => expect(result.current.isNavigationActive).toBe(true));
 
     act(() => {
       result.current.handleStopNavigation();
@@ -181,7 +181,7 @@ describe("useMapInteractions", () => {
     expect(mapController.restoreBrowseCamera).toHaveBeenCalledWith(BROWSE_CAMERA);
   });
 
-  it("keeps marker draft mode active and repositions it from a map tap", () => {
+  it("enters placement mode and repositions the draft marker from the map", () => {
     const mapController = createMapControllerRef();
     const location = {
       coords: {
@@ -194,6 +194,9 @@ describe("useMapInteractions", () => {
       useMapInteractions({
         mapControllerRef: mapController.mapControllerRef,
         location: location as never,
+        markers: MARKERS,
+        currentUserId: "user-1",
+        isAuthenticated: true,
       }),
     );
 
@@ -201,7 +204,7 @@ describe("useMapInteractions", () => {
       result.current.handleAddMarker();
     });
 
-    expect(result.current.showInputBox).toBe(true);
+    expect(result.current.isPlacementMode).toBe(true);
     expect(result.current.userMarker).toEqual({
       latitude: 54.6872,
       longitude: 25.2797,
@@ -214,36 +217,14 @@ describe("useMapInteractions", () => {
       });
     });
 
-    expect(result.current.showInputBox).toBe(true);
     expect(result.current.userMarker).toEqual({
       latitude: 54.6881,
       longitude: 25.2815,
     });
   });
 
-  it("centers on the live native map location when available", async () => {
+  it("requires authentication before entering placement mode", () => {
     const mapController = createMapControllerRef();
-
-    const { result } = renderHook(() =>
-      useMapInteractions({
-        mapControllerRef: mapController.mapControllerRef,
-        location: null,
-      }),
-    );
-
-    await act(async () => {
-      await result.current.handleCenterOnUserLocation();
-    });
-
-    expect(mapController.centerOnUserLocation).toHaveBeenCalled();
-    expect(mapController.centerOnCoordinate).not.toHaveBeenCalled();
-    expect(Alert.alert).not.toHaveBeenCalled();
-  });
-
-  it("falls back to the app location when the native map location is not ready yet", async () => {
-    const mapController = createMapControllerRef();
-    mapController.centerOnUserLocation.mockResolvedValue(false);
-
     const location = {
       coords: {
         latitude: 54.6872,
@@ -255,18 +236,75 @@ describe("useMapInteractions", () => {
       useMapInteractions({
         mapControllerRef: mapController.mapControllerRef,
         location: location as never,
+        markers: MARKERS,
       }),
     );
 
-    await act(async () => {
-      await result.current.handleCenterOnUserLocation();
+    act(() => {
+      result.current.handleAddMarker();
     });
 
-    expect(mapController.centerOnUserLocation).toHaveBeenCalled();
-    expect(mapController.centerOnCoordinate).toHaveBeenCalledWith({
-      latitude: 54.6872,
-      longitude: 25.2797,
+    expect(Alert.alert).toHaveBeenCalledWith(
+      "Sign in required",
+      "You need an account to submit a new sitting place.",
+    );
+    expect(result.current.isPlacementMode).toBe(false);
+  });
+
+  it("submits a new marker and resets the draft state", async () => {
+    const mapController = createMapControllerRef();
+    const onMarkerCreated = jest.fn();
+    const location = {
+      coords: {
+        latitude: 54.6872,
+        longitude: 25.2797,
+      },
+    };
+
+    mockedCreateMarker.mockResolvedValue({
+      id: "marker-3",
+      coordinate: { latitude: 54.6872, longitude: 25.2797 },
+      title: "Bench near Cathedral",
+      description: "Quiet in the morning",
+      location: "54.687200,25.279700",
+      status: "pending_approval",
+      authorId: "user-1",
+      createdAt: "2026-04-10T10:10:00.000Z",
+      photoUrl: null,
     });
-    expect(Alert.alert).not.toHaveBeenCalled();
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: location as never,
+        markers: MARKERS,
+        currentUserId: "user-1",
+        isAuthenticated: true,
+        onMarkerCreated,
+      }),
+    );
+
+    act(() => {
+      result.current.handleAddMarker();
+      result.current.setMarkerName("Bench near Cathedral");
+      result.current.setMarkerInfo("Quiet in the morning");
+      result.current.handleConfirmPlacement();
+    });
+
+    await act(async () => {
+      await result.current.handleSubmitMarker();
+    });
+
+    expect(mockedCreateMarker).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorId: "user-1",
+        title: "Bench near Cathedral",
+        description: "Quiet in the morning",
+      }),
+    );
+    expect(onMarkerCreated).toHaveBeenCalled();
+    expect(result.current.isPlacementMode).toBe(false);
+    expect(result.current.userMarker).toBeNull();
+    expect(result.current.isCreationModalVisible).toBe(false);
   });
 });

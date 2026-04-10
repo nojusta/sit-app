@@ -69,16 +69,26 @@ jest.mock("react-native-safe-area-context", () => ({
 
 const MARKERS: MarkerData[] = [
   {
-    id: 1,
+    id: "1",
     title: "Kudirka Square",
     description: "Skaters and benches",
     coordinate: { latitude: 54.6868, longitude: 25.2799 },
+    location: "54.686800,25.279900",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T09:00:00.000Z",
+    photoUrl: null,
   },
   {
-    id: 2,
+    id: "2",
     title: "Cathedral Square",
     description: "Main square",
     coordinate: { latitude: 54.6839, longitude: 25.2875 },
+    location: "54.683900,25.287500",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T08:00:00.000Z",
+    photoUrl: null,
   },
 ];
 

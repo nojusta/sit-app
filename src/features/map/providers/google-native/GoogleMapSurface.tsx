@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ActivityIndicator, Alert, Platform, Text, View } from "react-native";
 import * as Device from "expo-device";
 import {
-  Marker as GoogleMarker,
+  type Marker as GoogleMarker,
   MapColorScheme,
   MapViewController as GoogleMapViewController,
   NavigationNightMode,
@@ -231,6 +231,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         position: GoogleLatLng;
         title?: string;
         snippet?: string;
+        draggable?: boolean;
       },
     ) => {
       const iconCandidates = [...CUSTOM_MARKER_IMAGE_CANDIDATES, undefined];
