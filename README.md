@@ -1,4 +1,6 @@
-# SIT
+<p align="center">
+  <img src="./assets/images/logo.png" alt="SIT" width="120" />
+</p>
 
 <p align="center">
   Mobile app for discovering, creating, and navigating to sitting spots.

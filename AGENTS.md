@@ -114,6 +114,84 @@ When adding new functionality:
 - Native wrapper, manifest, plist, Pod, Gradle, or config changes require a rebuild of the touched platform.
 - Real-device validation matters for map/navigation behavior.
 
+## Product domain draft
+
+Treat the following as the current intended product contract unless implemented code or an explicit user instruction says otherwise. This is partially draft business/domain guidance, not a guarantee that every collection or screen already exists in runtime today.
+
+### Appwrite data model concept
+
+- Appwrite native auth owns user sessions and email/password sign-in.
+- Marker-like domain data should be modeled around sitting places, not generic map pins.
+- Current draft collections:
+  - `Markers`
+  - `Ratings`
+  - `Favorites`
+- Marker documents are expected to conceptually include:
+  - `markerId`
+  - `title`
+  - `description`
+  - `latitude`
+  - `longitude`
+  - `imageUrl`
+  - `authorId`
+  - `status`
+  - `averageRating`
+  - `attributes`
+  - `createdAt`
+- Marker `title` should be contextual and human, for example “Bench near Cathedral”, not just a street name.
+- `imageUrl` is expected to point to Appwrite Storage-backed media.
+- `status` is critical business logic and should be treated as an enum:
+  - `pending_approval`
+  - `approved`
+  - `rejected`
+- `averageRating` is derived data, not something to hand-wave in UI logic.
+- `attributes` is a tag-like array used for filtering, for example `shade`, `quiet`, `work_friendly`.
+- Ratings conceptually belong to a `(userId, markerId)` relationship with a `score` from `1` to `5`.
+- Favorites conceptually belong to a `(userId, markerId)` relationship.
+
+### Business rules
+
+#### Authentication and profiles
+
+- Registration uses email/password.
+- Password must be at least `8` characters.
+- Email format must be validated.
+- Duplicate emails must be prevented.
+- Successful registration should immediately create a session, log the user in, and redirect to the main map screen.
+- Login uses normal Appwrite session creation.
+
+#### Marker creation and moderation
+
+- Any authenticated user can create a marker.
+- Marker creation requires:
+  - title
+  - description
+  - location
+- Photo is optional but strongly encouraged.
+- Newly created markers must default to `status = pending_approval`.
+- Pending markers are not meant to be publicly visible.
+- Admin moderation should be able to review pending markers and move them to approved/rejected states.
+- Seeded data is expected to include at least `100` pre-filled OpenStreetMap-derived markers, treated as verified.
+
+#### Navigation and map interactions
+
+- Browse map should show approved markers.
+- Starting navigation should require location permissions.
+- Starting navigation should transition from standard browse map behavior into the Google Navigation SDK view.
+- Canceling navigation must stay available inside the navigation experience.
+- Canceling navigation must confirm with an “Are you sure?” style dialog before tearing down guidance and returning to browse mode.
+
+#### Ratings and evaluation
+
+- Authenticated users can rate markers from `1` to `5`.
+- When a rating changes, the system should recalculate and persist the owning marker’s `averageRating`.
+
+#### Filters and weather context
+
+- Filters are attribute-driven and should update visible markers dynamically.
+- Users should be able to clear all filters at once.
+- Weather context is expected to use Meteo.lt data to help indicate whether outdoor sitting is favorable for the current place/time.
+
 ## Validation
 
 For non-trivial changes, finish with the smallest meaningful checks:
