@@ -1,262 +1,133 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  PanResponder,
-  Animated,
-  Dimensions,
-  Easing,
-  Image,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CustomButton } from "@/shared/components";
+import React from "react";
+import { Image, ScrollView, Text, View } from "react-native";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 170;
+import type { MarkerData } from "../core";
+import { BottomSheet, CustomButton } from "@/shared/components";
 
-type MarkerDetails = {
-  title: string;
-  description: string;
-  imageUri?: string;
-};
+const COLLAPSED_HEIGHT = 292;
 
 interface InfoWindowProps {
-  selectedMarker: MarkerDetails | null;
+  selectedMarker: MarkerData | null;
   initialHeight?: number;
   onStartNavigation?: () => void;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
   selectedMarker,
-  initialHeight = INITIAL_INFO_WINDOW_HEIGHT,
+  initialHeight = COLLAPSED_HEIGHT,
   onStartNavigation,
 }) => {
-  const [infoWindowHeight] = useState(new Animated.Value(initialHeight));
-  const [infoWindowBottom] = useState(new Animated.Value(-initialHeight));
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [overlayOpacity] = useState(new Animated.Value(0));
-  const [visibleMarker, setVisibleMarker] = useState(selectedMarker);
-
-  const screenHeight = Dimensions.get("window").height;
-  const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    if (selectedMarker === null) {
-      Animated.timing(infoWindowBottom, {
-        toValue: -initialHeight,
-        duration: 1000,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: false,
-      }).start(() => {
-        setVisibleMarker(null);
-        Animated.timing(overlayOpacity, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: false,
-        }).start();
-      });
-    } else {
-      setVisibleMarker(selectedMarker);
-      Animated.timing(infoWindowHeight, {
-        toValue: initialHeight,
-        duration: 400,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: false,
-      }).start();
-      Animated.timing(infoWindowBottom, {
-        toValue: 0,
-        duration: 400,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: false,
-      }).start();
-    }
-  }, [selectedMarker, initialHeight, infoWindowBottom, infoWindowHeight, overlayOpacity]);
-
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => Math.abs(gestureState.dy) > 100,
-    onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dy < 0 && !isExpanded) {
-        Animated.timing(infoWindowHeight, {
-          toValue: screenHeight - insets.top,
-          duration: 480,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: false,
-        }).start(() => {
-          setIsExpanded(true);
-          Animated.timing(overlayOpacity, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: false,
-          }).start();
-        });
-      } else if (gestureState.dy > 0 && isExpanded) {
-        Animated.timing(infoWindowHeight, {
-          toValue: initialHeight,
-          duration: 480,
-          easing: Easing.in(Easing.ease),
-          useNativeDriver: false,
-        }).start(() => {
-          setIsExpanded(false);
-          Animated.timing(overlayOpacity, {
-            toValue: 0,
-            duration: 400,
-            useNativeDriver: false,
-          }).start();
-        });
-      }
-    },
-  });
+  const previewPhotos = selectedMarker?.photoUrls?.length
+    ? selectedMarker.photoUrls
+    : selectedMarker?.photoUrl
+      ? [selectedMarker.photoUrl]
+      : [];
 
   return (
-    <>
-      <Animated.View
-        style={[styles.overlay, { opacity: overlayOpacity }]}
-        pointerEvents={isExpanded ? "auto" : "none"}
-      />
-      {visibleMarker && (
-        <Animated.View
-          style={[
-            styles.infoWindow,
-            { height: infoWindowHeight, bottom: infoWindowBottom },
-          ]}
-          {...panResponder.panHandlers}
-        >
-          <View style={styles.infoContent}>
-            <View style={styles.headerSection}>
-              <Text style={styles.infoTitle}>{visibleMarker.title}</Text>
-              <CustomButton
-                title="Start Navigation"
-                handlePress={() => onStartNavigation?.()}
-                containerStyles="w-full mt-4 min-h-[48px]"
-                textStyles="text-base"
-                accessibilityLabel="Start navigation"
-              />
-            </View>
-            <View
-              pointerEvents={isExpanded ? "auto" : "none"}
-              style={[styles.detailsSection, { opacity: isExpanded ? 1 : 0 }]}
-            >
-              <View style={styles.imageBox}>
-                {visibleMarker.imageUri ? (
-                  <Image
-                    source={{ uri: visibleMarker.imageUri }}
-                    style={styles.infoImage}
-                  />
-                ) : (
-                  <View style={styles.imagePlaceholder}>
-                    <Text style={styles.imagePlaceholderText}>No image available</Text>
-                  </View>
-                )}
-              </View>
-              <View style={styles.ratingContainer}>
-                <View style={styles.ratingBox}>
-                  <Text style={styles.ratingText}>Rating: ★★★★☆</Text>
+    <BottomSheet
+      visible={selectedMarker !== null}
+      collapsedHeight={initialHeight}
+      initialState="collapsed"
+      sheetStyle={{
+        backgroundColor: "#F6F5F1",
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
+      }}
+      header={
+        <View className="px-5 pb-4 pt-3">
+          <View className="self-center h-1.5 w-14 rounded-full bg-slate-300" />
+          <View className="mt-4 flex-row items-start">
+            <View className="mr-4 h-24 w-24 overflow-hidden rounded-[24px] bg-slate-200">
+              {previewPhotos[0] ? (
+                <Image
+                  source={{ uri: previewPhotos[0] }}
+                  resizeMode="cover"
+                  className="h-full w-full"
+                />
+              ) : (
+                <View className="flex-1 items-center justify-center bg-[#E8ECEF] px-3">
+                  <Text className="text-center font-pmedium text-xs leading-5 text-slate-600">
+                    No images yet
+                  </Text>
                 </View>
-              </View>
-              <View style={styles.descriptionBox}>
-                <Text style={styles.infoDescription}>{visibleMarker.description}</Text>
-              </View>
+              )}
+            </View>
+
+            <View className="flex-1">
+              <Text className="font-psemibold text-xl leading-7 text-slate-950">
+                {selectedMarker?.title ?? ""}
+              </Text>
+              <Text
+                className="mt-2 font-pregular text-sm leading-6 text-slate-600"
+                numberOfLines={2}
+              >
+                {selectedMarker?.description ?? ""}
+              </Text>
             </View>
           </View>
-        </Animated.View>
-      )}
-    </>
+        </View>
+      }
+      bodyStyle={{ minHeight: 0 }}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+      >
+        <Text className="font-psemibold text-base text-slate-950">Photos</Text>
+
+        {previewPhotos.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingTop: 14, paddingBottom: 4 }}
+          >
+            {previewPhotos.map((photo, index) => (
+              <View
+                key={`${selectedMarker?.id ?? "marker"}-${index}`}
+                className="mr-3 h-56 w-72 overflow-hidden rounded-[28px] bg-slate-200"
+              >
+                <Image
+                  source={{ uri: photo }}
+                  resizeMode="cover"
+                  className="h-full w-full"
+                />
+              </View>
+            ))}
+          </ScrollView>
+        ) : (
+          <View className="mt-4 rounded-[28px] border border-dashed border-slate-300 bg-white px-5 py-6">
+            <Text className="font-psemibold text-base text-slate-900">
+              This marker has no images yet
+            </Text>
+            <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
+              You can still use the description below to decide whether this sitting place
+              is worth checking out.
+            </Text>
+          </View>
+        )}
+
+        <View className="mt-6 rounded-[28px] bg-white px-5 py-5">
+          <Text className="font-psemibold text-base text-slate-950">
+            About this place
+          </Text>
+          <Text className="mt-3 font-pregular text-sm leading-7 text-slate-700">
+            {selectedMarker?.description ?? ""}
+          </Text>
+        </View>
+
+        <View className="mt-6">
+          <CustomButton
+            title="Start Navigation"
+            handlePress={() => onStartNavigation?.()}
+            containerStyles="min-h-[52px] rounded-2xl"
+            textStyles="text-base"
+            accessibilityLabel="Start navigation"
+          />
+        </View>
+      </ScrollView>
+    </BottomSheet>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 1,
-  },
-  infoWindow: {
-    position: "absolute",
-    width: "100%",
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    alignItems: "center",
-    zIndex: 2,
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  infoContent: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-  },
-  headerSection: {
-    width: "100%",
-    paddingTop: 20,
-    paddingBottom: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  detailsSection: {
-    width: "100%",
-    alignItems: "center",
-  },
-  imageBox: {
-    width: "100%",
-    maxWidth: 350,
-    height: 280,
-    borderRadius: 10,
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  infoImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#e5e7eb",
-  },
-  imagePlaceholderText: {
-    color: "#6b7280",
-    fontSize: 14,
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-    width: "100%",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  ratingBox: {
-    alignItems: "flex-start",
-  },
-  ratingText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  descriptionBox: {
-    marginTop: 10,
-    marginBottom: 24,
-    padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 10,
-    width: "100%",
-  },
-  infoDescription: {
-    fontSize: 16,
-  },
-});
 
 export default InfoWindow;

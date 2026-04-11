@@ -1,4 +1,5 @@
 export { default as ActionDialog } from "./ActionDialog";
+export { default as BottomSheet } from "./BottomSheet";
 export { Collapsible } from "./Collapsible";
 export { default as CustomButton } from "./CustomButton";
 export { default as EmptyState } from "./EmptyState";

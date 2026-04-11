@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { View, Linking, Alert, InteractionManager, Keyboard } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
-  launchCamera,
-  launchImageLibrary,
-  type ImagePickerResponse,
-} from "react-native-image-picker";
+  AppState,
+  View,
+  Linking,
+  Alert,
+  InteractionManager,
+  Keyboard,
+  Platform,
+} from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as Device from "expo-device";
+import * as ImagePicker from "expo-image-picker";
 
 import { useAuthContext } from "@/features/auth";
 import {
@@ -21,14 +26,24 @@ import {
   useUserLocation,
 } from "@/features/map";
 import { MarkerCreationModal } from "@/features/markers";
-import { listApprovedMarkers } from "@/services/appwrite";
+import { listApprovedMarkers, subscribeToMarkerChanges } from "@/services/appwrite";
 import { useAppwrite } from "@/shared/hooks";
 import { NoticeBanner } from "@/shared/components";
 
 const INITIAL_INFO_WINDOW_HEIGHT = 170;
-const markerPickerOptions = {
-  mediaType: "photo" as const,
-  selectionLimit: 1 as const,
+const libraryPickerOptions: ImagePicker.ImagePickerOptions = {
+  mediaTypes: ["images"],
+  quality: 0.86,
+  allowsEditing: false,
+  selectionLimit: 1,
+  orderedSelection: true,
+  presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
+};
+const cameraPickerOptions: ImagePicker.ImagePickerOptions = {
+  mediaTypes: ["images"],
+  quality: 0.86,
+  allowsEditing: false,
+  cameraType: ImagePicker.CameraType.back,
 };
 
 const HomeApp: React.FC = () => {
@@ -93,20 +108,12 @@ const HomeApp: React.FC = () => {
   });
 
   const handleMarkerPhotoChange = useCallback(
-    (response: ImagePickerResponse) => {
-      if (response.errorCode) {
-        Alert.alert(
-          "Photo unavailable",
-          response.errorMessage || "The selected image could not be opened.",
-        );
+    (result: ImagePicker.ImagePickerResult) => {
+      if (result.canceled) {
         return;
       }
 
-      if (response.didCancel) {
-        return;
-      }
-
-      const file = response.assets?.[0];
+      const file = result.assets?.[0];
 
       if (!file?.uri) {
         Alert.alert("Photo unavailable", "The selected image could not be read.");
@@ -116,7 +123,7 @@ const HomeApp: React.FC = () => {
       setMarkerPhoto({
         uri: file.uri,
         name: file.fileName || `marker-${Date.now()}.jpg`,
-        type: file.type || "image/jpeg",
+        type: file.mimeType || "image/jpeg",
         size: file.fileSize,
       });
     },
@@ -128,24 +135,56 @@ const HomeApp: React.FC = () => {
       Keyboard.dismiss();
 
       InteractionManager.runAfterInteractions(() => {
-        try {
-          if (mode === "camera") {
-            launchCamera(
-              { ...markerPickerOptions, saveToPhotos: false },
-              handleMarkerPhotoChange,
-            );
-            return;
-          }
+        void (async () => {
+          try {
+            if (mode === "camera") {
+              if (Platform.OS === "ios" && !Device.isDevice) {
+                Alert.alert(
+                  "Camera unavailable",
+                  "Taking a new photo requires a real iPhone. Use Choose photo on the simulator.",
+                );
+                return;
+              }
 
-          launchImageLibrary(markerPickerOptions, handleMarkerPhotoChange);
-        } catch (error) {
-          Alert.alert(
-            "Photo unavailable",
-            error instanceof Error
-              ? error.message
-              : "The image picker could not be opened.",
-          );
-        }
+              const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+              if (!permission.granted) {
+                Alert.alert(
+                  "Camera access required",
+                  "Allow camera access to take a photo for your new sitting spot.",
+                );
+                return;
+              }
+
+              const result = await ImagePicker.launchCameraAsync({
+                ...cameraPickerOptions,
+              });
+              handleMarkerPhotoChange(result);
+              return;
+            }
+
+            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (!permission.granted) {
+              Alert.alert(
+                "Photo library access required",
+                "Allow photo access to choose an image for your sitting spot.",
+              );
+              return;
+            }
+
+            const result =
+              await ImagePicker.launchImageLibraryAsync(libraryPickerOptions);
+            handleMarkerPhotoChange(result);
+          } catch (error) {
+            Alert.alert(
+              "Photo unavailable",
+              error instanceof Error
+                ? error.message
+                : "The image picker could not be opened.",
+            );
+          }
+        })();
       });
     },
     [handleMarkerPhotoChange],
@@ -154,8 +193,45 @@ const HomeApp: React.FC = () => {
   useEffect(() => {
     if (isFocused) {
       void refreshLocation({ requestPermission: false });
+      refetchMarkers();
     }
-  }, [isFocused, refreshLocation]);
+  }, [isFocused, refetchMarkers, refreshLocation]);
+
+  useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
+
+    let refreshTimeout: ReturnType<typeof setTimeout> | null = null;
+    const queueMarkerRefresh = () => {
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+
+      refreshTimeout = setTimeout(() => {
+        refetchMarkers();
+      }, 350);
+    };
+
+    const unsubscribeMarkers = subscribeToMarkerChanges(() => {
+      queueMarkerRefresh();
+    });
+
+    const appStateSubscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "active") {
+        queueMarkerRefresh();
+      }
+    });
+
+    return () => {
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+
+      unsubscribeMarkers();
+      appStateSubscription.remove();
+    };
+  }, [isFocused, refetchMarkers]);
 
   useEffect(() => {
     setIsNavigationActive(isNavigationActive);
@@ -239,6 +315,7 @@ const HomeApp: React.FC = () => {
         {!isNavigationActive &&
         !isPlacementMode &&
         !isCreationModalVisible &&
+        !selectedMarker &&
         isNativeGoogleMapAvailable ? (
           <>
             <CircleButton

@@ -1,7 +1,8 @@
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CustomButton } from "@/shared/components";
+import { BottomSheet, CustomButton } from "@/shared/components";
+
+const COLLAPSED_HEIGHT = 244;
 
 interface MarkerPlacementCardProps {
   onCancel: () => void;
@@ -13,12 +14,18 @@ const MarkerPlacementCard: React.FC<MarkerPlacementCardProps> = ({
   onConfirm,
 }) => {
   return (
-    <View
-      className="absolute inset-0 z-20 justify-end bg-black/28"
-      pointerEvents="box-none"
-    >
-      <SafeAreaView edges={["bottom"]}>
-        <View className="rounded-t-[30px] bg-white px-5 pb-4 pt-4 shadow-sm">
+    <BottomSheet
+      visible={true}
+      collapsedHeight={COLLAPSED_HEIGHT}
+      initialState="collapsed"
+      onBackdropPress={onCancel}
+      sheetStyle={{
+        backgroundColor: "#FFFFFF",
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+      }}
+      header={
+        <View className="px-5 pb-4 pt-4">
           <View className="self-center h-1.5 w-14 rounded-full bg-slate-200" />
           <Text className="mt-4 font-psemibold text-xl text-slate-900">
             Place a sitting spot
@@ -48,8 +55,11 @@ const MarkerPlacementCard: React.FC<MarkerPlacementCardProps> = ({
             </View>
           </View>
         </View>
-      </SafeAreaView>
-    </View>
+      }
+      bodyStyle={{ minHeight: 0 }}
+    >
+      <View />
+    </BottomSheet>
   );
 };
 

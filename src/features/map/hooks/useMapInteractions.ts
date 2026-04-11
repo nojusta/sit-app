@@ -31,6 +31,9 @@ const initialDraftValues = {
   description: "",
 };
 
+const coordinatesMatch = (left: MapCoordinate | null, right: MapCoordinate | null) =>
+  left?.latitude === right?.latitude && left?.longitude === right?.longitude;
+
 const useMapInteractions = ({
   mapControllerRef,
   location,
@@ -101,7 +104,9 @@ const useMapInteractions = ({
 
   const handleMapPress = (coordinate?: MapCoordinate) => {
     if (isPlacementMode && coordinate) {
-      setDraftMarker(coordinate);
+      setDraftMarker((current) =>
+        coordinatesMatch(current, coordinate) ? current : coordinate,
+      );
       onMarkerSelectionChange?.(false);
       return;
     }

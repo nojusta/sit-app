@@ -1,5 +1,6 @@
 import {
   Account,
+  AppwriteException,
   Client,
   Databases,
   ID,
@@ -10,6 +11,7 @@ import {
   type Models,
 } from "appwrite";
 import Constants from "expo-constants";
+import { EncodingType, readAsStringAsync } from "expo-file-system/legacy";
 
 type ExpoExtra = {
   APPWRITE_ENDPOINT?: string;
@@ -54,6 +56,14 @@ export interface CreateMarkerInput {
   photo?: UploadableImage | null;
 }
 
+export interface UpdateMarkerInput {
+  markerId: string;
+  authorId: string;
+  description: string;
+  existingPhotoUrls?: string[];
+  newPhotos?: UploadableImage[];
+}
+
 interface AppwriteMarkerFields {
   title: string;
   description: string;
@@ -63,10 +73,6 @@ interface AppwriteMarkerFields {
   created_at: string;
   photo_url?: string | null;
   photo_urls?: string[] | null;
-  markerName: string;
-  markerInfo: string;
-  markerPhoto?: string | null;
-  timestamp: string;
   latitude: number;
   longitude: number;
 }
@@ -183,9 +189,6 @@ const getStorageId = () => {
   return appwriteConfig.storageId!;
 };
 
-const ensureTrailingSlash = (value: string) =>
-  value.endsWith("/") ? value : `${value}/`;
-
 const getErrorCode = (error: unknown) =>
   typeof error === "object" &&
   error !== null &&
@@ -250,12 +253,12 @@ const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
   status: document.status,
   authorId: document.author_id,
   createdAt: document.created_at,
-  photoUrl: document.photo_url ?? document.markerPhoto ?? null,
+  photoUrl: document.photo_url ?? null,
   photoUrls:
     Array.isArray(document.photo_urls) && document.photo_urls.length > 0
       ? document.photo_urls
-      : (document.photo_url ?? document.markerPhoto)
-        ? [document.photo_url ?? document.markerPhoto].filter(
+      : document.photo_url
+        ? [document.photo_url].filter(
             (value): value is string => typeof value === "string" && value.length > 0,
           )
         : [],
@@ -298,50 +301,60 @@ const buildProfilePhotoPermissions = (ownerId: string) => [
   Permission.delete(Role.user(ownerId)),
 ];
 
+const createAppwriteFile = async (file: UploadableImage): Promise<File> => {
+  if (typeof File !== "function") {
+    throw new Error("File uploads are not supported in this runtime.");
+  }
+
+  const base64 = await readAsStringAsync(file.uri, {
+    encoding: EncodingType.Base64,
+  });
+  const response = await fetch(`data:${file.type || "image/jpeg"};base64,${base64}`);
+  const blob = await response.blob();
+
+  return new File([blob], file.name, {
+    type: file.type || "image/jpeg",
+    lastModified: Date.now(),
+  });
+};
+
 const createStorageFile = async (
   file: UploadableImage,
   permissions: string[],
 ): Promise<string> => {
   ensureStorageReady();
-  const formData = new FormData();
-  formData.append("fileId", ID.unique());
-  permissions.forEach((permission) => {
-    formData.append("permissions[]", permission);
-  });
-  formData.append("file", {
-    uri: file.uri,
-    name: file.name,
-    type: file.type || "image/jpeg",
-  } as unknown as Blob);
-
-  const uploadUrl = new URL(
-    `/storage/buckets/${encodeURIComponent(getStorageId())}/files`,
-    ensureTrailingSlash(appwriteConfig.endpoint!),
-  );
-  const uploadResponse = await fetch(uploadUrl.toString(), {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "X-Appwrite-Project": appwriteConfig.projectId!,
-      "X-Appwrite-Response-Format": "1.8.0",
-    },
-    body: formData,
-  });
-  const payload = await uploadResponse.json().catch(() => null);
-
-  if (!uploadResponse.ok || !payload?.$id) {
-    throw new Error(
-      typeof payload?.message === "string"
-        ? payload.message
-        : "Could not upload the selected image.",
+  try {
+    const appwriteFile = await createAppwriteFile(file);
+    const response = await getStorageClient().createFile(
+      getStorageId(),
+      ID.unique(),
+      appwriteFile,
+      permissions,
     );
+    const fileUrl = getStorageClient().getFileView(getStorageId(), response.$id);
+
+    return String(fileUrl);
+  } catch (error) {
+    if (error instanceof AppwriteException) {
+      throw new Error(error.message || "Could not upload the selected image.");
+    }
+
+    throw error instanceof Error
+      ? error
+      : new Error("Could not upload the selected image.");
   }
-
-  const response = payload as Models.File;
-  const fileUrl = getStorageClient().getFileView(getStorageId(), response.$id);
-
-  return String(fileUrl);
 };
+
+const uploadMarkerPhotos = async (
+  photos: UploadableImage[],
+  status: MarkerStatus,
+  ownerId: string,
+) =>
+  Promise.all(
+    photos.map((photo) =>
+      createStorageFile(photo, buildMarkerFilePermissions(status, ownerId)),
+    ),
+  );
 
 // Register user
 export async function createUser(email: string, password: string, username: string) {
@@ -524,10 +537,6 @@ export async function createMarker({
       created_at: createdAt,
       photo_url: photoUrl,
       photo_urls: photoUrl ? [photoUrl] : [],
-      markerName: normalizedTitle,
-      markerInfo: normalizedDescription,
-      markerPhoto: photoUrl,
-      timestamp: createdAt,
       latitude: coordinate.latitude,
       longitude: coordinate.longitude,
     },
@@ -536,5 +545,55 @@ export async function createMarker({
 
   return mapMarkerDocument(document as AppwriteMarkerDocument);
 }
+
+export async function updateMarker({
+  markerId,
+  authorId,
+  description,
+  existingPhotoUrls = [],
+  newPhotos = [],
+}: UpdateMarkerInput): Promise<MarkerRecord> {
+  ensureDatabaseReady();
+
+  const normalizedDescription = description.trim();
+
+  if (!normalizedDescription) {
+    throw new Error("Marker description is required.");
+  }
+
+  const status: MarkerStatus = "pending_approval";
+  const uploadedPhotoUrls = await uploadMarkerPhotos(newPhotos, status, authorId);
+  const mergedPhotoUrls = [...existingPhotoUrls, ...uploadedPhotoUrls].filter(
+    (value, index, values): value is string =>
+      typeof value === "string" && value.length > 0 && values.indexOf(value) === index,
+  );
+  const primaryPhotoUrl = mergedPhotoUrls[0] ?? null;
+
+  const document = await getDatabasesClient().updateDocument(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    markerId,
+    {
+      description: normalizedDescription,
+      status,
+      photo_url: primaryPhotoUrl,
+      photo_urls: mergedPhotoUrls,
+    },
+    buildMarkerDocumentPermissions(status, authorId),
+  );
+
+  return mapMarkerDocument(document as AppwriteMarkerDocument);
+}
+
+export const subscribeToMarkerChanges = (callback: () => void) => {
+  if (!databaseReady) {
+    return () => {};
+  }
+
+  return client.subscribe(
+    [`databases.${getDatabaseId()}.collections.${getMarkersCollectionId()}.documents`],
+    () => callback(),
+  );
+};
 
 export { formatMarkerLocation };

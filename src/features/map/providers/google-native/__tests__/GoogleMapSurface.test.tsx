@@ -281,24 +281,22 @@ describe("GoogleMapSurface", () => {
     );
 
     await waitFor(() => expect(mockClearMapView).toHaveBeenCalled());
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      1,
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-1",
         imgPath: expect.any(String),
       }),
     );
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      2,
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-2",
         imgPath: expect.any(String),
       }),
     );
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      3,
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "draft-marker",
+        imgPath: expect.any(String),
         draggable: true,
         zIndex: 1000,
       }),

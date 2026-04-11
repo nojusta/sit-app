@@ -28,6 +28,7 @@ export type MarkerData = {
   authorId: string;
   createdAt: string;
   photoUrl?: string | null;
+  photoUrls?: string[];
 };
 
 export type MarkerDraftFields = {

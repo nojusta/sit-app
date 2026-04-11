@@ -67,6 +67,12 @@ Use services for:
 - For stacked or side-by-side buttons, use explicit spacing in layout wrappers instead of relying on default button padding to create separation.
 - Modal, sheet, and card actions should have clear vertical and horizontal gaps by default.
 
+### Safe area and notch
+
+- Do not place interactive or readable content under the notch, status bar, home indicator, or other system bars.
+- Sheets, modals, floating panels, and expanded overlays must respect safe areas on both iOS and Android.
+- If a panel expands upward, stop it below the top safe area instead of letting content clip into that region.
+
 ### Avoid prop drilling
 
 Do not pass state through many intermediate layers just to reach one child.

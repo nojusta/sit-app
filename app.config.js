@@ -63,6 +63,15 @@ export default {
       "expo-font",
       "expo-video",
       [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "Allow SIT to choose photos for new sitting places and profile pictures.",
+          cameraPermission:
+            "Allow SIT to take a photo when you add a new sitting place or update your profile picture.",
+        },
+      ],
+      [
         "expo-build-properties",
         {
           ios: {

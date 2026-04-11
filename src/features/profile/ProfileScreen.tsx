@@ -1,62 +1,72 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import {
-  ActionSheetIOS,
   ActivityIndicator,
   Alert,
   FlatList,
   Image,
-  Platform,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  launchCamera,
-  launchImageLibrary,
-  type ImagePickerResponse,
-} from "react-native-image-picker";
 
 import { useAuthContext } from "@/features/auth";
 import { MarkerGalleryTile } from "@/features/markers";
 import {
   listMarkersByAuthor,
   signOut,
-  uploadProfilePicture,
+  updateMarker,
+  type MarkerRecord,
   type UploadableImage,
 } from "@/services/appwrite";
-import { icons, images } from "@/shared/constants";
+import { icons } from "@/shared/constants";
 import { EmptyState, InfoBox } from "@/shared/components";
 import { useAppwrite } from "@/shared/hooks";
+import MarkerEditSheet from "./components/MarkerEditSheet";
 
-const profilePickerOptions = {
-  mediaType: "photo" as const,
-  selectionLimit: 1 as const,
+const markerEditPickerOptions: ImagePicker.ImagePickerOptions = {
+  mediaTypes: ["images"],
+  quality: 0.86,
+  allowsEditing: false,
+  allowsMultipleSelection: true,
+  selectionLimit: 0,
+  orderedSelection: true,
+  presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
 };
 
-const buildPickerImage = (response: ImagePickerResponse): UploadableImage | null => {
-  if (response.errorCode) {
-    throw new Error(response.errorMessage || "Could not access the selected photo.");
+const buildPickerImages = (result: ImagePicker.ImagePickerResult): UploadableImage[] => {
+  if (result.canceled) {
+    return [];
   }
 
-  const file = response.assets?.[0];
-
-  if (!file?.uri) {
-    return null;
-  }
-
-  return {
-    uri: file.uri,
-    name: file.fileName || `profile-${Date.now()}.jpg`,
-    type: file.type || "image/jpeg",
-    size: file.fileSize,
-  };
+  return (result.assets ?? [])
+    .filter((asset) => Boolean(asset?.uri))
+    .map((asset, index) => ({
+      uri: asset.uri as string,
+      name: asset.fileName || `marker-edit-${Date.now()}-${index}.jpg`,
+      type: asset.mimeType || "image/jpeg",
+      size: asset.fileSize,
+    }));
 };
+
+const getProfileInitials = (value?: string) =>
+  value
+    ?.trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "S";
 
 const ProfileScreen: React.FC = () => {
   const { user, setUser, setIsLogged, loading, setLoading } = useAuthContext();
   const router = useRouter();
+  const [highlightedMarkerId, setHighlightedMarkerId] = useState<string | null>(null);
+  const [markerBeingEdited, setMarkerBeingEdited] = useState<MarkerRecord | null>(null);
+  const [markerEditDescription, setMarkerEditDescription] = useState("");
+  const [queuedMarkerPhotos, setQueuedMarkerPhotos] = useState<UploadableImage[]>([]);
+  const [isSubmittingMarkerEdit, setIsSubmittingMarkerEdit] = useState(false);
   const {
     data: markers,
     loading: markersLoading,
@@ -69,6 +79,7 @@ const ProfileScreen: React.FC = () => {
     ),
   );
 
+  const markerCount = markers?.length ?? 0;
   const handleSignOut = async () => {
     setLoading(true);
 
@@ -84,72 +95,86 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  const handleProfilePhotoChange = async (response: ImagePickerResponse) => {
-    try {
-      const file = buildPickerImage(response);
+  const openMarkerEditor = (marker: MarkerRecord) => {
+    setMarkerBeingEdited(marker);
+    setMarkerEditDescription(marker.description);
+    setQueuedMarkerPhotos([]);
+  };
 
-      if (!file) {
+  const closeMarkerEditor = () => {
+    setMarkerBeingEdited(null);
+    setMarkerEditDescription("");
+    setQueuedMarkerPhotos([]);
+  };
+
+  const handleQueuedPhotoSelection = (result: ImagePicker.ImagePickerResult) => {
+    try {
+      const files = buildPickerImages(result);
+
+      if (files.length === 0) {
         return;
       }
 
-      setLoading(true);
-      const fileUrl = await uploadProfilePicture(file);
-      setUser((previousUser) =>
-        previousUser ? { ...previousUser, avatar: fileUrl.toString() } : null,
-      );
+      setQueuedMarkerPhotos((current) => [...current, ...files]);
     } catch (error) {
       Alert.alert(
-        "Error",
-        error instanceof Error ? error.message : "Failed to update the profile picture.",
+        "Photo unavailable",
+        error instanceof Error ? error.message : "The selected photos could not be read.",
       );
-    } finally {
-      setLoading(false);
     }
   };
 
-  const openCamera = () => {
-    launchCamera(
-      { ...profilePickerOptions, saveToPhotos: false },
-      handleProfilePhotoChange,
-    );
-  };
+  const handleAddMarkerPhotos = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  const openLibrary = () => {
-    launchImageLibrary(profilePickerOptions, handleProfilePhotoChange);
-  };
+      if (!permission.granted) {
+        Alert.alert(
+          "Photo library access required",
+          "Allow photo access to attach more images to this marker.",
+        );
+        return;
+      }
 
-  const handleProfilePicturePress = () => {
-    if (Platform.OS === "ios") {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ["Cancel", "Take Photo", "Choose from Library"],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) {
-            openCamera();
-          } else if (buttonIndex === 2) {
-            openLibrary();
-          }
-        },
+      const result = await ImagePicker.launchImageLibraryAsync(markerEditPickerOptions);
+      handleQueuedPhotoSelection(result);
+    } catch (error) {
+      Alert.alert(
+        "Photo unavailable",
+        error instanceof Error ? error.message : "The photo picker could not be opened.",
       );
+    }
+  };
+
+  const handleSubmitMarkerEdit = async () => {
+    if (!markerBeingEdited || !user?.$id) {
       return;
     }
 
-    Alert.alert("Update profile photo", "Choose how you want to add your picture.", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Take Photo",
-        onPress: openCamera,
-      },
-      {
-        text: "Choose from Library",
-        onPress: openLibrary,
-      },
-    ]);
+    setIsSubmittingMarkerEdit(true);
+
+    try {
+      await updateMarker({
+        markerId: markerBeingEdited.id,
+        authorId: user.$id,
+        description: markerEditDescription,
+        existingPhotoUrls: markerBeingEdited.photoUrls ?? [],
+        newPhotos: queuedMarkerPhotos,
+      });
+      closeMarkerEditor();
+      await refetchMarkers();
+      Alert.alert(
+        "Marker updated",
+        "Your edits were saved and the marker is pending approval again.",
+      );
+    } catch (error) {
+      Alert.alert(
+        "Update failed",
+        error instanceof Error ? error.message : "Could not update the marker.",
+      );
+    } finally {
+      setIsSubmittingMarkerEdit(false);
+    }
   };
 
   if (loading) {
@@ -169,7 +194,16 @@ const ProfileScreen: React.FC = () => {
         columnWrapperStyle={{ gap: 14 }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 140 }}
         ItemSeparatorComponent={() => <View className="h-4" />}
-        renderItem={({ item }) => <MarkerGalleryTile marker={item} />}
+        renderItem={({ item }) => (
+          <MarkerGalleryTile
+            marker={item}
+            isSelected={highlightedMarkerId === item.id}
+            onPress={() =>
+              setHighlightedMarkerId((current) => (current === item.id ? null : item.id))
+            }
+            onEditPress={() => openMarkerEditor(item)}
+          />
+        )}
         refreshing={markersRefreshing}
         onRefresh={refetchMarkers}
         ListEmptyComponent={() => (
@@ -200,18 +234,21 @@ const ProfileScreen: React.FC = () => {
 
             <View className="rounded-[30px] bg-slate-800 px-5 py-6 shadow-sm">
               <View className="flex-row items-center gap-4">
-                <TouchableOpacity
-                  onPress={handleProfilePicturePress}
-                  className="h-20 w-20 overflow-hidden rounded-[26px] border border-slate-600"
-                  accessibilityRole="button"
-                  accessibilityLabel="Update profile picture"
-                >
-                  <Image
-                    source={user?.avatar ? { uri: user.avatar } : images.profile}
-                    resizeMode="cover"
-                    className="h-full w-full"
-                  />
-                </TouchableOpacity>
+                <View className="h-20 w-20 overflow-hidden rounded-[26px] border border-slate-600">
+                  {user?.avatar ? (
+                    <Image
+                      source={{ uri: user.avatar }}
+                      resizeMode="cover"
+                      className="h-full w-full"
+                    />
+                  ) : (
+                    <View className="h-full w-full items-center justify-center bg-slate-700">
+                      <Text className="font-psemibold text-2xl text-slate-100">
+                        {getProfileInitials(user?.username || user?.email)}
+                      </Text>
+                    </View>
+                  )}
+                </View>
 
                 <View className="flex-1">
                   <Text className="font-psemibold text-xl text-slate-100">
@@ -221,15 +258,15 @@ const ProfileScreen: React.FC = () => {
                     {user?.email || ""}
                   </Text>
                   <Text className="mt-3 font-pregular text-sm text-slate-300">
-                    Every approved or pending sitting place you submit will show up in
-                    your gallery here.
+                    Marker edits happen from your post cards below. Profile photos are
+                    server-managed for now.
                   </Text>
                 </View>
               </View>
 
               <View className="mt-6 rounded-[24px] bg-slate-700 px-4 py-4">
                 <InfoBox
-                  title={String(markers?.length ?? 0)}
+                  title={String(markerCount)}
                   subtitle="Uploaded markers"
                   containerStyles=""
                   titleStyles="text-2xl text-slate-100"
@@ -240,11 +277,27 @@ const ProfileScreen: React.FC = () => {
             <View className="mt-8 flex-row items-center justify-between">
               <Text className="font-psemibold text-lg text-slate-100">Your posts</Text>
               <Text className="font-pregular text-sm text-slate-400">
-                Pull to refresh
+                Tap a card to edit it
               </Text>
             </View>
           </View>
         )}
+      />
+
+      <MarkerEditSheet
+        marker={markerBeingEdited}
+        description={markerEditDescription}
+        queuedPhotos={queuedMarkerPhotos}
+        isSubmitting={isSubmittingMarkerEdit}
+        onDescriptionChange={setMarkerEditDescription}
+        onAddPhotos={handleAddMarkerPhotos}
+        onRemoveQueuedPhoto={(index) =>
+          setQueuedMarkerPhotos((current) =>
+            current.filter((_, itemIndex) => itemIndex !== index),
+          )
+        }
+        onClose={closeMarkerEditor}
+        onSubmit={handleSubmitMarkerEdit}
       />
     </SafeAreaView>
   );

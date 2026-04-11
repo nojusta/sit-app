@@ -20,9 +20,17 @@ const COLLECTION_NAME = "markers";
 const DATABASE_NAME = "db.sitapp";
 const SEED_PATH = path.join(repoRoot, "test-run-unique.json");
 const PHOTOS_DIR = path.join(repoRoot, "photos-for-markers");
+const ADMIN_PROFILE_IMAGE_PATH = path.join(repoRoot, "assets/images/profile.png");
 const MAX_POLL_ATTEMPTS = 30;
 const POLL_DELAY_MS = 1000;
 const REQUEST_TIMEOUT_MS = 15000;
+const LEGACY_MARKER_ATTRIBUTE_KEYS = [
+  "markerName",
+  "markerInfo",
+  "markerPhoto",
+  "createdAt",
+  "timestamp",
+];
 
 const markerAttributes = [
   {
@@ -69,26 +77,6 @@ const markerAttributes = [
     key: "photo_urls",
     kind: "string",
     payload: { key: "photo_urls", size: 2048, required: false, array: true },
-  },
-  {
-    key: "markerName",
-    kind: "string",
-    payload: { key: "markerName", size: 160, required: true, array: false },
-  },
-  {
-    key: "markerInfo",
-    kind: "string",
-    payload: { key: "markerInfo", size: 4000, required: true, array: false },
-  },
-  {
-    key: "markerPhoto",
-    kind: "url",
-    payload: { key: "markerPhoto", required: false, array: false },
-  },
-  {
-    key: "timestamp",
-    kind: "datetime",
-    payload: { key: "timestamp", required: true, array: false },
   },
   {
     key: "latitude",
@@ -155,9 +143,13 @@ async function main() {
   );
   console.log("Ensuring marker indexes...");
   await ensureIndexes(databaseId, collectionId);
+  console.log("Removing legacy duplicate marker attributes...");
+  await cleanupLegacyAttributes(databaseId, collectionId);
 
   console.log("Resolving admin seed owner...");
   const adminUser = await resolveAdminUser();
+  console.log("Ensuring admin avatar...");
+  await ensureAdminAvatar(adminUser);
   console.log("Loading seed data and matching marker photos...");
   const photoMatches = loadPhotoMatches();
   const seedItems = loadSeedItems();
@@ -376,6 +368,48 @@ async function ensureIndexes(databaseId, collectionId) {
   }
 }
 
+async function cleanupLegacyAttributes(databaseId, collectionId) {
+  const collection = await getCollection(databaseId, collectionId);
+  const existingKeys = new Set(
+    (collection.attributes || []).map((attribute) => attribute.key),
+  );
+  const keysToDelete = LEGACY_MARKER_ATTRIBUTE_KEYS.filter((key) =>
+    existingKeys.has(key),
+  );
+
+  for (const key of keysToDelete) {
+    await appwriteFetch(
+      "DELETE",
+      `/databases/${encodeURIComponent(databaseId)}/collections/${encodeURIComponent(
+        collectionId,
+      )}/attributes/${encodeURIComponent(key)}`,
+    );
+  }
+
+  if (keysToDelete.length > 0) {
+    await waitForDeletedAttributes(databaseId, collectionId, keysToDelete);
+  }
+}
+
+async function waitForDeletedAttributes(databaseId, collectionId, keys) {
+  for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt += 1) {
+    const collection = await getCollection(databaseId, collectionId);
+    const existingKeys = new Set(
+      (collection.attributes || []).map((attribute) => attribute.key),
+    );
+
+    if (keys.every((key) => !existingKeys.has(key))) {
+      return;
+    }
+
+    await delay(POLL_DELAY_MS);
+  }
+
+  throw new Error(
+    `Timed out waiting for legacy attributes to be deleted: ${keys.join(", ")}`,
+  );
+}
+
 async function resolveAdminUser() {
   const response = await appwriteFetch("GET", "/users");
   const adminUser = (response.users || []).find(
@@ -389,6 +423,24 @@ async function resolveAdminUser() {
   }
 
   return adminUser;
+}
+
+async function ensureAdminAvatar(adminUser) {
+  if (adminUser?.prefs?.avatar || !fs.existsSync(ADMIN_PROFILE_IMAGE_PATH)) {
+    return;
+  }
+
+  const uploadedFile = await uploadMarkerPhoto(ADMIN_PROFILE_IMAGE_PATH, adminUser.$id);
+  const avatarUrl = buildStorageViewUrl(uploadedFile.$id);
+
+  await appwriteFetch("PATCH", `/users/${encodeURIComponent(adminUser.$id)}/prefs`, {
+    body: {
+      prefs: {
+        ...(adminUser.prefs || {}),
+        avatar: avatarUrl,
+      },
+    },
+  });
 }
 
 function loadSeedItems() {
@@ -519,10 +571,6 @@ async function createSeedDocument({
           created_at: createdAt,
           photo_url: primaryPhotoUrl,
           photo_urls: photoUrls,
-          markerName: title,
-          markerInfo: description,
-          markerPhoto: primaryPhotoUrl,
-          timestamp: createdAt,
           latitude: item.latitude,
           longitude: item.longitude,
         },

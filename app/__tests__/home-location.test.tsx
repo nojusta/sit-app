@@ -18,9 +18,17 @@ jest.mock("@react-navigation/native", () => ({
   useIsFocused: jest.fn(),
 }));
 
-jest.mock("react-native-image-picker", () => ({
-  launchCamera: jest.fn(),
-  launchImageLibrary: jest.fn(),
+jest.mock("expo-image-picker", () => ({
+  launchCameraAsync: jest.fn(),
+  launchImageLibraryAsync: jest.fn(),
+  requestCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  requestMediaLibraryPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  UIImagePickerPresentationStyle: {
+    FULL_SCREEN: "fullScreen",
+  },
+  CameraType: {
+    back: "back",
+  },
 }));
 
 jest.mock("react-native-safe-area-context", () => {

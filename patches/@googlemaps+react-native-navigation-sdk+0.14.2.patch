@@ -7351,19 +7351,53 @@ new file mode 100644
 index 0000000..2c3df73
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
-index 8a10394..e4302b6 100644
+index 8a10394..9493211 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
-@@ -49,6 +49,8 @@ import java.util.Map;
+@@ -13,8 +13,21 @@
+  */
+ package com.google.android.react.navsdk;
+ 
++import android.animation.ValueAnimator;
+ import android.annotation.SuppressLint;
+ import android.app.Activity;
++import android.graphics.Bitmap;
++import android.graphics.BitmapFactory;
++import android.graphics.Color;
++import android.graphics.Typeface;
++import android.graphics.drawable.GradientDrawable;
++import android.net.Uri;
++import android.util.TypedValue;
++import android.view.Gravity;
++import android.view.animation.DecelerateInterpolator;
++import android.view.animation.OvershootInterpolator;
++import android.widget.LinearLayout;
++import android.widget.TextView;
+ import androidx.core.util.Supplier;
+ import com.facebook.react.bridge.UiThreadUtil;
+ import com.google.android.gms.maps.CameraUpdateFactory;
+@@ -49,6 +62,11 @@ import java.util.Map;
  import java.util.concurrent.Executors;
  
  public class MapViewController implements INavigationViewControllerProperties {
 +  private static final int CAMERA_ANIMATION_DURATION_MS = 320;
++  private static final float CUSTOM_MARKER_BASE_SCALE = 0.18f;
++  private static final float DRAGGABLE_MARKER_BASE_SCALE = 0.24f;
++  private static final float DRAGGABLE_MARKER_ACTIVE_SCALE = 0.28f;
 +
    private GoogleMap mGoogleMap;
    private Supplier<Activity> activitySupplier;
    private INavigationViewCallback mNavigationViewCallback;
-@@ -72,6 +74,7 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -66,12 +84,16 @@ public class MapViewController implements INavigationViewControllerProperties {
+   private final Map<String, String> polygonNativeIdToEffectiveId = new HashMap<>();
+   private final Map<String, String> groundOverlayNativeIdToEffectiveId = new HashMap<>();
+   private final Map<String, String> circleNativeIdToEffectiveId = new HashMap<>();
++  private final Map<String, String> markerImagePathMap = new HashMap<>();
++  private final Map<String, Bitmap> markerBaseBitmapMap = new HashMap<>();
++  private final Map<String, Float> markerScaleMap = new HashMap<>();
+ 
+   private String style = "";
+ 
    // Zoom level preferences (-1 means use map's current value)
    private Float minZoomLevelPreference = null;
    private Float maxZoomLevelPreference = null;
@@ -7371,27 +7405,160 @@ index 8a10394..e4302b6 100644
  
    public void initialize(GoogleMap googleMap, Supplier<Activity> activitySupplier) {
      this.mGoogleMap = googleMap;
-@@ -87,6 +90,19 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -84,9 +106,89 @@ public class MapViewController implements INavigationViewControllerProperties {
+ 
+     mGoogleMap.setOnMarkerClickListener(
+         marker -> {
++          if (marker.isDraggable()) {
++            animateDraggableMarker(marker, true);
++          }
            mNavigationViewCallback.onMarkerClick(marker);
            return false;
          });
++    mGoogleMap.setInfoWindowAdapter(
++        new GoogleMap.InfoWindowAdapter() {
++          @Override
++          public android.view.View getInfoWindow(Marker marker) {
++            if (marker.isDraggable()) {
++              return null;
++            }
++
++            String title = marker.getTitle();
++            String snippet = marker.getSnippet();
++
++            if ((title == null || title.isEmpty()) && (snippet == null || snippet.isEmpty())) {
++              return null;
++            }
++
++            Activity activity = activitySupplier != null ? activitySupplier.get() : null;
++            if (activity == null) {
++              return null;
++            }
++
++            LinearLayout container = new LinearLayout(activity);
++            container.setOrientation(LinearLayout.VERTICAL);
++            container.setPadding(dp(16), dp(14), dp(16), dp(14));
++            GradientDrawable background = new GradientDrawable();
++            background.setColor(Color.WHITE);
++            background.setCornerRadius(dp(22));
++            container.setBackground(background);
++            container.setMinimumWidth(dp(220));
++
++            TextView titleView = new TextView(activity);
++            titleView.setText(title);
++            titleView.setTextColor(Color.parseColor("#0F172A"));
++            titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
++            titleView.setTypeface(loadFont("fonts/Poppins-SemiBold.ttf", Typeface.DEFAULT_BOLD));
++            titleView.setMaxLines(1);
++            container.addView(titleView);
++
++            if (snippet != null && !snippet.isEmpty()) {
++              TextView snippetView = new TextView(activity);
++              snippetView.setText(snippet);
++              snippetView.setTextColor(Color.parseColor("#475569"));
++              snippetView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
++              snippetView.setTypeface(loadFont("fonts/Poppins-Regular.ttf", Typeface.SANS_SERIF));
++              snippetView.setMaxLines(2);
++              LinearLayout.LayoutParams snippetLayoutParams =
++                  new LinearLayout.LayoutParams(
++                      LinearLayout.LayoutParams.WRAP_CONTENT,
++                      LinearLayout.LayoutParams.WRAP_CONTENT);
++              snippetLayoutParams.topMargin = dp(6);
++              snippetView.setLayoutParams(snippetLayoutParams);
++              container.addView(snippetView);
++            }
++
++            return container;
++          }
++
++          @Override
++          public android.view.View getInfoContents(Marker marker) {
++            return null;
++          }
++        });
 +    mGoogleMap.setOnMarkerDragListener(
 +        new GoogleMap.OnMarkerDragListener() {
 +          @Override
-+          public void onMarkerDragStart(Marker marker) {}
++          public void onMarkerDragStart(Marker marker) {
++            animateDraggableMarker(marker, true);
++          }
 +
 +          @Override
 +          public void onMarkerDrag(Marker marker) {}
 +
 +          @Override
 +          public void onMarkerDragEnd(Marker marker) {
++            animateDraggableMarker(marker, false);
 +            mNavigationViewCallback.onMapClick(marker.getPosition());
 +          }
 +        });
  
      mGoogleMap.setOnPolylineClickListener(
          polyline -> mNavigationViewCallback.onPolylineClick(polyline));
-@@ -811,10 +827,10 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -268,7 +370,14 @@ public class MapViewController implements INavigationViewControllerProperties {
+     MarkerOptions options = new MarkerOptions();
+     if (imagePath != null && !imagePath.isEmpty()) {
+       try {
+-        BitmapDescriptor icon = BitmapDescriptorFactory.fromAsset(imagePath);
++        if (customId != null && !customId.isEmpty()) {
++          markerImagePathMap.put(customId, imagePath);
++        }
++        BitmapDescriptor icon =
++            createMarkerIconDescriptor(
++                customId,
++                imagePath,
++                draggable ? DRAGGABLE_MARKER_BASE_SCALE : CUSTOM_MARKER_BASE_SCALE);
+         options.icon(icon);
+       } catch (Exception e) {
+         throw new IllegalArgumentException(JsErrors.INVALID_IMAGE_ERROR_MESSAGE);
+@@ -298,6 +407,11 @@ public class MapViewController implements INavigationViewControllerProperties {
+ 
+     markerMap.put(effectiveId, marker);
+     markerNativeIdToEffectiveId.put(marker.getId(), effectiveId);
++    if (imagePath != null && !imagePath.isEmpty()) {
++      markerImagePathMap.put(effectiveId, imagePath);
++      markerScaleMap.put(
++          effectiveId, draggable ? DRAGGABLE_MARKER_BASE_SCALE : CUSTOM_MARKER_BASE_SCALE);
++    }
+ 
+     return marker;
+   }
+@@ -312,11 +426,23 @@ public class MapViewController implements INavigationViewControllerProperties {
+     boolean draggable = CollectionUtil.getBool("draggable", optionsMap, false);
+     boolean flat = CollectionUtil.getBool("flat", optionsMap, false);
+     boolean visible = CollectionUtil.getBool("visible", optionsMap, true);
++    String effectiveId = getMarkerEffectiveId(marker.getId());
+ 
+     if (imagePath != null && !imagePath.isEmpty()) {
+       try {
+-        BitmapDescriptor icon = BitmapDescriptorFactory.fromAsset(imagePath);
++        String previousImagePath = markerImagePathMap.get(effectiveId);
++        if (previousImagePath == null || !previousImagePath.equals(imagePath)) {
++          markerBaseBitmapMap.remove(effectiveId);
++        }
++        markerImagePathMap.put(effectiveId, imagePath);
++        BitmapDescriptor icon =
++            createMarkerIconDescriptor(
++                effectiveId,
++                imagePath,
++                draggable ? DRAGGABLE_MARKER_BASE_SCALE : CUSTOM_MARKER_BASE_SCALE);
+         marker.setIcon(icon);
++        markerScaleMap.put(
++            effectiveId, draggable ? DRAGGABLE_MARKER_BASE_SCALE : CUSTOM_MARKER_BASE_SCALE);
+       } catch (Exception e) {
+         throw new IllegalArgumentException(JsErrors.INVALID_IMAGE_ERROR_MESSAGE);
+       }
+@@ -710,6 +836,9 @@ public class MapViewController implements INavigationViewControllerProperties {
+             markerNativeIdToEffectiveId.remove(marker.getId());
+             marker.remove();
+             markerMap.remove(id);
++            markerImagePathMap.remove(id);
++            markerBaseBitmapMap.remove(id);
++            markerScaleMap.remove(id);
+           }
+         });
+   }
+@@ -811,10 +940,10 @@ public class MapViewController implements INavigationViewControllerProperties {
  
    public void animateCamera(Map<String, Object> map) {
      if (mGoogleMap != null) {
@@ -7406,7 +7573,7 @@ index 8a10394..e4302b6 100644
  
        CameraPosition cameraPosition =
            new CameraPosition.Builder()
-@@ -955,9 +971,20 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -955,9 +1084,20 @@ public class MapViewController implements INavigationViewControllerProperties {
  
    @SuppressLint("MissingPermission")
    public void setMyLocationEnabled(boolean enabled) {
@@ -7429,7 +7596,15 @@ index 8a10394..e4302b6 100644
    }
  
    public void setMapToolbarEnabled(boolean enabled) {
-@@ -1012,6 +1039,17 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -1007,11 +1147,25 @@ public class MapViewController implements INavigationViewControllerProperties {
+     polygonMap.clear();
+     groundOverlayMap.clear();
+     circleMap.clear();
++    markerImagePathMap.clear();
++    markerBaseBitmapMap.clear();
++    markerScaleMap.clear();
+     markerNativeIdToEffectiveId.clear();
+     polylineNativeIdToEffectiveId.clear();
      polygonNativeIdToEffectiveId.clear();
      groundOverlayNativeIdToEffectiveId.clear();
      circleNativeIdToEffectiveId.clear();
@@ -7447,6 +7622,137 @@ index 8a10394..e4302b6 100644
    }
  
    public void resetMinMaxZoomLevel() {
+@@ -1022,6 +1176,130 @@ public class MapViewController implements INavigationViewControllerProperties {
+     mGoogleMap.resetMinMaxZoomPreference();
+   }
+ 
++  private BitmapDescriptor createMarkerIconDescriptor(
++      String effectiveId, String imagePath, float scale) throws IOException {
++    String cachedImagePath = markerImagePathMap.get(effectiveId);
++    Bitmap baseBitmap =
++        imagePath.equals(cachedImagePath) ? markerBaseBitmapMap.get(effectiveId) : null;
++
++    if (baseBitmap == null) {
++      baseBitmap = loadMarkerBitmap(imagePath);
++
++      if (baseBitmap == null) {
++        throw new IOException("Could not decode marker asset");
++      }
++
++      markerBaseBitmapMap.put(effectiveId, baseBitmap);
++    }
++
++    if (scale == 1f) {
++      return BitmapDescriptorFactory.fromBitmap(baseBitmap);
++    }
++
++    Bitmap scaledBitmap =
++        Bitmap.createScaledBitmap(
++            baseBitmap,
++            Math.round(baseBitmap.getWidth() * scale),
++            Math.round(baseBitmap.getHeight() * scale),
++            true);
++    return BitmapDescriptorFactory.fromBitmap(scaledBitmap);
++  }
++
++  private Bitmap loadMarkerBitmap(String imagePath) throws IOException {
++    Activity activity = activitySupplier != null ? activitySupplier.get() : null;
++    if (activity == null) {
++      throw new IOException("No activity available");
++    }
++
++    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
++      HttpURLConnection connection = (HttpURLConnection) new URL(imagePath).openConnection();
++      connection.setDoInput(true);
++      connection.connect();
++
++      try (InputStream inputStream = connection.getInputStream()) {
++        return BitmapFactory.decodeStream(inputStream);
++      } finally {
++        connection.disconnect();
++      }
++    }
++
++    if (imagePath.startsWith("content://") || imagePath.startsWith("file://")) {
++      Uri uri = Uri.parse(imagePath);
++      try (InputStream inputStream = activity.getContentResolver().openInputStream(uri)) {
++        return inputStream != null ? BitmapFactory.decodeStream(inputStream) : null;
++      }
++    }
++
++    if (imagePath.startsWith("/")) {
++      return BitmapFactory.decodeFile(imagePath);
++    }
++
++    try (InputStream inputStream = activity.getAssets().open(imagePath)) {
++      return BitmapFactory.decodeStream(inputStream);
++    }
++  }
++
++  private void animateDraggableMarker(Marker marker, boolean lifted) {
++    String effectiveId = getMarkerEffectiveId(marker.getId());
++    String imagePath = markerImagePathMap.get(effectiveId);
++
++    if (imagePath == null || imagePath.isEmpty()) {
++      return;
++    }
++
++    float startScale =
++        markerScaleMap.containsKey(effectiveId)
++            ? markerScaleMap.get(effectiveId)
++            : DRAGGABLE_MARKER_BASE_SCALE;
++    float targetScale = lifted ? DRAGGABLE_MARKER_ACTIVE_SCALE : DRAGGABLE_MARKER_BASE_SCALE;
++
++    if (Math.abs(startScale - targetScale) < 0.01f) {
++      return;
++    }
++
++    ValueAnimator animator = ValueAnimator.ofFloat(startScale, targetScale);
++    animator.setDuration(lifted ? 190L : 160L);
++    animator.setInterpolator(
++        lifted ? new OvershootInterpolator(0.7f) : new DecelerateInterpolator());
++    animator.addUpdateListener(
++        animation -> {
++          try {
++            float scale = (float) animation.getAnimatedValue();
++            marker.setIcon(createMarkerIconDescriptor(effectiveId, imagePath, scale));
++            markerScaleMap.put(effectiveId, scale);
++          } catch (IOException ignored) {
++            // Keep the last valid icon if a single animation frame fails to load.
++          }
++        });
++    animator.start();
++  }
++
++  private Typeface loadFont(String assetPath, Typeface fallback) {
++    try {
++      Activity activity = activitySupplier != null ? activitySupplier.get() : null;
++      if (activity == null) {
++        return fallback;
++      }
++
++      return Typeface.createFromAsset(activity.getAssets(), assetPath);
++    } catch (Exception ignored) {
++      return fallback;
++    }
++  }
++
++  private int dp(int value) {
++    Activity activity = activitySupplier != null ? activitySupplier.get() : null;
++    if (activity == null) {
++      return value;
++    }
++
++    return Math.round(
++        TypedValue.applyDimension(
++            TypedValue.COMPLEX_UNIT_DIP,
++            value,
++            activity.getResources().getDisplayMetrics()));
++  }
++
+   @SuppressLint("MissingPermission")
+   public void setFollowingPerspective(int jsValue) {
+     if (mGoogleMap == null) {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java
 index fc154e5..8909c1f 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewFragment.java
@@ -7596,10 +7902,10 @@ index 6cd6f27..7b0827e 100644
    public void showRouteOverview(String nativeID, final Promise promise) {
      UiThreadUtil.runOnUiThread(
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
-index e12b860..018df62 100644
+index e12b860..4902d01 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
-@@ -20,6 +20,59 @@
+@@ -20,6 +20,76 @@
  
  using namespace JS::NativeNavAutoModule;
  
@@ -7612,6 +7918,23 @@ index e12b860..018df62 100644
 +      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 +  if (trimmedPath.length == 0) {
 +    return nil;
++  }
++
++  if ([trimmedPath hasPrefix:@"file://"] || [trimmedPath hasPrefix:@"/"]) {
++    NSURL *fileURL = [trimmedPath hasPrefix:@"file://"] ? [NSURL URLWithString:trimmedPath] : nil;
++    NSString *filePath = fileURL.fileURL ? fileURL.path : trimmedPath;
++    UIImage *fileImage = [UIImage imageWithContentsOfFile:filePath];
++    if (fileImage) {
++      return fileImage;
++    }
++  }
++
++  if ([trimmedPath hasPrefix:@"http://"] || [trimmedPath hasPrefix:@"https://"]) {
++    NSData *remoteData = [NSData dataWithContentsOfURL:[NSURL URLWithString:trimmedPath]];
++    UIImage *remoteImage = remoteData ? [UIImage imageWithData:remoteData] : nil;
++    if (remoteImage) {
++      return remoteImage;
++    }
 +  }
 +
 +  NSMutableOrderedSet<NSString *> *candidates = [NSMutableOrderedSet orderedSet];
@@ -7659,7 +7982,7 @@ index e12b860..018df62 100644
  @implementation NavAutoModule
  
  RCT_EXPORT_MODULE(NavAutoModule);
-@@ -145,7 +198,7 @@ - (void)addMarker:(MarkerOptionsSpec &)options
+@@ -145,7 +215,7 @@ - (void)addMarker:(MarkerOptionsSpec &)options
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = nil;
        if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
@@ -7668,7 +7991,7 @@ index e12b860..018df62 100644
          if (!icon) {
            reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
            return;
-@@ -321,7 +374,7 @@ - (void)addGroundOverlay:(GroundOverlayOptionsSpec &)options
+@@ -321,7 +391,7 @@ - (void)addGroundOverlay:(GroundOverlayOptionsSpec &)options
      dispatch_async(dispatch_get_main_queue(), ^{
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
@@ -7757,7 +8080,7 @@ index 796c3a0..706cdcf 100644
  
  /**
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
-index 059e5d5..1121649 100644
+index 059e5d5..a1542f8 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewController.mm
 @@ -16,6 +16,7 @@
@@ -7768,7 +8091,7 @@ index 059e5d5..1121649 100644
  #import <React/RCTLog.h>
  #import <UserNotifications/UserNotifications.h>
  #import "CustomTypes.h"
-@@ -269,10 +270,16 @@ - (void)dealloc {
+@@ -269,10 +270,79 @@ - (void)dealloc {
  }
  
  - (void)mapViewDidTapRecenterButton:(GMSMapView *)mapView {
@@ -7778,6 +8101,69 @@ index 059e5d5..1121649 100644
    [_viewCallbacks handleRecenterButtonClick];
  }
  
++- (nullable UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
++  if (marker.draggable) {
++    return nil;
++  }
++
++  NSString *title = marker.title ?: @"";
++  NSString *snippet = marker.snippet ?: @"";
++
++  if (title.length == 0 && snippet.length == 0) {
++    return nil;
++  }
++
++  UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 236, snippet.length > 0 ? 92 : 64)];
++  container.backgroundColor = [UIColor whiteColor];
++  container.layer.cornerRadius = 22.0;
++  container.layer.masksToBounds = YES;
++
++  UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(16, 14, 204, 20)];
++  titleLabel.font = [UIFont fontWithName:@"Poppins-SemiBold" size:14] ?: [UIFont boldSystemFontOfSize:14];
++  titleLabel.textColor = [UIColor colorWithRed:15.0 / 255.0 green:23.0 / 255.0 blue:42.0 / 255.0 alpha:1.0];
++  titleLabel.numberOfLines = 1;
++  titleLabel.text = title;
++  [container addSubview:titleLabel];
++
++  if (snippet.length > 0) {
++    UILabel *snippetLabel = [[UILabel alloc] initWithFrame:CGRectMake(16, 40, 204, 38)];
++    snippetLabel.font = [UIFont fontWithName:@"Poppins-Regular" size:12] ?: [UIFont systemFontOfSize:12];
++    snippetLabel.textColor = [UIColor colorWithRed:71.0 / 255.0 green:85.0 / 255.0 blue:105.0 / 255.0 alpha:1.0];
++    snippetLabel.numberOfLines = 2;
++    snippetLabel.text = snippet;
++    [container addSubview:snippetLabel];
++  }
++
++  return container;
++}
++
++- (void)animateDraggableMarker:(GMSMarker *)marker lifted:(BOOL)lifted {
++  if (!marker.draggable || marker.iconView == nil) {
++    return;
++  }
++
++  marker.tracksViewChanges = YES;
++  CGFloat scale = lifted ? 1.1 : 1.0;
++  CGFloat offset = lifted ? -10.0 : 0.0;
++
++  [UIView animateWithDuration:0.18
++                        delay:0
++       usingSpringWithDamping:0.74
++        initialSpringVelocity:0.4
++                      options:UIViewAnimationOptionBeginFromCurrentState |
++                              UIViewAnimationOptionAllowUserInteraction
++                   animations:^{
++                     CGAffineTransform translated = CGAffineTransformMakeTranslation(0, offset);
++                     CGAffineTransform scaled = CGAffineTransformMakeScale(scale, scale);
++                     marker.iconView.transform = CGAffineTransformConcat(translated, scaled);
++                   }
++                   completion:^(BOOL finished) {
++                     if (!lifted) {
++                       marker.tracksViewChanges = NO;
++                     }
++                   }];
++}
++
  - (void)mapView:(GMSMapView *)mapView didTapInfoWindowOfMarker:(GMSMarker *)marker {
 +  if (_mapViewType != NULL && *_mapViewType == NAVIGATION && _mapView.navigationEnabled) {
 +    return;
@@ -7785,18 +8171,26 @@ index 059e5d5..1121649 100644
    [_viewCallbacks handleMarkerInfoWindowTapped:marker];
  }
  
-@@ -282,10 +289,18 @@ - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D
+@@ -282,10 +352,26 @@ - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D
  }
  
  - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
 +  if (_mapViewType != NULL && *_mapViewType == NAVIGATION && _mapView.navigationEnabled) {
 +    return YES;
 +  }
++  if (marker.draggable) {
++    [self animateDraggableMarker:marker lifted:YES];
++  }
    [_viewCallbacks handleMarkerClick:marker];
    return FALSE;
  }
  
++- (void)mapView:(GMSMapView *)mapView didBeginDraggingMarker:(GMSMarker *)marker {
++  [self animateDraggableMarker:marker lifted:YES];
++}
++
 +- (void)mapView:(GMSMapView *)mapView didEndDraggingMarker:(GMSMarker *)marker {
++  [self animateDraggableMarker:marker lifted:NO];
 +  [_viewCallbacks
 +      handleMapClick:[ObjectTranslationUtil transformCoordinateToDictionary:marker.position]];
 +}
@@ -7804,7 +8198,7 @@ index 059e5d5..1121649 100644
  - (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay {
    if ([overlay isKindOfClass:[GMSPolyline class]]) {
      GMSPolyline *polyline = (GMSPolyline *)overlay;
-@@ -960,6 +975,28 @@ - (void)animateCamera:(GMSCameraUpdate *)update result:(OnBooleanResult)completi
+@@ -960,6 +1046,28 @@ - (void)animateCamera:(GMSCameraUpdate *)update result:(OnBooleanResult)completi
    }
  }
  
@@ -7834,10 +8228,10 @@ index 059e5d5..1121649 100644
    NSMutableArray<NSDictionary *> *result = [[NSMutableArray alloc] init];
    for (NSString *key in _markerMap) {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
-index b80d4f5..127898c 100644
+index b80d4f5..6f0d298 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
-@@ -30,6 +30,59 @@
+@@ -30,6 +30,76 @@
    return dict;
  }
  
@@ -7850,6 +8244,23 @@ index b80d4f5..127898c 100644
 +      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 +  if (trimmedPath.length == 0) {
 +    return nil;
++  }
++
++  if ([trimmedPath hasPrefix:@"file://"] || [trimmedPath hasPrefix:@"/"]) {
++    NSURL *fileURL = [trimmedPath hasPrefix:@"file://"] ? [NSURL URLWithString:trimmedPath] : nil;
++    NSString *filePath = fileURL.fileURL ? fileURL.path : trimmedPath;
++    UIImage *fileImage = [UIImage imageWithContentsOfFile:filePath];
++    if (fileImage) {
++      return fileImage;
++    }
++  }
++
++  if ([trimmedPath hasPrefix:@"http://"] || [trimmedPath hasPrefix:@"https://"]) {
++    NSData *remoteData = [NSData dataWithContentsOfURL:[NSURL URLWithString:trimmedPath]];
++    UIImage *remoteImage = remoteData ? [UIImage imageWithData:remoteData] : nil;
++    if (remoteImage) {
++      return remoteImage;
++    }
 +  }
 +
 +  NSMutableOrderedSet<NSString *> *candidates = [NSMutableOrderedSet orderedSet];
@@ -7897,7 +8308,7 @@ index b80d4f5..127898c 100644
  @implementation NavViewModule
  
  RCT_EXPORT_MODULE();
-@@ -148,7 +201,7 @@ - (void)addMarker:(NSString *)nativeID
+@@ -148,7 +218,7 @@ - (void)addMarker:(NSString *)nativeID
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = nil;
        if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
@@ -7906,7 +8317,7 @@ index b80d4f5..127898c 100644
          if (!icon) {
            reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
            return;
-@@ -288,7 +341,7 @@ - (void)addGroundOverlay:(NSString *)nativeID
+@@ -288,7 +358,7 @@ - (void)addGroundOverlay:(NSString *)nativeID
      dispatch_async(dispatch_get_main_queue(), ^{
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
@@ -7915,7 +8326,7 @@ index b80d4f5..127898c 100644
                            : nil;
  
        if (!icon) {
-@@ -373,7 +426,10 @@ - (void)moveCamera:(NSString *)nativeID
+@@ -373,7 +443,10 @@ - (void)moveCamera:(NSString *)nativeID
    CameraPositionSpec positionCopy(cameraPosition);
    if (viewController) {
      dispatch_async(dispatch_get_main_queue(), ^{
@@ -7927,7 +8338,7 @@ index b80d4f5..127898c 100644
  
        if (positionCopy.target().has_value()) {
          auto target = positionCopy.target().value();
-@@ -400,6 +456,47 @@ - (void)moveCamera:(NSString *)nativeID
+@@ -400,6 +473,47 @@ - (void)moveCamera:(NSString *)nativeID
    }
  }
  
@@ -7975,6 +8386,82 @@ index b80d4f5..127898c 100644
  - (void)getCameraPosition:(NSString *)nativeID
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
+index b5de26f..288e476 100644
+--- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
+@@ -16,8 +16,49 @@
+ 
+ #import "ObjectTranslationUtil.h"
+ 
++static CGFloat const kMarkerBaseScale = 0.18;
++static CGFloat const kDraggableMarkerBaseScale = 0.24;
++
+ @implementation ObjectTranslationUtil
+ 
+++ (UIImage *)scaledMarkerImage:(UIImage *)image scale:(CGFloat)scale {
++  if (image == nil || scale == 1.0) {
++    return image;
++  }
++
++  CGSize targetSize = CGSizeMake(image.size.width * scale, image.size.height * scale);
++  UIGraphicsImageRenderer *renderer =
++      [[UIGraphicsImageRenderer alloc] initWithSize:targetSize];
++
++  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
++    [image drawInRect:CGRectMake(0, 0, targetSize.width, targetSize.height)];
++  }];
++}
++
+++ (void)applyMarkerIcon:(nullable UIImage *)icon toMarker:(GMSMarker *)marker draggable:(BOOL)draggable {
++  if (icon == nil) {
++    marker.icon = nil;
++    marker.iconView = nil;
++    return;
++  }
++
++  UIImage *scaledIcon =
++      [self scaledMarkerImage:icon scale:draggable ? kDraggableMarkerBaseScale : kMarkerBaseScale];
++
++  if (draggable) {
++    UIImageView *iconView = [[UIImageView alloc] initWithImage:scaledIcon];
++    iconView.contentMode = UIViewContentModeScaleAspectFit;
++    iconView.frame = CGRectMake(0, 0, scaledIcon.size.width, scaledIcon.size.height);
++    marker.icon = nil;
++    marker.iconView = iconView;
++    marker.groundAnchor = CGPointMake(0.5, 1.0);
++    return;
++  }
++
++  marker.iconView = nil;
++  marker.icon = scaledIcon;
++}
++
+ #pragma mark - Transformation Methods
+ 
+ + (NSDictionary *)transformCoordinateToDictionary:(CLLocationCoordinate2D)coordinate {
+@@ -286,9 +327,7 @@ + (GMSMarker *)createMarker:(CLLocationCoordinate2D)position
+   marker.rotation = rotation;
+   marker.flat = flat;
+   marker.draggable = draggable;
+-  if (icon) {
+-    marker.icon = icon;
+-  }
++  [self applyMarkerIcon:icon toMarker:marker draggable:draggable];
+   if (zIndex) {
+     marker.zIndex = [zIndex intValue];
+   }
+@@ -442,9 +481,7 @@ + (void)updateMarker:(GMSMarker *)marker
+   marker.rotation = rotation;
+   marker.flat = flat;
+   marker.draggable = draggable;
+-  if (icon) {
+-    marker.icon = icon;
+-  }
++  [self applyMarkerIcon:icon toMarker:marker draggable:draggable];
+   if (zIndex) {
+     marker.zIndex = [zIndex intValue];
+   }
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js b/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
 index 199386f..a21a0f1 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/lib/commonjs/navigation/navigationView/navigationViewController.js
