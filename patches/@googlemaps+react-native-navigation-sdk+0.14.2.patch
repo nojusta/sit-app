@@ -31,6 +31,17 @@ diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/
 new file mode 100644
 index 0000000..340fbce
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9058d2e1860d4b234bd572d473cb3b20/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/results.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/transformed/classes/classes_dex/classes.dex b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..44063c2
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/9d45d316b5e470cbe96b6faaa484cec8/transformed/classes/classes_dex/classes.dex differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/f950f02e433bd11527b9d07e3e12130f/results.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/.transforms/f950f02e433bd11527b9d07e3e12130f/results.bin
 new file mode 100644
 index 0000000..0d259dd
@@ -6761,7 +6772,7 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
 new file mode 100644
-index 0000000..5a0fcb5
+index 0000000..6c8da0a
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
 new file mode 100644
@@ -6911,9 +6922,17 @@ diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/
 new file mode 100644
 index 0000000..c8b73df
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/JsErrors.class differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$1.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$1.class
+new file mode 100644
+index 0000000..5a0adb7
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$1.class differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$2.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$2.class
+new file mode 100644
+index 0000000..915c149
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController$2.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class
 new file mode 100644
-index 0000000..516e5e1
+index 0000000..2d178a0
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewController.class differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewFragment$NavViewEvent.class b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/google/android/react/navsdk/MapViewFragment$NavViewEvent.class
 new file mode 100644
@@ -7201,7 +7220,7 @@ index 0000000..579a7a7
 \ No newline at end of file
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
 new file mode 100644
-index 0000000..5aa2174
+index 0000000..a2418af
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
 new file mode 100644
@@ -7254,107 +7273,131 @@ index 0000000..f83ce61
 +		INJECTED from /Users/nojukas123/Documents/vscode/sit-app/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
 +		INJECTED from /Users/nojukas123/Documents/vscode/sit-app/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId22 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId22
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId14 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId14
 new file mode 100644
 index 0000000..9a1206b
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId22 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId18 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId18
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen$1.class.uniqueId14 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId12 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId12
 new file mode 100644
 index 0000000..d1f77b2
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId18 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId8 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId8
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/AndroidAutoBaseScreen.class.uniqueId12 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/IMapViewFragment.class.uniqueId25 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/IMapViewFragment.class.uniqueId25
 new file mode 100644
-index 0000000..d2ec40e
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId8 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId3 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId3
+index 0000000..fa3fc00
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/IMapViewFragment.class.uniqueId25 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/INavViewFragment.class.uniqueId5 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/INavViewFragment.class.uniqueId5
 new file mode 100644
-index 0000000..d0b5f51
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId3 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId21 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId21
+index 0000000..44fb591
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/INavViewFragment.class.uniqueId5 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10
+new file mode 100644
+index 0000000..516e5e1
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewController.class.uniqueId10 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId18 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId18
+new file mode 100644
+index 0000000..6c26117
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment$NavViewEvent.class.uniqueId18 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId2 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId2
+new file mode 100644
+index 0000000..5aacf59
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/MapViewFragment.class.uniqueId2 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule$ModuleReadyListener.class.uniqueId11 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule$ModuleReadyListener.class.uniqueId11
+new file mode 100644
+index 0000000..3963db6
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule$ModuleReadyListener.class.uniqueId11 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule.class.uniqueId23 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule.class.uniqueId23
+new file mode 100644
+index 0000000..28191b2
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavAutoModule.class.uniqueId23 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId28 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId28
 new file mode 100644
 index 0000000..3311d2a
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId21 differ
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$1.class.uniqueId28 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$2.class.uniqueId0 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$2.class.uniqueId0
 new file mode 100644
 index 0000000..1d3c299
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$2.class.uniqueId0 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId10 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId10
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId19 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId19
 new file mode 100644
 index 0000000..81f58a6
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId10 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId12 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId12
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$3.class.uniqueId19 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId21 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId21
 new file mode 100644
 index 0000000..b489ee9
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId12 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId13 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId13
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$4.class.uniqueId21 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId7 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId7
 new file mode 100644
 index 0000000..65a05d4
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId13 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId19 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId19
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$5.class.uniqueId7 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId26 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId26
 new file mode 100644
 index 0000000..d3d5111
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId19 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId6 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId6
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$6.class.uniqueId26 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId4 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId4
 new file mode 100644
 index 0000000..db89e97
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId6 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId11 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId11
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$7.class.uniqueId4 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId20 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId20
 new file mode 100644
 index 0000000..e22270b
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId11 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId17 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId17
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$8.class.uniqueId20 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId24 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId24
 new file mode 100644
 index 0000000..3d893ef
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId17 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId20 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId20
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$ModuleReadyListener.class.uniqueId24 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId13 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId13
 new file mode 100644
 index 0000000..53852a1
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId20 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId16 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId16
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule$NavigationReadyListener.class.uniqueId13 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId9 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId9
 new file mode 100644
 index 0000000..9991228
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId16 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId2 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId2
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavModule.class.uniqueId9 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1
 new file mode 100644
-index 0000000..02712f3
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId2 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId7 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId7
+index 0000000..a2111b7
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$1.class.uniqueId1 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17
 new file mode 100644
-index 0000000..fa12d83
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId7 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId14 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId14
+index 0000000..1a41258
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$2.class.uniqueId17 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22
 new file mode 100644
-index 0000000..3afd9bf
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId14 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId15 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId15
+index 0000000..441ddcc
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment$NavViewEvent.class.uniqueId22 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8
 new file mode 100644
-index 0000000..8b3f1bc
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId15 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId9 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId9
+index 0000000..0ee9404
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewFragment.class.uniqueId8 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId6 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId6
 new file mode 100644
 index 0000000..4faa9ae
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId9 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId4 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId4
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager$1.class.uniqueId6 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId3 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId3
 new file mode 100644
-index 0000000..1e8e8e0
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId4 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId5 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId5
+index 0000000..1d63fd1
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewManager.class.uniqueId3 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId16 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId16
 new file mode 100644
 index 0000000..047017d
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId5 differ
-diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId1 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId1
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/NavViewModule.class.uniqueId16 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId15 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId15
 new file mode 100644
 index 0000000..e83c959
-Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId1 differ
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/Package.class.uniqueId15 differ
+diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/ViewPropertiesSink.class.uniqueId27 b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/ViewPropertiesSink.class.uniqueId27
+new file mode 100644
+index 0000000..186f95d
+Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/compileTransaction/stash-dir/ViewPropertiesSink.class.uniqueId27 differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
 new file mode 100644
-index 0000000..2c3df73
+index 0000000..3f0694d
 Binary files /dev/null and b/node_modules/@googlemaps/react-native-navigation-sdk/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
-index 8a10394..9493211 100644
+index 8a10394..7d49af4 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/android/src/main/java/com/google/android/react/navsdk/MapViewController.java
-@@ -13,8 +13,21 @@
+@@ -13,8 +13,25 @@
   */
  package com.google.android.react.navsdk;
  
@@ -7363,7 +7406,11 @@ index 8a10394..9493211 100644
  import android.app.Activity;
 +import android.graphics.Bitmap;
 +import android.graphics.BitmapFactory;
++import android.graphics.Canvas;
 +import android.graphics.Color;
++import android.graphics.Paint;
++import android.graphics.Rect;
++import android.graphics.RectF;
 +import android.graphics.Typeface;
 +import android.graphics.drawable.GradientDrawable;
 +import android.net.Uri;
@@ -7376,7 +7423,7 @@ index 8a10394..9493211 100644
  import androidx.core.util.Supplier;
  import com.facebook.react.bridge.UiThreadUtil;
  import com.google.android.gms.maps.CameraUpdateFactory;
-@@ -49,6 +62,11 @@ import java.util.Map;
+@@ -49,6 +66,12 @@ import java.util.Map;
  import java.util.concurrent.Executors;
  
  public class MapViewController implements INavigationViewControllerProperties {
@@ -7384,11 +7431,12 @@ index 8a10394..9493211 100644
 +  private static final float CUSTOM_MARKER_BASE_SCALE = 0.18f;
 +  private static final float DRAGGABLE_MARKER_BASE_SCALE = 0.24f;
 +  private static final float DRAGGABLE_MARKER_ACTIVE_SCALE = 0.28f;
++  private static final String CLUSTER_MARKER_PREFIX = "__cluster__:";
 +
    private GoogleMap mGoogleMap;
    private Supplier<Activity> activitySupplier;
    private INavigationViewCallback mNavigationViewCallback;
-@@ -66,12 +84,16 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -66,12 +89,16 @@ public class MapViewController implements INavigationViewControllerProperties {
    private final Map<String, String> polygonNativeIdToEffectiveId = new HashMap<>();
    private final Map<String, String> groundOverlayNativeIdToEffectiveId = new HashMap<>();
    private final Map<String, String> circleNativeIdToEffectiveId = new HashMap<>();
@@ -7405,7 +7453,7 @@ index 8a10394..9493211 100644
  
    public void initialize(GoogleMap googleMap, Supplier<Activity> activitySupplier) {
      this.mGoogleMap = googleMap;
-@@ -84,9 +106,89 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -84,9 +111,89 @@ public class MapViewController implements INavigationViewControllerProperties {
  
      mGoogleMap.setOnMarkerClickListener(
          marker -> {
@@ -7495,7 +7543,7 @@ index 8a10394..9493211 100644
  
      mGoogleMap.setOnPolylineClickListener(
          polyline -> mNavigationViewCallback.onPolylineClick(polyline));
-@@ -268,7 +370,14 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -268,7 +375,14 @@ public class MapViewController implements INavigationViewControllerProperties {
      MarkerOptions options = new MarkerOptions();
      if (imagePath != null && !imagePath.isEmpty()) {
        try {
@@ -7511,7 +7559,7 @@ index 8a10394..9493211 100644
          options.icon(icon);
        } catch (Exception e) {
          throw new IllegalArgumentException(JsErrors.INVALID_IMAGE_ERROR_MESSAGE);
-@@ -298,6 +407,11 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -298,6 +412,11 @@ public class MapViewController implements INavigationViewControllerProperties {
  
      markerMap.put(effectiveId, marker);
      markerNativeIdToEffectiveId.put(marker.getId(), effectiveId);
@@ -7523,7 +7571,7 @@ index 8a10394..9493211 100644
  
      return marker;
    }
-@@ -312,11 +426,23 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -312,11 +431,23 @@ public class MapViewController implements INavigationViewControllerProperties {
      boolean draggable = CollectionUtil.getBool("draggable", optionsMap, false);
      boolean flat = CollectionUtil.getBool("flat", optionsMap, false);
      boolean visible = CollectionUtil.getBool("visible", optionsMap, true);
@@ -7548,7 +7596,7 @@ index 8a10394..9493211 100644
        } catch (Exception e) {
          throw new IllegalArgumentException(JsErrors.INVALID_IMAGE_ERROR_MESSAGE);
        }
-@@ -710,6 +836,9 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -710,6 +841,9 @@ public class MapViewController implements INavigationViewControllerProperties {
              markerNativeIdToEffectiveId.remove(marker.getId());
              marker.remove();
              markerMap.remove(id);
@@ -7558,7 +7606,7 @@ index 8a10394..9493211 100644
            }
          });
    }
-@@ -811,10 +940,10 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -811,10 +945,10 @@ public class MapViewController implements INavigationViewControllerProperties {
  
    public void animateCamera(Map<String, Object> map) {
      if (mGoogleMap != null) {
@@ -7573,7 +7621,7 @@ index 8a10394..9493211 100644
  
        CameraPosition cameraPosition =
            new CameraPosition.Builder()
-@@ -955,9 +1084,20 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -955,9 +1089,20 @@ public class MapViewController implements INavigationViewControllerProperties {
  
    @SuppressLint("MissingPermission")
    public void setMyLocationEnabled(boolean enabled) {
@@ -7596,7 +7644,7 @@ index 8a10394..9493211 100644
    }
  
    public void setMapToolbarEnabled(boolean enabled) {
-@@ -1007,11 +1147,25 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -1007,11 +1152,25 @@ public class MapViewController implements INavigationViewControllerProperties {
      polygonMap.clear();
      groundOverlayMap.clear();
      circleMap.clear();
@@ -7622,7 +7670,7 @@ index 8a10394..9493211 100644
    }
  
    public void resetMinMaxZoomLevel() {
-@@ -1022,6 +1176,130 @@ public class MapViewController implements INavigationViewControllerProperties {
+@@ -1022,6 +1181,171 @@ public class MapViewController implements INavigationViewControllerProperties {
      mGoogleMap.resetMinMaxZoomPreference();
    }
  
@@ -7661,6 +7709,10 @@ index 8a10394..9493211 100644
 +      throw new IOException("No activity available");
 +    }
 +
++    if (imagePath.startsWith(CLUSTER_MARKER_PREFIX)) {
++      return createClusterMarkerBitmap(imagePath.substring(CLUSTER_MARKER_PREFIX.length()));
++    }
++
 +    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
 +      HttpURLConnection connection = (HttpURLConnection) new URL(imagePath).openConnection();
 +      connection.setDoInput(true);
@@ -7687,6 +7739,43 @@ index 8a10394..9493211 100644
 +    try (InputStream inputStream = activity.getAssets().open(imagePath)) {
 +      return BitmapFactory.decodeStream(inputStream);
 +    }
++  }
++
++  private Bitmap createClusterMarkerBitmap(String label) {
++    Activity activity = activitySupplier != null ? activitySupplier.get() : null;
++    float density = activity != null ? activity.getResources().getDisplayMetrics().density : 1f;
++    int size = Math.max(512, Math.round(184 * density));
++    Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
++    Canvas canvas = new Canvas(bitmap);
++
++    Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++    fillPaint.setColor(Color.parseColor("#0F766E"));
++    canvas.drawCircle(size / 2f, size / 2f, size / 2f - (size * 0.08f), fillPaint);
++
++    Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++    strokePaint.setColor(Color.parseColor("#115E59"));
++    strokePaint.setStyle(Paint.Style.STROKE);
++    strokePaint.setStrokeWidth(size * 0.06f);
++    canvas.drawCircle(size / 2f, size / 2f, size / 2f - (size * 0.11f), strokePaint);
++
++    Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++    textPaint.setColor(Color.WHITE);
++    textPaint.setTextAlign(Paint.Align.CENTER);
++    textPaint.setTypeface(Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD));
++    textPaint.setTextSize(label.length() > 2 ? size * 0.28f : size * 0.34f);
++
++    Rect textBounds = new Rect();
++    textPaint.getTextBounds(label, 0, label.length(), textBounds);
++    float baseline = size / 2f - textBounds.exactCenterY();
++    canvas.drawText(label, size / 2f, baseline, textPaint);
++
++    Paint tailPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
++    tailPaint.setColor(Color.parseColor("#0F766E"));
++    RectF tailRect =
++        new RectF(size * 0.39f, size * 0.74f, size * 0.61f, size * 0.96f);
++    canvas.drawRoundRect(tailRect, size * 0.08f, size * 0.08f, tailPaint);
++
++    return bitmap;
 +  }
 +
 +  private void animateDraggableMarker(Marker marker, boolean lifted) {
@@ -7902,13 +7991,59 @@ index 6cd6f27..7b0827e 100644
    public void showRouteOverview(String nativeID, final Promise promise) {
      UiThreadUtil.runOnUiThread(
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
-index e12b860..4902d01 100644
+index e12b860..28d69e8 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavAutoModule.mm
-@@ -20,6 +20,76 @@
+@@ -20,6 +20,126 @@
  
  using namespace JS::NativeNavAutoModule;
  
++static NSString *const kClusterMarkerPrefix = @"__cluster__:";
++
++static UIImage *CreateClusterMarkerImage(NSString *label) {
++  CGSize size = CGSizeMake(512, 512);
++  UIGraphicsImageRenderer *renderer =
++      [[UIGraphicsImageRenderer alloc] initWithSize:size];
++
++  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
++    CGRect bounds = CGRectMake(0, 0, size.width, size.height);
++    CGRect circleRect = CGRectInset(bounds, size.width * 0.09, size.height * 0.12);
++    UIBezierPath *circlePath = [UIBezierPath bezierPathWithOvalInRect:circleRect];
++    [[UIColor colorWithRed:15 / 255.0 green:118 / 255.0 blue:110 / 255.0 alpha:1]
++        setFill];
++    [circlePath fill];
++
++    circlePath.lineWidth = size.width * 0.06;
++    [[UIColor colorWithRed:17 / 255.0 green:94 / 255.0 blue:89 / 255.0 alpha:1]
++        setStroke];
++    [circlePath stroke];
++
++    UIFont *font = [UIFont boldSystemFontOfSize:label.length > 2 ? 150 : 176];
++    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
++    style.alignment = NSTextAlignmentCenter;
++    NSDictionary *attributes = @{
++      NSFontAttributeName : font,
++      NSForegroundColorAttributeName : UIColor.whiteColor,
++      NSParagraphStyleAttributeName : style,
++    };
++    CGSize textSize = [label sizeWithAttributes:attributes];
++    CGRect textRect = CGRectMake((size.width - textSize.width) / 2.0,
++                                 (size.height - textSize.height) / 2.0 - 18,
++                                 textSize.width,
++                                 textSize.height);
++    [label drawInRect:textRect withAttributes:attributes];
++
++    UIBezierPath *tailPath = [UIBezierPath bezierPath];
++    [tailPath moveToPoint:CGPointMake(size.width * 0.42, size.height * 0.74)];
++    [tailPath addLineToPoint:CGPointMake(size.width * 0.58, size.height * 0.74)];
++    [tailPath addLineToPoint:CGPointMake(size.width * 0.5, size.height * 0.96)];
++    [tailPath closePath];
++    [[UIColor colorWithRed:15 / 255.0 green:118 / 255.0 blue:110 / 255.0 alpha:1]
++        setFill];
++    [tailPath fill];
++  }];
++}
++
 +static UIImage *LoadMarkerImage(NSString *imgPath) {
 +  if (!imgPath || ![imgPath isKindOfClass:[NSString class]]) {
 +    return nil;
@@ -7918,6 +8053,10 @@ index e12b860..4902d01 100644
 +      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 +  if (trimmedPath.length == 0) {
 +    return nil;
++  }
++
++  if ([trimmedPath hasPrefix:kClusterMarkerPrefix]) {
++    return CreateClusterMarkerImage([trimmedPath substringFromIndex:kClusterMarkerPrefix.length]);
 +  }
 +
 +  if ([trimmedPath hasPrefix:@"file://"] || [trimmedPath hasPrefix:@"/"]) {
@@ -7982,7 +8121,7 @@ index e12b860..4902d01 100644
  @implementation NavAutoModule
  
  RCT_EXPORT_MODULE(NavAutoModule);
-@@ -145,7 +215,7 @@ - (void)addMarker:(MarkerOptionsSpec &)options
+@@ -145,7 +265,7 @@ - (void)addMarker:(MarkerOptionsSpec &)options
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = nil;
        if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
@@ -7991,7 +8130,7 @@ index e12b860..4902d01 100644
          if (!icon) {
            reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
            return;
-@@ -321,7 +391,7 @@ - (void)addGroundOverlay:(GroundOverlayOptionsSpec &)options
+@@ -321,7 +441,7 @@ - (void)addGroundOverlay:(GroundOverlayOptionsSpec &)options
      dispatch_async(dispatch_get_main_queue(), ^{
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
@@ -8228,13 +8367,59 @@ index 059e5d5..a1542f8 100644
    NSMutableArray<NSDictionary *> *result = [[NSMutableArray alloc] init];
    for (NSString *key in _markerMap) {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
-index b80d4f5..6f0d298 100644
+index b80d4f5..8edb43a 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/NavViewModule.mm
-@@ -30,6 +30,76 @@
+@@ -30,6 +30,126 @@
    return dict;
  }
  
++static NSString *const kClusterMarkerPrefix = @"__cluster__:";
++
++static UIImage *CreateClusterMarkerImage(NSString *label) {
++  CGSize size = CGSizeMake(512, 512);
++  UIGraphicsImageRenderer *renderer =
++      [[UIGraphicsImageRenderer alloc] initWithSize:size];
++
++  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
++    CGRect bounds = CGRectMake(0, 0, size.width, size.height);
++    CGRect circleRect = CGRectInset(bounds, size.width * 0.09, size.height * 0.12);
++    UIBezierPath *circlePath = [UIBezierPath bezierPathWithOvalInRect:circleRect];
++    [[UIColor colorWithRed:15 / 255.0 green:118 / 255.0 blue:110 / 255.0 alpha:1]
++        setFill];
++    [circlePath fill];
++
++    circlePath.lineWidth = size.width * 0.06;
++    [[UIColor colorWithRed:17 / 255.0 green:94 / 255.0 blue:89 / 255.0 alpha:1]
++        setStroke];
++    [circlePath stroke];
++
++    UIFont *font = [UIFont boldSystemFontOfSize:label.length > 2 ? 150 : 176];
++    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
++    style.alignment = NSTextAlignmentCenter;
++    NSDictionary *attributes = @{
++      NSFontAttributeName : font,
++      NSForegroundColorAttributeName : UIColor.whiteColor,
++      NSParagraphStyleAttributeName : style,
++    };
++    CGSize textSize = [label sizeWithAttributes:attributes];
++    CGRect textRect = CGRectMake((size.width - textSize.width) / 2.0,
++                                 (size.height - textSize.height) / 2.0 - 18,
++                                 textSize.width,
++                                 textSize.height);
++    [label drawInRect:textRect withAttributes:attributes];
++
++    UIBezierPath *tailPath = [UIBezierPath bezierPath];
++    [tailPath moveToPoint:CGPointMake(size.width * 0.42, size.height * 0.74)];
++    [tailPath addLineToPoint:CGPointMake(size.width * 0.58, size.height * 0.74)];
++    [tailPath addLineToPoint:CGPointMake(size.width * 0.5, size.height * 0.96)];
++    [tailPath closePath];
++    [[UIColor colorWithRed:15 / 255.0 green:118 / 255.0 blue:110 / 255.0 alpha:1]
++        setFill];
++    [tailPath fill];
++  }];
++}
++
 +static UIImage *LoadMarkerImage(NSString *imgPath) {
 +  if (!imgPath || ![imgPath isKindOfClass:[NSString class]]) {
 +    return nil;
@@ -8244,6 +8429,10 @@ index b80d4f5..6f0d298 100644
 +      [imgPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 +  if (trimmedPath.length == 0) {
 +    return nil;
++  }
++
++  if ([trimmedPath hasPrefix:kClusterMarkerPrefix]) {
++    return CreateClusterMarkerImage([trimmedPath substringFromIndex:kClusterMarkerPrefix.length]);
 +  }
 +
 +  if ([trimmedPath hasPrefix:@"file://"] || [trimmedPath hasPrefix:@"/"]) {
@@ -8308,7 +8497,7 @@ index b80d4f5..6f0d298 100644
  @implementation NavViewModule
  
  RCT_EXPORT_MODULE();
-@@ -148,7 +218,7 @@ - (void)addMarker:(NSString *)nativeID
+@@ -148,7 +268,7 @@ - (void)addMarker:(NSString *)nativeID
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = nil;
        if (imgPath && [imgPath isKindOfClass:[NSString class]] && imgPath.length > 0) {
@@ -8317,7 +8506,7 @@ index b80d4f5..6f0d298 100644
          if (!icon) {
            reject(@"INVALID_IMAGE", @"Failed to load image from the provided path", nil);
            return;
-@@ -288,7 +358,7 @@ - (void)addGroundOverlay:(NSString *)nativeID
+@@ -288,7 +408,7 @@ - (void)addGroundOverlay:(NSString *)nativeID
      dispatch_async(dispatch_get_main_queue(), ^{
        NSString *imgPath = optionsCopy.imgPath();
        UIImage *icon = (imgPath && [imgPath isKindOfClass:[NSString class]])
@@ -8326,7 +8515,7 @@ index b80d4f5..6f0d298 100644
                            : nil;
  
        if (!icon) {
-@@ -373,7 +443,10 @@ - (void)moveCamera:(NSString *)nativeID
+@@ -373,7 +493,10 @@ - (void)moveCamera:(NSString *)nativeID
    CameraPositionSpec positionCopy(cameraPosition);
    if (viewController) {
      dispatch_async(dispatch_get_main_queue(), ^{
@@ -8338,7 +8527,7 @@ index b80d4f5..6f0d298 100644
  
        if (positionCopy.target().has_value()) {
          auto target = positionCopy.target().value();
-@@ -400,6 +473,47 @@ - (void)moveCamera:(NSString *)nativeID
+@@ -400,6 +523,47 @@ - (void)moveCamera:(NSString *)nativeID
    }
  }
  
@@ -8387,14 +8576,14 @@ index b80d4f5..6f0d298 100644
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
 diff --git a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
-index b5de26f..288e476 100644
+index b5de26f..ad42278 100644
 --- a/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
 +++ b/node_modules/@googlemaps/react-native-navigation-sdk/ios/react-native-navigation-sdk/ObjectTranslationUtil.mm
 @@ -16,8 +16,49 @@
  
  #import "ObjectTranslationUtil.h"
  
-+static CGFloat const kMarkerBaseScale = 0.18;
++static CGFloat const kMarkerBaseScale = 0.06;
 +static CGFloat const kDraggableMarkerBaseScale = 0.24;
 +
  @implementation ObjectTranslationUtil

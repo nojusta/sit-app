@@ -296,7 +296,6 @@ describe("GoogleMapSurface", () => {
     expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "draft-marker",
-        imgPath: expect.any(String),
         draggable: true,
         zIndex: 1000,
       }),

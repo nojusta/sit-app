@@ -11,7 +11,7 @@ import {
   type Models,
 } from "appwrite";
 import Constants from "expo-constants";
-import { EncodingType, readAsStringAsync } from "expo-file-system/legacy";
+import { Platform } from "react-native";
 
 type ExpoExtra = {
   APPWRITE_ENDPOINT?: string;
@@ -301,22 +301,47 @@ const buildProfilePhotoPermissions = (ownerId: string) => [
   Permission.delete(Role.user(ownerId)),
 ];
 
-const createAppwriteFile = async (file: UploadableImage): Promise<File> => {
-  if (typeof File !== "function") {
-    throw new Error("File uploads are not supported in this runtime.");
+const APPWRITE_RESPONSE_FORMAT = "1.8.0";
+
+const ensureTrailingSlash = (value: string) =>
+  value.endsWith("/") ? value : `${value}/`;
+
+const buildAppwriteUrl = (resourcePath: string) => {
+  ensureReady();
+
+  return new URL(
+    resourcePath.replace(/^\/+/, ""),
+    ensureTrailingSlash(appwriteConfig.endpoint!),
+  ).toString();
+};
+
+const parseJsonResponse = (value: string) => {
+  if (!value) {
+    return null;
   }
 
-  const base64 = await readAsStringAsync(file.uri, {
-    encoding: EncodingType.Base64,
-  });
-  const response = await fetch(`data:${file.type || "image/jpeg"};base64,${base64}`);
-  const blob = await response.blob();
-
-  return new File([blob], file.name, {
-    type: file.type || "image/jpeg",
-    lastModified: Date.now(),
-  });
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
 };
+
+const normalizeUploadFileName = (value: string | undefined, fallback: string) => {
+  const normalized = String(value || fallback)
+    .trim()
+    .replace(/[^\p{L}\p{N}._-]+/gu, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return normalized || fallback;
+};
+
+const buildUploadPayload = (file: UploadableImage) => ({
+  uri: file.uri,
+  name: normalizeUploadFileName(file.name, `upload-${Date.now()}.jpg`),
+  type: file.type || "image/jpeg",
+});
 
 const createStorageFile = async (
   file: UploadableImage,
@@ -324,14 +349,40 @@ const createStorageFile = async (
 ): Promise<string> => {
   ensureStorageReady();
   try {
-    const appwriteFile = await createAppwriteFile(file);
-    const response = await getStorageClient().createFile(
-      getStorageId(),
-      ID.unique(),
-      appwriteFile,
-      permissions,
+    const jwt = await getAccountClient().createJWT();
+    const formData = new FormData();
+
+    formData.append("fileId", "unique()");
+    formData.append("file", buildUploadPayload(file) as unknown as Blob);
+    permissions.forEach((permission) => {
+      formData.append("permissions[]", permission);
+    });
+
+    const response = await fetch(
+      buildAppwriteUrl(`/storage/buckets/${encodeURIComponent(getStorageId())}/files`),
+      {
+        method: "POST",
+        credentials: "omit",
+        headers: {
+          Accept: "application/json",
+          "X-Appwrite-Project": appwriteConfig.projectId!,
+          "X-Appwrite-JWT": jwt.jwt,
+          "X-Appwrite-Response-Format": APPWRITE_RESPONSE_FORMAT,
+        },
+        body: formData,
+      },
     );
-    const fileUrl = getStorageClient().getFileView(getStorageId(), response.$id);
+    const payload = parseJsonResponse(await response.text());
+
+    if (!response.ok || !payload?.$id) {
+      throw new Error(
+        typeof payload?.message === "string"
+          ? payload.message
+          : "Could not upload the selected image.",
+      );
+    }
+
+    const fileUrl = getStorageClient().getFileView(getStorageId(), payload.$id);
 
     return String(fileUrl);
   } catch (error) {
@@ -586,14 +637,22 @@ export async function updateMarker({
 }
 
 export const subscribeToMarkerChanges = (callback: () => void) => {
-  if (!databaseReady) {
+  if (!databaseReady || Platform.OS !== "web") {
     return () => {};
   }
 
-  return client.subscribe(
-    [`databases.${getDatabaseId()}.collections.${getMarkersCollectionId()}.documents`],
-    () => callback(),
-  );
+  try {
+    return client.subscribe(
+      [`databases.${getDatabaseId()}.collections.${getMarkersCollectionId()}.documents`],
+      () => callback(),
+    );
+  } catch (error) {
+    if (__DEV__) {
+      console.warn("Marker realtime subscription unavailable.", error);
+    }
+
+    return () => {};
+  }
 };
 
 export { formatMarkerLocation };

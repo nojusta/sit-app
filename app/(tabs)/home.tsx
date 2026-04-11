@@ -1,14 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import {
-  AppState,
-  View,
-  Linking,
-  Alert,
-  InteractionManager,
-  Keyboard,
-  Platform,
-} from "react-native";
+import { AppState, View, Linking, Alert, Keyboard, Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Device from "expo-device";
 import * as ImagePicker from "expo-image-picker";
@@ -71,6 +63,10 @@ const HomeApp: React.FC = () => {
         : null,
     [location],
   );
+  const [isPickerLaunching, setIsPickerLaunching] = useState(false);
+  const [pendingPickerMode, setPendingPickerMode] = useState<"camera" | "library" | null>(
+    null,
+  );
   const {
     markers,
     selectedMarker,
@@ -130,65 +126,74 @@ const HomeApp: React.FC = () => {
     [setMarkerPhoto],
   );
 
-  const launchMarkerPicker = useCallback(
-    (mode: "camera" | "library") => {
-      Keyboard.dismiss();
+  const launchMarkerPicker = useCallback((mode: "camera" | "library") => {
+    Keyboard.dismiss();
+    setPendingPickerMode(mode);
+    setIsPickerLaunching(true);
+  }, []);
 
-      InteractionManager.runAfterInteractions(() => {
-        void (async () => {
-          try {
-            if (mode === "camera") {
-              if (Platform.OS === "ios" && !Device.isDevice) {
-                Alert.alert(
-                  "Camera unavailable",
-                  "Taking a new photo requires a real iPhone. Use Choose photo on the simulator.",
-                );
-                return;
-              }
+  useEffect(() => {
+    if (!pendingPickerMode || !isPickerLaunching) {
+      return;
+    }
 
-              const permission = await ImagePicker.requestCameraPermissionsAsync();
-
-              if (!permission.granted) {
-                Alert.alert(
-                  "Camera access required",
-                  "Allow camera access to take a photo for your new sitting spot.",
-                );
-                return;
-              }
-
-              const result = await ImagePicker.launchCameraAsync({
-                ...cameraPickerOptions,
-              });
-              handleMarkerPhotoChange(result);
-              return;
-            }
-
-            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-            if (!permission.granted) {
+    const timeoutId = setTimeout(() => {
+      void (async () => {
+        try {
+          if (pendingPickerMode === "camera") {
+            if (Platform.OS === "ios" && !Device.isDevice) {
               Alert.alert(
-                "Photo library access required",
-                "Allow photo access to choose an image for your sitting spot.",
+                "Camera unavailable",
+                "Taking a new photo requires a real iPhone. Use Choose photo on the simulator.",
               );
               return;
             }
 
-            const result =
-              await ImagePicker.launchImageLibraryAsync(libraryPickerOptions);
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+            if (!permission.granted) {
+              Alert.alert(
+                "Camera access required",
+                "Allow camera access to take a photo for your new sitting spot.",
+              );
+              return;
+            }
+
+            const result = await ImagePicker.launchCameraAsync(cameraPickerOptions);
             handleMarkerPhotoChange(result);
-          } catch (error) {
-            Alert.alert(
-              "Photo unavailable",
-              error instanceof Error
-                ? error.message
-                : "The image picker could not be opened.",
-            );
+            return;
           }
-        })();
-      });
-    },
-    [handleMarkerPhotoChange],
-  );
+
+          const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+          if (!permission.granted) {
+            Alert.alert(
+              "Photo library access required",
+              "Allow photo access to choose an image for your sitting spot.",
+            );
+            return;
+          }
+
+          const result = await ImagePicker.launchImageLibraryAsync(libraryPickerOptions);
+          handleMarkerPhotoChange(result);
+        } catch (error) {
+          Alert.alert(
+            "Photo unavailable",
+            error instanceof Error
+              ? error.message
+              : "The image picker could not be opened.",
+          );
+        } finally {
+          setPendingPickerMode(null);
+          setIsPickerLaunching(false);
+        }
+      })();
+    }, 320);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [handleMarkerPhotoChange, isPickerLaunching, pendingPickerMode]);
 
   useEffect(() => {
     if (isFocused) {
@@ -298,7 +303,7 @@ const HomeApp: React.FC = () => {
             />
           )}
         <MarkerCreationModal
-          visible={isCreationModalVisible}
+          visible={isCreationModalVisible && !isPickerLaunching}
           title={markerName}
           description={markerInfo}
           photo={markerPhoto}

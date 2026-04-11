@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import type { MapViewController as GoogleMapViewController } from "@googlemaps/react-native-navigation-sdk";
 
-import type { MapCoordinate, MarkerData } from "../../../core";
+import type { MapCoordinate } from "../../../core";
 import { DRAFT_MARKER_ID } from "../googleMapSurface.constants";
+import type { BrowseMarkerRenderable } from "../googleMapSurface.clustering";
 import {
   isNoViewControllerError,
   retryTransientNativeCommand,
@@ -27,8 +28,8 @@ interface UseBrowseMarkerSyncOptions {
   isBrowseMapControllerReady: boolean;
   isBrowseMapReady: boolean;
   isNavigationSurfaceVisible: boolean;
-  markerLookupRef: React.MutableRefObject<Map<string, MarkerData>>;
-  markers: MarkerData[];
+  markerLookupRef: React.MutableRefObject<Map<string, BrowseMarkerRenderable>>;
+  markers: BrowseMarkerRenderable[];
 }
 
 const useBrowseMarkerSync = ({
@@ -76,15 +77,16 @@ const useBrowseMarkerSync = ({
           return;
         }
 
-        const lookup = new Map<string, MarkerData>();
+        const lookup = new Map<string, BrowseMarkerRenderable>();
 
         for (const marker of markers) {
           try {
             const googleMarker = await addMarkerWithFallback(controller, {
               id: `marker-${marker.id}`,
               position: toGoogleLatLng(marker.coordinate),
-              title: marker.title,
-              snippet: marker.description,
+              title: "title" in marker ? marker.title : undefined,
+              snippet: "description" in marker ? marker.description : undefined,
+              imgPath: "imgPath" in marker ? marker.imgPath : undefined,
             });
 
             if (!isActive) {
@@ -105,6 +107,7 @@ const useBrowseMarkerSync = ({
             position: toGoogleLatLng(draftMarkerRef.current),
             title: "New marker",
             snippet: "Press and drag to place this sitting spot.",
+            imgPath: null,
             draggable: true,
             zIndex: 1000,
           });
@@ -167,6 +170,7 @@ const useBrowseMarkerSync = ({
           position: toGoogleLatLng(draftMarker),
           title: "New marker",
           snippet: "Press and drag to place this sitting spot.",
+          imgPath: null,
           draggable: true,
           zIndex: 1000,
         });

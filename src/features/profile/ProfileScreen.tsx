@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -59,6 +60,30 @@ const getProfileInitials = (value?: string) =>
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("") || "S";
 
+const PROFILE_CARD_HEIGHT = 188;
+const PROFILE_CARD_GAP = 14;
+
+const MarkerGallerySkeleton: React.FC = () => (
+  <View className="flex-row flex-wrap justify-between gap-y-4 pt-2">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <View
+        key={`marker-skeleton-${index}`}
+        className="overflow-hidden rounded-[24px] border border-slate-700 bg-slate-800"
+        style={{
+          width: "48%",
+          height: PROFILE_CARD_HEIGHT,
+        }}
+      >
+        <View className="h-[128px] bg-slate-700" />
+        <View className="px-3 py-3">
+          <View className="h-4 rounded-full bg-slate-600" />
+          <View className="mt-2 h-3 w-20 rounded-full bg-slate-700" />
+        </View>
+      </View>
+    ))}
+  </View>
+);
+
 const ProfileScreen: React.FC = () => {
   const { user, setUser, setIsLogged, loading, setLoading } = useAuthContext();
   const router = useRouter();
@@ -67,6 +92,7 @@ const ProfileScreen: React.FC = () => {
   const [markerEditDescription, setMarkerEditDescription] = useState("");
   const [queuedMarkerPhotos, setQueuedMarkerPhotos] = useState<UploadableImage[]>([]);
   const [isSubmittingMarkerEdit, setIsSubmittingMarkerEdit] = useState(false);
+  const { width: windowWidth } = useWindowDimensions();
   const {
     data: markers,
     loading: markersLoading,
@@ -80,6 +106,20 @@ const ProfileScreen: React.FC = () => {
   );
 
   const markerCount = markers?.length ?? 0;
+  const tileWidth = (windowWidth - 32 - PROFILE_CARD_GAP) / 2;
+  const getMarkerLayout = (
+    _: ArrayLike<MarkerRecord> | null | undefined,
+    index: number,
+  ) => {
+    const row = Math.floor(index / 2);
+    const rowHeight = PROFILE_CARD_HEIGHT + 16;
+
+    return {
+      index,
+      length: rowHeight,
+      offset: row * rowHeight,
+    };
+  };
   const handleSignOut = async () => {
     setLoading(true);
 
@@ -194,22 +234,32 @@ const ProfileScreen: React.FC = () => {
         columnWrapperStyle={{ gap: 14 }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 140 }}
         ItemSeparatorComponent={() => <View className="h-4" />}
+        initialNumToRender={12}
+        maxToRenderPerBatch={12}
+        windowSize={7}
+        removeClippedSubviews
+        getItemLayout={getMarkerLayout}
+        extraData={highlightedMarkerId}
         renderItem={({ item }) => (
-          <MarkerGalleryTile
-            marker={item}
-            isSelected={highlightedMarkerId === item.id}
-            onPress={() =>
-              setHighlightedMarkerId((current) => (current === item.id ? null : item.id))
-            }
-            onEditPress={() => openMarkerEditor(item)}
-          />
+          <View style={{ width: tileWidth }}>
+            <MarkerGalleryTile
+              marker={item}
+              isSelected={highlightedMarkerId === item.id}
+              onPress={() =>
+                setHighlightedMarkerId((current) =>
+                  current === item.id ? null : item.id,
+                )
+              }
+              onEditPress={() => openMarkerEditor(item)}
+            />
+          </View>
         )}
         refreshing={markersRefreshing}
         onRefresh={refetchMarkers}
         ListEmptyComponent={() => (
           <View className="py-6">
             {markersLoading ? (
-              <ActivityIndicator size="small" color="#E2E8F0" />
+              <MarkerGallerySkeleton />
             ) : (
               <EmptyState
                 title="No submitted markers yet"

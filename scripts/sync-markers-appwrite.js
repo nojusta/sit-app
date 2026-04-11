@@ -18,7 +18,11 @@ const config = {
 
 const COLLECTION_NAME = "markers";
 const DATABASE_NAME = "db.sitapp";
-const SEED_PATH = path.join(repoRoot, "test-run-unique.json");
+const PRIMARY_SEED_PATH = path.join(repoRoot, "new-markers.json");
+const FALLBACK_SEED_PATH = path.join(repoRoot, "test-run-unique.json");
+const SEED_PATH = fs.existsSync(PRIMARY_SEED_PATH)
+  ? PRIMARY_SEED_PATH
+  : FALLBACK_SEED_PATH;
 const PHOTOS_DIR = path.join(repoRoot, "photos-for-markers");
 const ADMIN_PROFILE_IMAGE_PATH = path.join(repoRoot, "assets/images/profile.png");
 const MAX_POLL_ATTEMPTS = 30;
@@ -127,6 +131,7 @@ async function main() {
   const collectionId = config.collectionId || (await resolveCollectionId(databaseId));
 
   console.log(`Using Appwrite database ${databaseId} and collection ${collectionId}.`);
+  console.log(`Using seed file ${path.relative(repoRoot, SEED_PATH)}.`);
 
   const collectionBefore = await getCollection(databaseId, collectionId);
   console.log("Updating collection security...");

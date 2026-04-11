@@ -103,11 +103,14 @@ const useMapInteractions = ({
   };
 
   const handleMapPress = (coordinate?: MapCoordinate) => {
-    if (isPlacementMode && coordinate) {
-      setDraftMarker((current) =>
-        coordinatesMatch(current, coordinate) ? current : coordinate,
-      );
-      onMarkerSelectionChange?.(false);
+    if (isPlacementMode) {
+      if (coordinate) {
+        setDraftMarker((current) =>
+          coordinatesMatch(current, coordinate) ? current : coordinate,
+        );
+        onMarkerSelectionChange?.(false);
+      }
+
       return;
     }
 
