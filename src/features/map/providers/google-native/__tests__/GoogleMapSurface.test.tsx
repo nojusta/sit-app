@@ -6,6 +6,7 @@ import GoogleMapSurface from "../GoogleMapSurface";
 
 const mockClearMapView = jest.fn();
 const mockAddMarker = jest.fn();
+const mockRemoveMarker = jest.fn();
 const mockGetCameraPosition = jest.fn();
 const mockGetMyLocation = jest.fn();
 const mockMoveCamera = jest.fn();
@@ -104,6 +105,7 @@ describe("GoogleMapSurface", () => {
 
     mockClearMapView.mockResolvedValue(undefined);
     mockAddMarker.mockImplementation(async ({ id }: { id: string }) => ({ id }));
+    mockRemoveMarker.mockImplementation(() => {});
     mockGetCameraPosition.mockResolvedValue({
       target: { lat: 54.6872, lng: 25.2797 },
       zoom: 14.3,
@@ -162,6 +164,7 @@ describe("GoogleMapSurface", () => {
           onMapViewControllerCreated?.({
             clearMapView: mockClearMapView,
             addMarker: mockAddMarker,
+            removeMarker: mockRemoveMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
             animateCamera: mockAnimateCamera,
@@ -201,6 +204,7 @@ describe("GoogleMapSurface", () => {
           onMapViewControllerCreated?.({
             clearMapView: mockClearMapView,
             addMarker: mockAddMarker,
+            removeMarker: mockRemoveMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
             animateCamera: mockAnimateCamera,
@@ -280,7 +284,7 @@ describe("GoogleMapSurface", () => {
       />,
     );
 
-    await waitFor(() => expect(mockClearMapView).toHaveBeenCalled());
+    await waitFor(() => expect(mockAddMarker).toHaveBeenCalledTimes(3));
     expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-1",

@@ -223,6 +223,40 @@ describe("useMapInteractions", () => {
     });
   });
 
+  it("keeps placement mode active when the native map press does not return coordinates", () => {
+    const mapController = createMapControllerRef();
+    const location = {
+      coords: {
+        latitude: 54.6872,
+        longitude: 25.2797,
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: location as never,
+        markers: MARKERS,
+        currentUserId: "user-1",
+        isAuthenticated: true,
+      }),
+    );
+
+    act(() => {
+      result.current.handleAddMarker();
+    });
+
+    act(() => {
+      result.current.handleMapPress(undefined);
+    });
+
+    expect(result.current.isPlacementMode).toBe(true);
+    expect(result.current.userMarker).toEqual({
+      latitude: 54.6872,
+      longitude: 25.2797,
+    });
+  });
+
   it("requires authentication before entering placement mode", () => {
     const mapController = createMapControllerRef();
     const location = {

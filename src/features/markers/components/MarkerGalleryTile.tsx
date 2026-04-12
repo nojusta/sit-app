@@ -22,30 +22,33 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   return (
     <Pressable onPress={onPress} className="w-full">
       <View className="h-[188px] overflow-hidden rounded-[24px] border border-slate-700 bg-slate-800">
-        <View className="relative">
+        <View className="relative h-[128px] items-center justify-center">
           {previewPhoto ? (
             <Image
               source={{ uri: previewPhoto }}
               resizeMode="cover"
               blurRadius={isSelected ? 10 : 0}
-              className="h-[128px] w-full"
+              className="absolute inset-0 h-[128px] w-full"
             />
           ) : (
-            <View className="h-[128px] items-center justify-center bg-slate-700">
-              <View className="h-16 w-16 items-center justify-center rounded-full bg-slate-600">
+            <View className="absolute inset-0 h-[128px] w-full items-center justify-center bg-slate-700 px-4">
+              <View className="items-center justify-center">
                 <Image
                   source={icons.upload}
                   resizeMode="contain"
                   className="h-7 w-7"
                   style={{ tintColor: "#E2E8F0" }}
                 />
+                <Text className="mt-3 font-pregular text-xs text-slate-200">
+                  No photo yet
+                </Text>
               </View>
             </View>
           )}
 
           {isSelected ? (
-            <View className="absolute inset-0 items-center justify-center bg-slate-950/55 px-4">
-              <View className="w-full max-w-[150px]">
+            <View className="absolute inset-0 flex-row items-center justify-center bg-slate-950/55 px-4">
+              <View className="w-[150px]">
                 <CustomButton
                   title="Edit marker"
                   handlePress={() => onEditPress?.()}

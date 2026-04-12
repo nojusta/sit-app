@@ -21,6 +21,7 @@ jest.mock("@react-navigation/native", () => ({
 jest.mock("expo-image-picker", () => ({
   launchCameraAsync: jest.fn(),
   launchImageLibraryAsync: jest.fn(),
+  getCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
   requestCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
   requestMediaLibraryPermissionsAsync: jest.fn(async () => ({ granted: true })),
   UIImagePickerPresentationStyle: {

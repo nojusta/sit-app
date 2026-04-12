@@ -4,11 +4,7 @@ import type { MapViewController as GoogleMapViewController } from "@googlemaps/r
 import type { MapCoordinate } from "../../../core";
 import { DRAFT_MARKER_ID } from "../googleMapSurface.constants";
 import type { BrowseMarkerRenderable } from "../googleMapSurface.clustering";
-import {
-  isNoViewControllerError,
-  retryTransientNativeCommand,
-  toGoogleLatLng,
-} from "../googleMapSurface.utils";
+import { toGoogleLatLng } from "../googleMapSurface.utils";
 
 interface UseBrowseMarkerSyncOptions {
   addMarkerWithFallback: (
@@ -43,6 +39,7 @@ const useBrowseMarkerSync = ({
   markers,
 }: UseBrowseMarkerSyncOptions) => {
   const draftMarkerRef = useRef(draftMarker);
+  const renderedMarkerIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     draftMarkerRef.current = draftMarker;
@@ -68,45 +65,63 @@ const useBrowseMarkerSync = ({
           return;
         }
 
-        await retryTransientNativeCommand(
-          () => Promise.resolve(controller.clearMapView()),
-          isNoViewControllerError,
-        );
+        const lookup = new Map<string, BrowseMarkerRenderable>();
+        const nextMarkerIds = new Set<string>();
+        const syncBatchSize = 18;
+
+        for (let index = 0; index < markers.length; index += syncBatchSize) {
+          const batch = markers.slice(index, index + syncBatchSize);
+
+          await Promise.all(
+            batch.map(async (marker) => {
+              const markerId = `marker-${marker.id}`;
+              nextMarkerIds.add(markerId);
+
+              try {
+                const googleMarker = await addMarkerWithFallback(controller, {
+                  id: markerId,
+                  position: toGoogleLatLng(marker.coordinate),
+                  title: "title" in marker ? marker.title : undefined,
+                  snippet: "description" in marker ? marker.description : undefined,
+                  imgPath: "imgPath" in marker ? marker.imgPath : undefined,
+                });
+
+                if (!isActive) {
+                  return;
+                }
+
+                lookup.set(googleMarker.id, marker);
+              } catch (error) {
+                if (__DEV__) {
+                  console.warn(`Failed to render marker ${marker.id}.`, error);
+                }
+              }
+            }),
+          );
+
+          if (!isActive) {
+            return;
+          }
+        }
+
+        renderedMarkerIdsRef.current.forEach((renderedMarkerId) => {
+          if (nextMarkerIds.has(renderedMarkerId)) {
+            return;
+          }
+
+          try {
+            controller.removeMarker(renderedMarkerId);
+          } catch {}
+        });
 
         if (!isActive) {
           return;
-        }
-
-        const lookup = new Map<string, BrowseMarkerRenderable>();
-
-        for (const marker of markers) {
-          try {
-            const googleMarker = await addMarkerWithFallback(controller, {
-              id: `marker-${marker.id}`,
-              position: toGoogleLatLng(marker.coordinate),
-              title: "title" in marker ? marker.title : undefined,
-              snippet: "description" in marker ? marker.description : undefined,
-              imgPath: "imgPath" in marker ? marker.imgPath : undefined,
-            });
-
-            if (!isActive) {
-              return;
-            }
-
-            lookup.set(googleMarker.id, marker);
-          } catch (error) {
-            if (__DEV__) {
-              console.warn(`Failed to render marker ${marker.id}.`, error);
-            }
-          }
         }
 
         if (draftMarkerRef.current) {
           await addMarkerWithFallback(controller, {
             id: DRAFT_MARKER_ID,
             position: toGoogleLatLng(draftMarkerRef.current),
-            title: "New marker",
-            snippet: "Press and drag to place this sitting spot.",
             imgPath: null,
             draggable: true,
             zIndex: 1000,
@@ -114,6 +129,7 @@ const useBrowseMarkerSync = ({
         }
 
         if (isActive) {
+          renderedMarkerIdsRef.current = nextMarkerIds;
           markerLookupRef.current = lookup;
         }
       } catch (error) {
@@ -168,8 +184,6 @@ const useBrowseMarkerSync = ({
         await addMarkerWithFallback(controller, {
           id: DRAFT_MARKER_ID,
           position: toGoogleLatLng(draftMarker),
-          title: "New marker",
-          snippet: "Press and drag to place this sitting spot.",
           imgPath: null,
           draggable: true,
           zIndex: 1000,

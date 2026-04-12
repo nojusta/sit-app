@@ -57,6 +57,13 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   onStopNavigation,
   navigationSdk,
 }) => {
+  const quantizeBrowseZoom = useCallback((zoom: number) => {
+    if (zoom >= 15) {
+      return 15;
+    }
+
+    return Math.round(zoom * 2) / 2;
+  }, []);
   const {
     MapView,
     NavigationSessionStatus,
@@ -87,7 +94,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const previousNavigationModeRef = useRef<boolean | null>(null);
   const hasAttemptedInitialCleanupRef = useRef(false);
   const markerLookupRef = useRef<Map<string, BrowseMarkerRenderable>>(new Map());
-  const browseZoomRef = useRef(INITIAL_CAMERA.zoom ?? 14.5);
+  const browseZoomRef = useRef(quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5));
   const [isBrowseMapReady, setIsBrowseMapReady] = useState(false);
   const [isNavigationMapReady, setIsNavigationMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
@@ -97,7 +104,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     useState(false);
   const [isNavigationViewControllerReady, setIsNavigationViewControllerReady] =
     useState(false);
-  const [browseZoom, setBrowseZoom] = useState(INITIAL_CAMERA.zoom ?? 14.5);
+  const [browseZoom, setBrowseZoom] = useState(
+    quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5),
+  );
 
   const navigationSessionOk = NavigationSessionStatus.OK;
   const routeOk = RouteStatus.OK;
@@ -372,9 +381,11 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           return;
         }
 
-        if (Math.abs(camera.zoom - browseZoomRef.current) >= 0.25) {
-          browseZoomRef.current = camera.zoom;
-          setBrowseZoom(camera.zoom);
+        const nextZoomBucket = quantizeBrowseZoom(camera.zoom);
+
+        if (Math.abs(nextZoomBucket - browseZoomRef.current) >= 0.49) {
+          browseZoomRef.current = nextZoomBucket;
+          setBrowseZoom(nextZoomBucket);
         }
       } catch {}
     };
@@ -382,13 +393,18 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     void syncCameraZoom();
     const intervalId = setInterval(() => {
       void syncCameraZoom();
-    }, 250);
+    }, 450);
 
     return () => {
       isActive = false;
       clearInterval(intervalId);
     };
-  }, [isBrowseMapControllerReady, isBrowseMapReady, isNavigationSurfaceVisible]);
+  }, [
+    isBrowseMapControllerReady,
+    isBrowseMapReady,
+    isNavigationSurfaceVisible,
+    quantizeBrowseZoom,
+  ]);
 
   useEffect(() => {
     if (!isNavigationActive || !isPreparingNavigation) {
@@ -473,9 +489,15 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           setIsBrowseMapReady(true);
         }}
         onMapClick={(coordinate) => {
+          if (__DEV__ && Platform.OS === "android" && draftMarker) {
+            console.log("[GoogleMapSurface] Raw map press", coordinate ?? null);
+          }
           onMapPress(toMapCoordinate(coordinate));
         }}
         onMarkerClick={(marker: GoogleMarker) => {
+          if (__DEV__ && Platform.OS === "android" && draftMarker) {
+            console.log("[GoogleMapSurface] Marker press", marker.id);
+          }
           const selectedMarker = markerLookupRef.current.get(marker.id);
 
           if (selectedMarker) {
@@ -484,8 +506,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
 
               if (controller) {
                 const nextZoom = Math.min(browseZoomRef.current + 2, 18.5);
-                browseZoomRef.current = nextZoom;
-                setBrowseZoom(nextZoom);
+                const nextZoomBucket = quantizeBrowseZoom(nextZoom);
+                browseZoomRef.current = nextZoomBucket;
+                setBrowseZoom(nextZoomBucket);
                 void animateCamera(controller, {
                   target: toGoogleLatLng(selectedMarker.coordinate),
                   zoom: nextZoom,
@@ -500,6 +523,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         }}
         onMapViewControllerCreated={(controller) => {
           browseMapControllerRef.current = controller;
+          browseZoomRef.current = quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5);
           setIsBrowseMapControllerReady(true);
           mapControllerRef.current = createMapInteractionController(controller);
         }}

@@ -141,6 +141,10 @@ const HomeApp: React.FC = () => {
       void (async () => {
         try {
           if (pendingPickerMode === "camera") {
+            if (__DEV__) {
+              console.log("[MarkerPhoto] Preparing camera launch on", Platform.OS);
+            }
+
             if (Platform.OS === "ios" && !Device.isDevice) {
               Alert.alert(
                 "Camera unavailable",
@@ -149,17 +153,74 @@ const HomeApp: React.FC = () => {
               return;
             }
 
-            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            const existingPermission = await ImagePicker.getCameraPermissionsAsync();
 
-            if (!permission.granted) {
+            if (__DEV__) {
+              console.log(
+                "[MarkerPhoto] Existing camera permission:",
+                existingPermission,
+              );
+            }
+
+            if (!existingPermission.granted && existingPermission.canAskAgain === false) {
               Alert.alert(
                 "Camera access required",
-                "Allow camera access to take a photo for your new sitting spot.",
+                "Allow camera access in Settings to take a photo for your new sitting spot.",
+                [
+                  {
+                    text: "Not now",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Open settings",
+                    onPress: () => {
+                      void Linking.openSettings();
+                    },
+                  },
+                ],
               );
               return;
             }
 
+            const permission = existingPermission.granted
+              ? existingPermission
+              : await ImagePicker.requestCameraPermissionsAsync();
+
+            if (__DEV__) {
+              console.log("[MarkerPhoto] Camera permission after request:", permission);
+            }
+
+            if (!permission.granted) {
+              Alert.alert(
+                "Camera access required",
+                permission.canAskAgain === false
+                  ? "Allow camera access in Settings to take a photo for your new sitting spot."
+                  : "Allow camera access to take a photo for your new sitting spot.",
+                permission.canAskAgain === false
+                  ? [
+                      {
+                        text: "Not now",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Open settings",
+                        onPress: () => {
+                          void Linking.openSettings();
+                        },
+                      },
+                    ]
+                  : undefined,
+              );
+              return;
+            }
+
+            if (__DEV__) {
+              console.log("[MarkerPhoto] Launching camera picker");
+            }
             const result = await ImagePicker.launchCameraAsync(cameraPickerOptions);
+            if (__DEV__) {
+              console.log("[MarkerPhoto] Camera picker returned", result);
+            }
             handleMarkerPhotoChange(result);
             return;
           }
@@ -183,12 +244,15 @@ const HomeApp: React.FC = () => {
               ? error.message
               : "The image picker could not be opened.",
           );
+          if (__DEV__) {
+            console.error("[MarkerPhoto] Picker failure", error);
+          }
         } finally {
           setPendingPickerMode(null);
           setIsPickerLaunching(false);
         }
       })();
-    }, 320);
+    }, 700);
 
     return () => {
       clearTimeout(timeoutId);
