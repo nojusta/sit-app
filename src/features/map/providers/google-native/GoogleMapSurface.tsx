@@ -58,11 +58,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   navigationSdk,
 }) => {
   const quantizeBrowseZoom = useCallback((zoom: number) => {
-    if (zoom >= 15) {
-      return 15;
-    }
-
-    return Math.round(zoom * 2) / 2;
+    return Math.round(zoom);
   }, []);
   const {
     MapView,
@@ -93,6 +89,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const currentLocationRef = useRef(currentLocation);
   const previousNavigationModeRef = useRef<boolean | null>(null);
   const hasAttemptedInitialCleanupRef = useRef(false);
+  const resolvedDefaultMarkerImagePathRef = useRef<string | null>(null);
   const markerLookupRef = useRef<Map<string, BrowseMarkerRenderable>>(new Map());
   const browseZoomRef = useRef(quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5));
   const [isBrowseMapReady, setIsBrowseMapReady] = useState(false);
@@ -262,12 +259,20 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           ? [undefined]
           : marker.imgPath
             ? [marker.imgPath]
-            : [...CUSTOM_MARKER_IMAGE_CANDIDATES, undefined];
+            : [
+                ...(resolvedDefaultMarkerImagePathRef.current
+                  ? [resolvedDefaultMarkerImagePathRef.current]
+                  : []),
+                ...CUSTOM_MARKER_IMAGE_CANDIDATES.filter(
+                  (candidate) => candidate !== resolvedDefaultMarkerImagePathRef.current,
+                ),
+                undefined,
+              ];
       let lastError: unknown;
 
       for (const iconCandidate of iconCandidates) {
         try {
-          return await retryTransientNativeCommand(
+          const nativeMarker = await retryTransientNativeCommand(
             () =>
               controller.addMarker({
                 ...markerOptions,
@@ -275,6 +280,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
               }),
             isNoViewControllerError,
           );
+
+          if (!marker.imgPath && iconCandidate) {
+            resolvedDefaultMarkerImagePathRef.current = iconCandidate;
+          }
+
+          return nativeMarker;
         } catch (error) {
           lastError = error;
 
@@ -393,7 +404,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     void syncCameraZoom();
     const intervalId = setInterval(() => {
       void syncCameraZoom();
-    }, 450);
+    }, 750);
 
     return () => {
       isActive = false;
@@ -489,15 +500,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           setIsBrowseMapReady(true);
         }}
         onMapClick={(coordinate) => {
-          if (__DEV__ && Platform.OS === "android" && draftMarker) {
-            console.log("[GoogleMapSurface] Raw map press", coordinate ?? null);
-          }
           onMapPress(toMapCoordinate(coordinate));
         }}
         onMarkerClick={(marker: GoogleMarker) => {
-          if (__DEV__ && Platform.OS === "android" && draftMarker) {
-            console.log("[GoogleMapSurface] Marker press", marker.id);
-          }
           const selectedMarker = markerLookupRef.current.get(marker.id);
 
           if (selectedMarker) {

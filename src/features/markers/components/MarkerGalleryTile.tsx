@@ -1,4 +1,5 @@
-import { Image, Pressable, Text, View } from "react-native";
+import React from "react";
+import { Image, Pressable, Text, View, type GestureResponderEvent } from "react-native";
 
 import type { MarkerRecord } from "@/services/appwrite";
 import { CustomButton } from "@/shared/components";
@@ -18,9 +19,12 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   onEditPress,
 }) => {
   const previewPhoto = marker.photoUrls?.[0] ?? marker.photoUrl;
+  const handleTouchStart = (event: GestureResponderEvent) => {
+    event.stopPropagation();
+  };
 
   return (
-    <Pressable onPress={onPress} className="w-full">
+    <Pressable onPress={onPress} onTouchStart={handleTouchStart} className="w-full">
       <View className="h-[188px] overflow-hidden rounded-[24px] border border-slate-700 bg-slate-800">
         <View className="relative h-[128px] items-center justify-center">
           {previewPhoto ? (
@@ -31,8 +35,16 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
               className="absolute inset-0 h-[128px] w-full"
             />
           ) : (
-            <View className="absolute inset-0 h-[128px] w-full items-center justify-center bg-slate-700 px-4">
-              <View className="items-center justify-center">
+            <View className="absolute inset-0 h-[128px] w-full items-center justify-center bg-slate-700">
+              <View className="absolute inset-0 bg-slate-700" />
+              <Image
+                source={icons.upload}
+                resizeMode="contain"
+                blurRadius={22}
+                className="absolute inset-0 h-full w-full opacity-15"
+                style={{ tintColor: "#E2E8F0" }}
+              />
+              <View className="items-center justify-center px-4">
                 <Image
                   source={icons.upload}
                   resizeMode="contain"
@@ -73,4 +85,4 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   );
 };
 
-export default MarkerGalleryTile;
+export default React.memo(MarkerGalleryTile);

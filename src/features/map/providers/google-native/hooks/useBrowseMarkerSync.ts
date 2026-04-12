@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Platform } from "react-native";
 import type { MapViewController as GoogleMapViewController } from "@googlemaps/react-native-navigation-sdk";
 
 import type { MapCoordinate } from "../../../core";
@@ -67,7 +68,11 @@ const useBrowseMarkerSync = ({
 
         const lookup = new Map<string, BrowseMarkerRenderable>();
         const nextMarkerIds = new Set<string>();
-        const syncBatchSize = 18;
+        const syncBatchSize = Platform.select({
+          ios: 12,
+          android: 24,
+          default: 16,
+        });
 
         for (let index = 0; index < markers.length; index += syncBatchSize) {
           const batch = markers.slice(index, index + syncBatchSize);

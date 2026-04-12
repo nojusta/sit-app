@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { AppState, View, Linking, Alert, Keyboard, Platform } from "react-native";
+import {
+  AppState,
+  BackHandler,
+  View,
+  Linking,
+  Alert,
+  Keyboard,
+  Platform,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Device from "expo-device";
 import * as ImagePicker from "expo-image-picker";
@@ -141,10 +149,6 @@ const HomeApp: React.FC = () => {
       void (async () => {
         try {
           if (pendingPickerMode === "camera") {
-            if (__DEV__) {
-              console.log("[MarkerPhoto] Preparing camera launch on", Platform.OS);
-            }
-
             if (Platform.OS === "ios" && !Device.isDevice) {
               Alert.alert(
                 "Camera unavailable",
@@ -154,13 +158,6 @@ const HomeApp: React.FC = () => {
             }
 
             const existingPermission = await ImagePicker.getCameraPermissionsAsync();
-
-            if (__DEV__) {
-              console.log(
-                "[MarkerPhoto] Existing camera permission:",
-                existingPermission,
-              );
-            }
 
             if (!existingPermission.granted && existingPermission.canAskAgain === false) {
               Alert.alert(
@@ -186,10 +183,6 @@ const HomeApp: React.FC = () => {
               ? existingPermission
               : await ImagePicker.requestCameraPermissionsAsync();
 
-            if (__DEV__) {
-              console.log("[MarkerPhoto] Camera permission after request:", permission);
-            }
-
             if (!permission.granted) {
               Alert.alert(
                 "Camera access required",
@@ -213,14 +206,7 @@ const HomeApp: React.FC = () => {
               );
               return;
             }
-
-            if (__DEV__) {
-              console.log("[MarkerPhoto] Launching camera picker");
-            }
             const result = await ImagePicker.launchCameraAsync(cameraPickerOptions);
-            if (__DEV__) {
-              console.log("[MarkerPhoto] Camera picker returned", result);
-            }
             handleMarkerPhotoChange(result);
             return;
           }
@@ -244,9 +230,6 @@ const HomeApp: React.FC = () => {
               ? error.message
               : "The image picker could not be opened.",
           );
-          if (__DEV__) {
-            console.error("[MarkerPhoto] Picker failure", error);
-          }
         } finally {
           setPendingPickerMode(null);
           setIsPickerLaunching(false);
@@ -318,6 +301,42 @@ const HomeApp: React.FC = () => {
       setIsPlacementActive(false);
     };
   }, [isCreationModalVisible, isPlacementMode, setIsPlacementActive]);
+
+  useEffect(() => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (isCreationModalVisible) {
+        handleCloseCreationModal();
+        return true;
+      }
+
+      if (isPlacementMode) {
+        handleCancelPlacement();
+        return true;
+      }
+
+      if (selectedMarker) {
+        handleMapPress();
+        return true;
+      }
+
+      return false;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [
+    handleCancelPlacement,
+    handleCloseCreationModal,
+    handleMapPress,
+    isCreationModalVisible,
+    isPlacementMode,
+    selectedMarker,
+  ]);
 
   return (
     <SafeAreaProvider>

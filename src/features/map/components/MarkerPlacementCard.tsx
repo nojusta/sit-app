@@ -18,12 +18,12 @@ const MarkerPlacementCard: React.FC<MarkerPlacementCardProps> = ({
       visible={true}
       collapsedHeight={COLLAPSED_HEIGHT}
       initialState="collapsed"
-      onBackdropPress={onCancel}
       sheetStyle={{
         backgroundColor: "#FFFFFF",
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
       }}
+      maxBackdropOpacity={0.18}
       header={
         <View className="px-5 pb-4 pt-4">
           <View className="self-center h-1.5 w-14 rounded-full bg-slate-200" />

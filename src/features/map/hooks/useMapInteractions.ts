@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type React from "react";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { LocationObject } from "expo-location";
 
 import { createMarker, type UploadableImage } from "@/services/appwrite";
@@ -103,10 +103,6 @@ const useMapInteractions = ({
   };
 
   const handleMapPress = (coordinate?: MapCoordinate) => {
-    if (__DEV__ && Platform.OS === "android" && isPlacementMode) {
-      console.log("[PlacementMode] Map press received", coordinate ?? null);
-    }
-
     if (isPlacementMode) {
       if (coordinate) {
         setDraftMarker((current) =>
@@ -167,17 +163,9 @@ const useMapInteractions = ({
     setDraftMarker(currentLocationCoordinate);
     setIsPlacementMode(true);
     setIsCreationModalVisible(false);
-
-    if (__DEV__ && Platform.OS === "android") {
-      console.log("[PlacementMode] Entered placement mode", currentLocationCoordinate);
-    }
   };
 
   const handleCancelPlacement = () => {
-    if (__DEV__ && Platform.OS === "android") {
-      console.log("[PlacementMode] Placement cancelled");
-    }
-
     resetDraftState();
     onMarkerSelectionChange?.(false);
 
@@ -196,10 +184,6 @@ const useMapInteractions = ({
     }
 
     setIsCreationModalVisible(true);
-
-    if (__DEV__ && Platform.OS === "android") {
-      console.log("[PlacementMode] Placement confirmed", draftMarker);
-    }
   };
 
   const handleCloseCreationModal = () => {

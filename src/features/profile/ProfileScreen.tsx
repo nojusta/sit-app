@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
@@ -106,7 +106,10 @@ const ProfileScreen: React.FC = () => {
   );
 
   const markerCount = markers?.length ?? 0;
-  const tileWidth = (windowWidth - 32 - PROFILE_CARD_GAP) / 2;
+  const tileWidth = useMemo(
+    () => (windowWidth - 32 - PROFILE_CARD_GAP) / 2,
+    [windowWidth],
+  );
   const getMarkerLayout = (
     _: ArrayLike<MarkerRecord> | null | undefined,
     index: number,
@@ -146,6 +149,24 @@ const ProfileScreen: React.FC = () => {
     setMarkerEditDescription("");
     setQueuedMarkerPhotos([]);
   };
+
+  const handleMarkerCardPress = useCallback((markerId: string) => {
+    setHighlightedMarkerId((current) => (current === markerId ? null : markerId));
+  }, []);
+
+  const renderMarkerItem = useCallback(
+    ({ item }: { item: MarkerRecord }) => (
+      <View style={{ width: tileWidth }}>
+        <MarkerGalleryTile
+          marker={item}
+          isSelected={highlightedMarkerId === item.id}
+          onPress={() => handleMarkerCardPress(item.id)}
+          onEditPress={() => openMarkerEditor(item)}
+        />
+      </View>
+    ),
+    [handleMarkerCardPress, highlightedMarkerId, tileWidth],
+  );
 
   const handleQueuedPhotoSelection = (result: ImagePicker.ImagePickerResult) => {
     try {
@@ -226,12 +247,25 @@ const ProfileScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-800" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1 bg-gray-800"
+      edges={["top"]}
+      onTouchStart={() => {
+        if (highlightedMarkerId && !markerBeingEdited) {
+          setHighlightedMarkerId(null);
+        }
+      }}
+    >
       <FlatList
         data={markers ?? []}
         numColumns={2}
         keyExtractor={(item) => item.id}
         columnWrapperStyle={{ gap: 14 }}
+        onTouchStart={() => {
+          if (highlightedMarkerId && !markerBeingEdited) {
+            setHighlightedMarkerId(null);
+          }
+        }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 140 }}
         ItemSeparatorComponent={() => <View className="h-4" />}
         initialNumToRender={12}
@@ -240,20 +274,12 @@ const ProfileScreen: React.FC = () => {
         removeClippedSubviews
         getItemLayout={getMarkerLayout}
         extraData={highlightedMarkerId}
-        renderItem={({ item }) => (
-          <View style={{ width: tileWidth }}>
-            <MarkerGalleryTile
-              marker={item}
-              isSelected={highlightedMarkerId === item.id}
-              onPress={() =>
-                setHighlightedMarkerId((current) =>
-                  current === item.id ? null : item.id,
-                )
-              }
-              onEditPress={() => openMarkerEditor(item)}
-            />
-          </View>
-        )}
+        onScrollBeginDrag={() => {
+          if (highlightedMarkerId) {
+            setHighlightedMarkerId(null);
+          }
+        }}
+        renderItem={renderMarkerItem}
         refreshing={markersRefreshing}
         onRefresh={refetchMarkers}
         ListEmptyComponent={() => (

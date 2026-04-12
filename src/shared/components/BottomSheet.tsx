@@ -173,13 +173,18 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-      <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={onBackdropPress}
-          accessibilityRole="button"
-          accessibilityLabel="Close sheet overlay"
-        />
+      <Animated.View
+        pointerEvents={onBackdropPress ? "auto" : "none"}
+        style={[styles.backdrop, { opacity: backdropOpacity }]}
+      >
+        {onBackdropPress ? (
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={onBackdropPress}
+            accessibilityRole="button"
+            accessibilityLabel="Close sheet overlay"
+          />
+        ) : null}
       </Animated.View>
       <Animated.View
         style={[

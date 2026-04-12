@@ -108,7 +108,7 @@ describe("GoogleMapSurface", () => {
     mockRemoveMarker.mockImplementation(() => {});
     mockGetCameraPosition.mockResolvedValue({
       target: { lat: 54.6872, lng: 25.2797 },
-      zoom: 14.3,
+      zoom: 16.3,
       bearing: 5,
       tilt: 25,
     });
@@ -284,7 +284,14 @@ describe("GoogleMapSurface", () => {
       />,
     );
 
-    await waitFor(() => expect(mockAddMarker).toHaveBeenCalledTimes(3));
+    await waitFor(() =>
+      expect(mockAddMarker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "marker-1",
+          imgPath: expect.any(String),
+        }),
+      ),
+    );
     expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-1",

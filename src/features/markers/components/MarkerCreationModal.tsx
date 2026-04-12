@@ -146,7 +146,7 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
                 />
               ) : (
                 <View className="h-52 items-center justify-center bg-[#EEF6F2] px-8">
-                  <View className="h-18 w-18 items-center justify-center rounded-full bg-white">
+                  <View className="h-12 w-12 items-center justify-center rounded-full bg-white">
                     <Image
                       source={icons.upload}
                       resizeMode="contain"

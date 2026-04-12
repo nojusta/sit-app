@@ -1,8 +1,13 @@
+import { Platform } from "react-native";
 import type { MarkerData, MapCoordinate } from "../../core";
 
 export const CLUSTER_MARKER_IMAGE_PREFIX = "__cluster__:";
-const CLUSTER_CELL_SIZE = 88;
-const CLUSTER_BREAKPOINT_ZOOM = 14.25;
+const CLUSTER_CELL_SIZE = 104;
+const CLUSTER_BREAKPOINT_ZOOM = Platform.select({
+  ios: 15,
+  android: 15,
+  default: 15,
+});
 
 export interface ClusterMarkerRenderable {
   id: string;
@@ -49,7 +54,7 @@ export const clusterBrowseMarkers = (
   markers: MarkerData[],
   zoom: number,
 ): BrowseMarkerRenderable[] => {
-  if (markers.length <= 1 || zoom >= CLUSTER_BREAKPOINT_ZOOM) {
+  if (markers.length <= 1 || zoom >= (CLUSTER_BREAKPOINT_ZOOM ?? 15)) {
     return markers;
   }
 

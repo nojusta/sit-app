@@ -28,10 +28,10 @@ const resolvedCustomMarkerAsset = Image.resolveAssetSource(
   require("../../../../../assets/images/custom-marker.png"),
 );
 export const CUSTOM_MARKER_IMAGE_CANDIDATES = [
-  resolvedCustomMarkerAsset?.uri,
   ...(Platform.select({
     ios: ["CustomMarker", "custom-marker", "custom-marker.png"],
     android: ["markers/custom-marker.png", "custom-marker.png", "custom-marker"],
     default: [],
   }) ?? []),
+  resolvedCustomMarkerAsset?.uri,
 ].filter((value): value is string => typeof value === "string" && value.length > 0);
