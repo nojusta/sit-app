@@ -22,11 +22,11 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({
     <SafeAreaView
       pointerEvents="box-none"
       edges={["top"]}
-      className="absolute top-0 left-0 right-0 z-10 px-4 pt-3"
+      className="absolute left-0 right-0 top-0 z-10 px-4 pt-3"
     >
       <View className="rounded-2xl border border-white/10 bg-[#1F2937] px-4 py-4 shadow-lg">
         <View className="flex-row items-start justify-between gap-3">
-          <Text className="flex-1 text-sm font-psemibold text-white">{title}</Text>
+          <Text className="flex-1 font-psemibold text-sm text-white">{title}</Text>
 
           <TouchableOpacity
             onPress={() => setCollapsed((current) => !current)}
@@ -52,7 +52,7 @@ const NoticeBanner: React.FC<NoticeBannerProps> = ({
                 accessibilityRole="button"
                 accessibilityLabel={actionLabel}
               >
-                <Text className="text-sm font-psemibold text-gray-300">
+                <Text className="font-psemibold text-sm text-gray-300">
                   {actionLabel}
                 </Text>
               </TouchableOpacity>

@@ -60,7 +60,7 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
       }}
       header={
         <View className="px-5 pb-4 pt-3">
-          <View className="self-center h-1.5 w-14 rounded-full bg-slate-300" />
+          <View className="h-1.5 w-14 self-center rounded-full bg-slate-300" />
 
           <View className="mt-4 flex-row items-start justify-between">
             <View className="mr-4 flex-1">

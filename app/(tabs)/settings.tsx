@@ -27,8 +27,8 @@ const Settings: React.FC = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-800">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View className="flex-row justify-between items-center mb-12">
-          <Text className="text-3xl text-gray-300 font-pbold">Settings</Text>
+        <View className="mb-12 flex-row items-center justify-between">
+          <Text className="font-pbold text-3xl text-gray-300">Settings</Text>
           <TouchableOpacity onPress={handleSignOut}>
             <Image
               source={icons.logout}
@@ -39,14 +39,14 @@ const Settings: React.FC = () => {
         </View>
 
         <View className="mb-8">
-          <Text className="text-2xl text-gray-300 mb-4 font-pbold">Account</Text>
+          <Text className="mb-4 font-pbold text-2xl text-gray-300">Account</Text>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
               source={icons.profile}
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Profile</Text>
+            <Text className="font-pregular text-xl text-gray-400">Profile</Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
@@ -54,19 +54,19 @@ const Settings: React.FC = () => {
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Privacy</Text>
+            <Text className="font-pregular text-xl text-gray-400">Privacy</Text>
           </TouchableOpacity>
         </View>
 
         <View className="mb-8">
-          <Text className="text-2xl text-gray-300 mb-4 font-pbold">Notifications</Text>
+          <Text className="mb-4 font-pbold text-2xl text-gray-300">Notifications</Text>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
               source={icons.push}
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">
+            <Text className="font-pregular text-xl text-gray-400">
               Email Notifications
             </Text>
           </TouchableOpacity>
@@ -76,21 +76,21 @@ const Settings: React.FC = () => {
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">
+            <Text className="font-pregular text-xl text-gray-400">
               Push Notifications
             </Text>
           </TouchableOpacity>
         </View>
 
         <View className="mb-8">
-          <Text className="text-2xl text-gray-300 mb-4 font-pbold">About</Text>
+          <Text className="mb-4 font-pbold text-2xl text-gray-300">About</Text>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
               source={icons.terms}
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Terms of Service</Text>
+            <Text className="font-pregular text-xl text-gray-400">Terms of Service</Text>
           </TouchableOpacity>
           <TouchableOpacity className="mt-4 flex-row items-center">
             <Image
@@ -98,7 +98,7 @@ const Settings: React.FC = () => {
               resizeMode="contain"
               style={{ width: 28, height: 28, marginRight: 12, tintColor: "#9CA3AF" }} // Lighter gray
             />
-            <Text className="text-xl text-gray-400 font-pregular">Privacy Policy</Text>
+            <Text className="font-pregular text-xl text-gray-400">Privacy Policy</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

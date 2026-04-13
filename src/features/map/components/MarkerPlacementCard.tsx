@@ -26,7 +26,7 @@ const MarkerPlacementCard: React.FC<MarkerPlacementCardProps> = ({
       maxBackdropOpacity={0.18}
       header={
         <View className="px-5 pb-4 pt-4">
-          <View className="self-center h-1.5 w-14 rounded-full bg-slate-200" />
+          <View className="h-1.5 w-14 self-center rounded-full bg-slate-200" />
           <Text className="mt-4 font-psemibold text-xl text-slate-900">
             Place a sitting spot
           </Text>
