@@ -49,6 +49,7 @@ const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
       collapsedHeight={COLLAPSED_HEIGHT}
       initialState="expanded"
       onBackdropPress={onClose}
+      dragGestureScope="header"
       sheetStyle={{
         backgroundColor: "#F4F4F0",
         borderTopLeftRadius: 34,
@@ -56,7 +57,7 @@ const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
       }}
       header={
         <View className="px-5 pb-4 pt-3">
-          <View className="self-center h-1.5 w-14 rounded-full bg-slate-300" />
+          <View className="h-1.5 w-14 self-center rounded-full bg-slate-300" />
           <Text className="mt-4 font-psemibold text-2xl text-slate-950">Edit marker</Text>
           <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
             Updating description or photos sends this marker back to pending review before
@@ -74,8 +75,8 @@ const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
           bounces={false}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="interactive"
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 84 }}
         >
           <View className="rounded-[28px] bg-white px-5 py-5">
@@ -96,6 +97,9 @@ const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
               placeholder="Add more context for this sitting spot"
               placeholderTextColor="#94A3B8"
               multiline
+              editable={!isSubmitting}
+              autoCorrect
+              autoCapitalize="sentences"
               textAlignVertical="top"
               className="mt-2 min-h-[148px] rounded-[26px] border border-slate-200 bg-white px-4 py-4 font-pmedium text-base text-slate-950"
             />

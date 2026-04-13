@@ -47,6 +47,7 @@ const MARKERS: MarkerData[] = [
 const createMapControllerRef = () => {
   const captureBrowseCamera = jest.fn().mockResolvedValue(BROWSE_CAMERA);
   const focusCoordinate = jest.fn();
+  const clearSelectedMarker = jest.fn();
   const restoreBrowseCamera = jest.fn();
   const centerOnCoordinate = jest.fn();
   const centerOnUserLocation = jest.fn().mockResolvedValue(true);
@@ -56,6 +57,7 @@ const createMapControllerRef = () => {
       current: {
         captureBrowseCamera,
         focusCoordinate,
+        clearSelectedMarker,
         restoreBrowseCamera,
         centerOnCoordinate,
         centerOnUserLocation,
@@ -63,6 +65,7 @@ const createMapControllerRef = () => {
     } as React.MutableRefObject<MapInteractionController | null>,
     captureBrowseCamera,
     focusCoordinate,
+    clearSelectedMarker,
     restoreBrowseCamera,
     centerOnCoordinate,
     centerOnUserLocation,
@@ -255,6 +258,31 @@ describe("useMapInteractions", () => {
       latitude: 54.6872,
       longitude: 25.2797,
     });
+  });
+
+  it("clears the native selected marker when dismissing marker details", async () => {
+    const mapController = createMapControllerRef();
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: null,
+        markers: MARKERS,
+      }),
+    );
+
+    act(() => {
+      result.current.handleMarkerPress(MARKERS[0]);
+    });
+
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
+
+    act(() => {
+      result.current.handleMapPress();
+    });
+
+    expect(mapController.clearSelectedMarker).toHaveBeenCalled();
+    expect(result.current.selectedMarker).toBeNull();
   });
 
   it("requires authentication before entering placement mode", () => {

@@ -22,6 +22,7 @@ interface UseBrowseMarkerSyncOptions {
   ) => Promise<{ id: string }>;
   browseMapControllerRef: React.MutableRefObject<GoogleMapViewController | null>;
   draftMarker: MapCoordinate | null;
+  isDefaultMarkerAssetReady: boolean;
   isBrowseMapControllerReady: boolean;
   isBrowseMapReady: boolean;
   isNavigationSurfaceVisible: boolean;
@@ -33,6 +34,7 @@ const useBrowseMarkerSync = ({
   addMarkerWithFallback,
   browseMapControllerRef,
   draftMarker,
+  isDefaultMarkerAssetReady,
   isBrowseMapControllerReady,
   isBrowseMapReady,
   isNavigationSurfaceVisible,
@@ -51,6 +53,7 @@ const useBrowseMarkerSync = ({
       !isBrowseMapReady ||
       !isBrowseMapControllerReady ||
       !browseMapControllerRef.current ||
+      !isDefaultMarkerAssetReady ||
       isNavigationSurfaceVisible
     ) {
       return;
@@ -154,6 +157,7 @@ const useBrowseMarkerSync = ({
     browseMapControllerRef,
     isBrowseMapControllerReady,
     isBrowseMapReady,
+    isDefaultMarkerAssetReady,
     isNavigationSurfaceVisible,
     markerLookupRef,
     markers,

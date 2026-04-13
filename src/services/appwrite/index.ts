@@ -48,6 +48,14 @@ export interface MarkerRecord {
   photoUrls?: string[];
 }
 
+export interface MarkerPageResult {
+  markers: MarkerRecord[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface CreateMarkerInput {
   title: string;
   description: string;
@@ -536,17 +544,45 @@ export async function listMarkersByAuthor(
   authorId: string,
   _signal?: AbortSignal,
 ): Promise<MarkerRecord[]> {
+  const response = await listMarkersByAuthorPage(authorId, { page: 1, pageSize: 200 });
+
+  return response.markers;
+}
+
+export async function listMarkersByAuthorPage(
+  authorId: string,
+  options?: { page?: number; pageSize?: number },
+): Promise<MarkerPageResult> {
   ensureDatabaseReady();
+
+  const page = Math.max(1, options?.page ?? 1);
+  const pageSize = Math.max(1, Math.min(options?.pageSize ?? 10, 100));
+  const offset = (page - 1) * pageSize;
 
   const response = await getDatabasesClient().listDocuments(
     getDatabaseId(),
     getMarkersCollectionId(),
-    [Query.equal("author_id", authorId), Query.orderDesc("created_at"), Query.limit(200)],
+    [
+      Query.equal("author_id", authorId),
+      Query.orderDesc("created_at"),
+      Query.limit(pageSize),
+      Query.offset(offset),
+    ],
   );
 
-  return response.documents.map((document) =>
+  const markers = response.documents.map((document) =>
     mapMarkerDocument(document as AppwriteMarkerDocument),
   );
+  const total = response.total;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  return {
+    markers,
+    page,
+    pageSize,
+    total,
+    totalPages,
+  };
 }
 
 export async function createMarker({

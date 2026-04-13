@@ -115,6 +115,7 @@ const useMapInteractions = ({
     }
 
     if (selectedMarker || draftMarker || isCreationModalVisible) {
+      mapControllerRef.current?.clearSelectedMarker();
       setSelectedMarker(null);
       setIsCreationModalVisible(false);
       onMarkerSelectionChange?.(false);

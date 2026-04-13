@@ -12,6 +12,27 @@ interface MarkerGalleryTileProps {
   onEditPress?: () => void;
 }
 
+const MarkerGalleryFallback: React.FC<{
+  isSelected: boolean;
+}> = ({ isSelected }) => (
+  <View
+    className="absolute inset-0 h-[128px] w-full items-center justify-center bg-slate-700 px-4"
+    testID="marker-gallery-fallback"
+  >
+    {!isSelected ? (
+      <View className="items-center justify-center">
+        <Image
+          source={icons.upload}
+          resizeMode="contain"
+          className="h-7 w-7"
+          style={{ tintColor: "#E2E8F0" }}
+        />
+        <Text className="mt-3 font-pregular text-xs text-slate-200">No photo yet</Text>
+      </View>
+    ) : null}
+  </View>
+);
+
 const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   marker,
   isSelected = false,
@@ -33,33 +54,16 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
               resizeMode="cover"
               blurRadius={isSelected ? 10 : 0}
               className="absolute inset-0 h-[128px] w-full"
+              testID="marker-gallery-preview"
             />
           ) : (
-            <View className="absolute inset-0 h-[128px] w-full items-center justify-center bg-slate-700">
-              <View className="absolute inset-0 bg-slate-700" />
-              <Image
-                source={icons.upload}
-                resizeMode="contain"
-                blurRadius={22}
-                className="absolute inset-0 h-full w-full opacity-15"
-                style={{ tintColor: "#E2E8F0" }}
-              />
-              <View className="items-center justify-center px-4">
-                <Image
-                  source={icons.upload}
-                  resizeMode="contain"
-                  className="h-7 w-7"
-                  style={{ tintColor: "#E2E8F0" }}
-                />
-                <Text className="mt-3 font-pregular text-xs text-slate-200">
-                  No photo yet
-                </Text>
-              </View>
-            </View>
+            <MarkerGalleryFallback isSelected={isSelected} />
           )}
 
+          {isSelected ? <View className="bg-slate-950/35 absolute inset-0" /> : null}
+
           {isSelected ? (
-            <View className="absolute inset-0 flex-row items-center justify-center bg-slate-950/55 px-4">
+            <View className="absolute inset-0 flex-row items-center justify-center px-4">
               <View className="w-[150px]">
                 <CustomButton
                   title="Edit marker"
@@ -85,4 +89,12 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   );
 };
 
-export default React.memo(MarkerGalleryTile);
+const areEqual = (prevProps: MarkerGalleryTileProps, nextProps: MarkerGalleryTileProps) =>
+  prevProps.isSelected === nextProps.isSelected &&
+  prevProps.marker.id === nextProps.marker.id &&
+  prevProps.marker.title === nextProps.marker.title &&
+  prevProps.marker.status === nextProps.marker.status &&
+  prevProps.marker.photoUrl === nextProps.marker.photoUrl &&
+  (prevProps.marker.photoUrls?.[0] ?? null) === (nextProps.marker.photoUrls?.[0] ?? null);
+
+export default React.memo(MarkerGalleryTile, areEqual);

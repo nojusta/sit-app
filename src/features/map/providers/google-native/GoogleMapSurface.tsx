@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Platform, Text, View } from "react-native";
+import { Asset } from "expo-asset";
 import * as Device from "expo-device";
 import {
   type Marker as GoogleMarker,
@@ -13,6 +14,7 @@ import { ActionDialog, CustomButton } from "@/shared/components";
 import { loadGoogleNavigationSdk } from "../../utils/googleNavigationSdk";
 import { NAVIGATION_UNAVAILABLE_TITLE } from "../../utils/navigation";
 import {
+  CUSTOM_MARKER_ASSET_MODULE,
   CUSTOM_MARKER_IMAGE_CANDIDATES,
   INITIAL_CAMERA,
   NAVIGATION_START_TIMEOUT_MS,
@@ -92,6 +94,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const resolvedDefaultMarkerImagePathRef = useRef<string | null>(null);
   const markerLookupRef = useRef<Map<string, BrowseMarkerRenderable>>(new Map());
   const browseZoomRef = useRef(quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5));
+  const [isDefaultMarkerAssetReady, setIsDefaultMarkerAssetReady] = useState(
+    Platform.OS !== "ios",
+  );
   const [isBrowseMapReady, setIsBrowseMapReady] = useState(false);
   const [isNavigationMapReady, setIsNavigationMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
@@ -133,6 +138,44 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   useEffect(() => {
     currentLocationRef.current = currentLocation;
   }, [currentLocation]);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+
+    let isActive = true;
+
+    const prepareDefaultMarkerAsset = async () => {
+      try {
+        const asset = Asset.fromModule(CUSTOM_MARKER_ASSET_MODULE);
+
+        if (!asset.localUri) {
+          await asset.downloadAsync();
+        }
+
+        if (!isActive) {
+          return;
+        }
+
+        resolvedDefaultMarkerImagePathRef.current = asset.localUri || asset.uri || null;
+      } catch (error) {
+        if (__DEV__) {
+          console.warn("Failed to prepare the default iOS marker asset.", error);
+        }
+      } finally {
+        if (isActive) {
+          setIsDefaultMarkerAssetReady(true);
+        }
+      }
+    };
+
+    void prepareDefaultMarkerAsset();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const resetNavigationSessionState = useCallback(() => {
     navigationSessionInitializedRef.current = false;
@@ -438,6 +481,7 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     addMarkerWithFallback,
     browseMapControllerRef,
     draftMarker,
+    isDefaultMarkerAssetReady,
     isBrowseMapControllerReady,
     isBrowseMapReady,
     isNavigationSurfaceVisible,

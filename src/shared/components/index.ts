@@ -9,6 +9,8 @@ export { HelloWave } from "./HelloWave";
 export { default as InfoBox } from "./InfoBox";
 export { default as Loader } from "./Loader";
 export { default as NoticeBanner } from "./NoticeBanner";
+export { default as Pagination } from "./Pagination";
 export { default as ParallaxScrollView } from "./ParallaxScrollView";
+export { default as PhotoLightbox } from "./PhotoLightbox";
 export { ThemedText } from "./ThemedText";
 export { ThemedView } from "./ThemedView";

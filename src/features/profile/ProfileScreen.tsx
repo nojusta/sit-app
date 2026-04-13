@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
@@ -16,16 +16,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthContext } from "@/features/auth";
 import { MarkerGalleryTile } from "@/features/markers";
 import {
-  listMarkersByAuthor,
   signOut,
   updateMarker,
   type MarkerRecord,
   type UploadableImage,
 } from "@/services/appwrite";
 import { icons } from "@/shared/constants";
-import { EmptyState, InfoBox } from "@/shared/components";
-import { useAppwrite } from "@/shared/hooks";
+import { EmptyState, InfoBox, Pagination } from "@/shared/components";
 import MarkerEditSheet from "./components/MarkerEditSheet";
+import useProfileMarkersPagination from "./hooks/useProfileMarkersPagination";
 
 const markerEditPickerOptions: ImagePicker.ImagePickerOptions = {
   mediaTypes: ["images"],
@@ -93,19 +92,19 @@ const ProfileScreen: React.FC = () => {
   const [queuedMarkerPhotos, setQueuedMarkerPhotos] = useState<UploadableImage[]>([]);
   const [isSubmittingMarkerEdit, setIsSubmittingMarkerEdit] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
+  const markersListRef = useRef<FlatList<MarkerRecord> | null>(null);
   const {
-    data: markers,
-    loading: markersLoading,
-    refreshing: markersRefreshing,
+    markers,
+    currentPage,
+    totalPages,
+    totalCount,
+    isLoading: markersLoading,
+    isRefreshing: markersRefreshing,
+    goToPage,
     refetch: refetchMarkers,
-  } = useAppwrite(
-    useCallback(
-      () => (user?.$id ? listMarkersByAuthor(user.$id) : Promise.resolve([])),
-      [user?.$id],
-    ),
-  );
+  } = useProfileMarkersPagination(user?.$id);
 
-  const markerCount = markers?.length ?? 0;
+  const markerCount = totalCount;
   const tileWidth = useMemo(
     () => (windowWidth - 32 - PROFILE_CARD_GAP) / 2,
     [windowWidth],
@@ -123,6 +122,12 @@ const ProfileScreen: React.FC = () => {
       offset: row * rowHeight,
     };
   };
+
+  useEffect(() => {
+    setHighlightedMarkerId(null);
+    markersListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, [currentPage]);
+
   const handleSignOut = async () => {
     setLoading(true);
 
@@ -247,17 +252,10 @@ const ProfileScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-gray-800"
-      edges={["top"]}
-      onTouchStart={() => {
-        if (highlightedMarkerId && !markerBeingEdited) {
-          setHighlightedMarkerId(null);
-        }
-      }}
-    >
+    <SafeAreaView className="flex-1 bg-gray-800" edges={["top"]}>
       <FlatList
-        data={markers ?? []}
+        ref={markersListRef}
+        data={markers}
         numColumns={2}
         keyExtractor={(item) => item.id}
         columnWrapperStyle={{ gap: 14 }}
@@ -308,7 +306,7 @@ const ProfileScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
 
-            <View className="rounded-[30px] bg-slate-800 px-5 py-6 shadow-sm">
+            <View className="rounded-[30px] border border-slate-700 bg-slate-800 px-5 py-6 shadow-sm">
               <View className="flex-row items-center gap-4">
                 <View className="h-20 w-20 overflow-hidden rounded-[26px] border border-slate-600">
                   {user?.avatar ? (
@@ -357,6 +355,14 @@ const ProfileScreen: React.FC = () => {
               </Text>
             </View>
           </View>
+        )}
+        ListFooterComponent={() => (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            isLoading={markersLoading && markerCount > 0}
+            onPageChange={goToPage}
+          />
         )}
       />
 

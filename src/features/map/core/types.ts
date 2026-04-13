@@ -13,6 +13,7 @@ export type MapCameraSnapshot = {
 export interface MapInteractionController {
   captureBrowseCamera: () => Promise<MapCameraSnapshot | null>;
   focusCoordinate: (coordinate: MapCoordinate) => void;
+  clearSelectedMarker: () => void;
   restoreBrowseCamera: (camera: MapCameraSnapshot) => void;
   centerOnCoordinate: (coordinate: MapCoordinate) => void;
   centerOnUserLocation: () => Promise<boolean>;
