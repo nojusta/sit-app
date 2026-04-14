@@ -544,6 +544,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           setIsBrowseMapReady(true);
         }}
         onMapClick={(coordinate) => {
+          // The patched native wrapper forwards draft-marker drag end through
+          // this callback on both platforms, so taps and drag placement updates
+          // share the same draft-coordinate path.
           onMapPress(toMapCoordinate(coordinate));
         }}
         onMarkerClick={(marker: GoogleMarker) => {

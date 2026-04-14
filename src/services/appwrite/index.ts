@@ -273,6 +273,8 @@ const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
 });
 
 const buildMarkerDocumentPermissions = (status: MarkerStatus, authorId: string) => {
+  // Pending/rejected markers stay author-scoped because moderation currently
+  // happens outside the client app in Appwrite, not through an in-app admin flow.
   const permissions = [
     Permission.read(Role.user(authorId)),
     Permission.update(Role.user(authorId)),
@@ -288,6 +290,8 @@ const buildMarkerDocumentPermissions = (status: MarkerStatus, authorId: string) 
 };
 
 const buildMarkerFilePermissions = (status: MarkerStatus, ownerId: string) => {
+  // Mirror marker visibility for uploaded photos so pending submissions remain
+  // private until they are explicitly approved.
   const permissions = [
     Permission.read(Role.user(ownerId)),
     Permission.update(Role.user(ownerId)),

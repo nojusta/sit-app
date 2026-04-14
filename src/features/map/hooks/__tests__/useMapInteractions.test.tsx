@@ -369,4 +369,61 @@ describe("useMapInteractions", () => {
     expect(result.current.userMarker).toBeNull();
     expect(result.current.isCreationModalVisible).toBe(false);
   });
+
+  it("submits the latest draft coordinate after the placement marker moves", async () => {
+    const mapController = createMapControllerRef();
+    const location = {
+      coords: {
+        latitude: 54.6872,
+        longitude: 25.2797,
+      },
+    };
+    const draggedCoordinate = {
+      latitude: 54.6894,
+      longitude: 25.2831,
+    };
+
+    mockedCreateMarker.mockResolvedValue({
+      id: "marker-4",
+      coordinate: draggedCoordinate,
+      title: "Bench by the river",
+      description: "Good afternoon sun",
+      location: "54.689400,25.283100",
+      status: "pending_approval",
+      authorId: "user-1",
+      createdAt: "2026-04-10T10:20:00.000Z",
+      photoUrl: null,
+    });
+
+    const { result } = renderHook(() =>
+      useMapInteractions({
+        mapControllerRef: mapController.mapControllerRef,
+        location: location as never,
+        markers: MARKERS,
+        currentUserId: "user-1",
+        isAuthenticated: true,
+      }),
+    );
+
+    act(() => {
+      result.current.handleAddMarker();
+    });
+
+    act(() => {
+      result.current.handleMapPress(draggedCoordinate);
+      result.current.setMarkerName("Bench by the river");
+      result.current.setMarkerInfo("Good afternoon sun");
+      result.current.handleConfirmPlacement();
+    });
+
+    await act(async () => {
+      await result.current.handleSubmitMarker();
+    });
+
+    expect(mockedCreateMarker).toHaveBeenCalledWith(
+      expect.objectContaining({
+        coordinate: draggedCoordinate,
+      }),
+    );
+  });
 });
