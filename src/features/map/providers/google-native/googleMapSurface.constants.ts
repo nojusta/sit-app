@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Image, Platform } from "react-native";
 
 import type { MapCameraSnapshot } from "../../core";
 
@@ -24,9 +24,22 @@ export const STOP_BUTTON_BOTTOM_OFFSET = Platform.select({
   android: 117,
   default: 117,
 });
-export const CUSTOM_MARKER_IMAGE_CANDIDATES =
+export const CUSTOM_MARKER_ASSET_MODULE = require("../../../../../assets/images/custom-marker.png");
+const resolvedCustomMarkerAsset = Image.resolveAssetSource(CUSTOM_MARKER_ASSET_MODULE);
+// Native size knobs live in the Google SDK patch file:
+// iOS -> ObjectTranslationUtil.mm:kMarkerBaseWidth / kDraggableMarkerBaseWidth / kClusterMarkerBaseWidth
+// Android -> MapViewController.java:CUSTOM_MARKER_BASE_SCALE / CLUSTER_MARKER_SCALE
+export const CUSTOM_MARKER_IMAGE_CANDIDATES = (
   Platform.select({
-    ios: ["CustomMarker", "custom-marker", "custom-marker.png"],
-    android: ["markers/custom-marker.png", "custom-marker.png", "custom-marker"],
-    default: [],
-  }) ?? [];
+    ios: [resolvedCustomMarkerAsset?.uri],
+    android: [
+      "markers/custom-marker.png",
+      "custom-marker.png",
+      "custom-marker",
+      resolvedCustomMarkerAsset?.uri,
+    ],
+    default: [resolvedCustomMarkerAsset?.uri],
+  }) ?? []
+)
+  .filter((value): value is string => typeof value === "string" && value.length > 0)
+  .filter((value, index, values) => values.indexOf(value) === index);

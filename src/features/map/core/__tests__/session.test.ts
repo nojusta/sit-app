@@ -8,10 +8,14 @@ import {
 } from "..";
 
 const MARKER: MarkerData = {
-  id: 1,
+  id: "marker-1",
   coordinate: { latitude: 54.6872, longitude: 25.2797 },
   title: "Kudirka Square",
   description: "A central city marker",
+  location: "54.687200,25.279700",
+  status: "approved",
+  authorId: "user-1",
+  createdAt: "2026-04-10T10:00:00.000Z",
 };
 
 const CAMERA: MapCameraSnapshot = {

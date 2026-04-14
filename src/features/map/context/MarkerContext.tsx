@@ -5,6 +5,8 @@ interface MarkerContextProps {
   setIsMarkerSelected: (selected: boolean) => void;
   isNavigationActive: boolean;
   setIsNavigationActive: (active: boolean) => void;
+  isPlacementActive: boolean;
+  setIsPlacementActive: (active: boolean) => void;
 }
 
 const MarkerContext = createContext<MarkerContextProps | undefined>(undefined);
@@ -16,6 +18,7 @@ interface MarkerProviderProps {
 export const MarkerProvider: React.FC<MarkerProviderProps> = ({ children }) => {
   const [isMarkerSelected, setIsMarkerSelected] = useState<boolean>(false);
   const [isNavigationActive, setIsNavigationActive] = useState<boolean>(false);
+  const [isPlacementActive, setIsPlacementActive] = useState<boolean>(false);
 
   return (
     <MarkerContext.Provider
@@ -24,6 +27,8 @@ export const MarkerProvider: React.FC<MarkerProviderProps> = ({ children }) => {
         setIsMarkerSelected,
         isNavigationActive,
         setIsNavigationActive,
+        isPlacementActive,
+        setIsPlacementActive,
       }}
     >
       {children}

@@ -13,17 +13,23 @@ export type MapCameraSnapshot = {
 export interface MapInteractionController {
   captureBrowseCamera: () => Promise<MapCameraSnapshot | null>;
   focusCoordinate: (coordinate: MapCoordinate) => void;
+  clearSelectedMarker: () => void;
   restoreBrowseCamera: (camera: MapCameraSnapshot) => void;
   centerOnCoordinate: (coordinate: MapCoordinate) => void;
   centerOnUserLocation: () => Promise<boolean>;
 }
 
 export type MarkerData = {
-  id: number;
+  id: string;
   coordinate: MapCoordinate;
   title: string;
   description: string;
-  imageUri?: string;
+  location: string;
+  status: "pending_approval" | "approved" | "rejected";
+  authorId: string;
+  createdAt: string;
+  photoUrl?: string | null;
+  photoUrls?: string[];
 };
 
 export type MarkerDraftFields = {

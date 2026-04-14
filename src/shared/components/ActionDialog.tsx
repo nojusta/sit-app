@@ -38,7 +38,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
       statusBarTranslucent
       onRequestClose={onCancel}
     >
-      <View className="flex-1 items-center justify-center bg-black/45 px-5">
+      <View className="bg-black/45 flex-1 items-center justify-center px-5">
         <Pressable
           className="absolute inset-0"
           onPress={onCancel}

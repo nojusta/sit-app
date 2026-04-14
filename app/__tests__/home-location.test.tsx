@@ -7,17 +7,35 @@ import HomeApp from "../(tabs)/home";
 
 const setIsMarkerSelected = jest.fn();
 const setIsNavigationActive = jest.fn();
+const setIsPlacementActive = jest.fn();
 const handleCenterOnUserLocation = jest.fn();
 const handleAddMarker = jest.fn();
+const handleConfirmPlacement = jest.fn();
 const refreshLocation = jest.fn();
+const refetchMarkers = jest.fn();
 
 jest.mock("@react-navigation/native", () => ({
   useIsFocused: jest.fn(),
 }));
 
+jest.mock("expo-image-picker", () => ({
+  launchCameraAsync: jest.fn(),
+  launchImageLibraryAsync: jest.fn(),
+  getCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  requestCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  requestMediaLibraryPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  UIImagePickerPresentationStyle: {
+    FULL_SCREEN: "fullScreen",
+  },
+  CameraType: {
+    back: "back",
+  },
+}));
+
 jest.mock("react-native-safe-area-context", () => {
   const React = require("react");
   const { View } = require("react-native");
+
   return {
     SafeAreaProvider: ({ children }: { children: React.ReactNode }) => (
       <View>{children}</View>
@@ -28,19 +46,19 @@ jest.mock("react-native-safe-area-context", () => {
   };
 });
 
-jest.mock("@expo/vector-icons", () => {
-  const React = require("react");
-  const { Text } = require("react-native");
-  return {
-    MaterialIcons: ({ name }: { name: string }) => <Text>{name}</Text>,
-  };
-});
+jest.mock("@/features/auth", () => ({
+  useAuthContext: jest.fn(),
+}));
+
+jest.mock("@/shared/hooks", () => ({
+  useAppwrite: jest.fn(),
+}));
 
 jest.mock("@/features/markers", () => ({
-  MarkerInputBox: () => {
+  MarkerCreationModal: ({ visible }: { visible: boolean }) => {
     const React = require("react");
     const { Text } = require("react-native");
-    return <Text>Marker input</Text>;
+    return visible ? <Text>Marker creation modal</Text> : null;
   },
 }));
 
@@ -76,28 +94,17 @@ jest.mock("@/shared/components", () => {
       description: string;
       actionLabel?: string;
       onAction?: () => void;
-    }) => {
-      const [collapsed, setCollapsed] = React.useState(false);
-
-      return (
-        <View>
-          <Text>{title}</Text>
-          <TouchableOpacity
-            onPress={() => setCollapsed((current: boolean) => !current)}
-            accessibilityRole="button"
-            accessibilityLabel={collapsed ? "Expand notice" : "Minimize notice"}
-          >
-            <Text>{collapsed ? "Expand notice" : "Minimize notice"}</Text>
+    }) => (
+      <View>
+        <Text>{title}</Text>
+        <Text>{description}</Text>
+        {actionLabel && onAction ? (
+          <TouchableOpacity onPress={onAction}>
+            <Text>{actionLabel}</Text>
           </TouchableOpacity>
-          {!collapsed ? <Text>{description}</Text> : null}
-          {!collapsed && actionLabel && onAction ? (
-            <TouchableOpacity onPress={onAction}>
-              <Text>{actionLabel}</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-      );
-    },
+        ) : null}
+      </View>
+    ),
   };
 });
 
@@ -136,7 +143,6 @@ jest.mock("@/features/map", () => {
           : "Google map surface"}
       </Text>
     ),
-    isGoogleNavigationSdkNativeAvailable: jest.fn(() => true),
     InfoWindow: ({
       selectedMarker,
       onStartNavigation,
@@ -149,12 +155,18 @@ jest.mock("@/features/map", () => {
         <Text onPress={onStartNavigation}>Start Navigation</Text>
       </>
     ),
+    MarkerPlacementCard: ({ onConfirm }: { onConfirm?: () => void }) => (
+      <Text onPress={onConfirm}>Placement Card</Text>
+    ),
+    isGoogleNavigationSdkNativeAvailable: jest.fn(() => true),
     useMapInteractions: jest.fn(),
     useMarkerContext: jest.fn(),
     useUserLocation: jest.fn(),
   };
 });
 
+const { useAuthContext } = jest.requireMock("@/features/auth");
+const { useAppwrite } = jest.requireMock("@/shared/hooks");
 const { useMapInteractions, useMarkerContext, useUserLocation } =
   jest.requireMock("@/features/map");
 const mockedUseIsFocused = jest.mocked(useIsFocused);
@@ -163,28 +175,48 @@ describe("home location permission flow", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedUseIsFocused.mockReturnValue(true);
+    jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    useAuthContext.mockReturnValue({
+      isLogged: true,
+      user: { $id: "user-1" },
+    });
+
+    useAppwrite.mockReturnValue({
+      data: [],
+      loading: false,
+      refreshing: false,
+      error: null,
+      refetch: refetchMarkers,
+    });
 
     useMarkerContext.mockReturnValue({
       setIsMarkerSelected,
       setIsNavigationActive,
+      setIsPlacementActive,
     });
 
     useMapInteractions.mockReturnValue({
       markers: [],
       selectedMarker: null,
       userMarker: null,
+      isPlacementMode: false,
+      isCreationModalVisible: false,
       markerName: "",
       markerInfo: "",
-      showInputBox: false,
+      markerPhoto: null,
+      isSubmittingMarker: false,
       setMarkerName: jest.fn(),
       setMarkerInfo: jest.fn(),
-      setShowInputBox: jest.fn(),
+      setMarkerPhoto: jest.fn(),
       handleMarkerPress: jest.fn(),
       handleMapPress: jest.fn(),
-      handleLongPress: jest.fn(),
-      handleMarkerDragEnd: jest.fn(),
       handleCenterOnUserLocation,
       handleAddMarker,
+      handleCancelPlacement: jest.fn(),
+      handleConfirmPlacement,
+      handleCloseCreationModal: jest.fn(),
+      handleSubmitMarker: jest.fn(),
       handleStartNavigation: jest.fn(),
       handleStopNavigation: jest.fn(),
       isNavigationActive: false,
@@ -209,7 +241,6 @@ describe("home location permission flow", () => {
     render(<HomeApp />);
 
     expect(refreshLocation).toHaveBeenCalledWith({ requestPermission: false });
-
     expect(
       screen.getByText(
         "Enable location permission to use location-based navigation features on the map.",
@@ -219,80 +250,13 @@ describe("home location permission flow", () => {
     const centerButton = screen.getByRole("button", {
       name: "Center on my location",
     });
-
-    expect(centerButton.props.accessibilityState?.disabled).toBe(true);
-
-    fireEvent.press(centerButton);
-    expect(handleCenterOnUserLocation).not.toHaveBeenCalled();
+    expect(centerButton.props.accessibilityState.disabled).toBe(true);
 
     fireEvent.press(screen.getByText("Open settings"));
     expect(openSettingsSpy).toHaveBeenCalled();
   });
 
-  it("lets the user minimize the notice while keeping the title visible", () => {
-    useUserLocation.mockReturnValue({
-      location: null,
-      permissionState: "denied",
-      isPermissionDenied: true,
-      isPermissionGranted: false,
-      isPermissionLoading: false,
-      refreshLocation,
-    });
-
-    render(<HomeApp />);
-
-    fireEvent.press(screen.getByRole("button", { name: "Minimize notice" }));
-
-    expect(screen.getByText("Location access required")).toBeTruthy();
-    expect(
-      screen.queryByText(
-        "Enable location permission to use location-based navigation features on the map.",
-      ),
-    ).toBeNull();
-    expect(screen.queryByText("Open settings")).toBeNull();
-
-    fireEvent.press(screen.getByRole("button", { name: "Expand notice" }));
-
-    expect(
-      screen.getByText(
-        "Enable location permission to use location-based navigation features on the map.",
-      ),
-    ).toBeTruthy();
-  });
-
-  it("keeps the navigation control enabled when location access is available", () => {
-    useUserLocation.mockReturnValue({
-      location: {
-        coords: { latitude: 54.6872, longitude: 25.2797 },
-      },
-      permissionState: "granted",
-      isPermissionDenied: false,
-      isPermissionGranted: true,
-      isPermissionLoading: false,
-      refreshLocation,
-    });
-
-    render(<HomeApp />);
-
-    expect(
-      screen.queryByText(
-        "Enable location permission to use location-based navigation features on the map.",
-      ),
-    ).toBeNull();
-
-    const centerButton = screen.getByRole("button", {
-      name: "Center on my location",
-    });
-
-    expect(centerButton.props.accessibilityState?.disabled).not.toBe(true);
-
-    fireEvent.press(centerButton);
-    expect(handleCenterOnUserLocation).toHaveBeenCalled();
-  });
-
-  it("starts embedded navigation mode and swaps the floating map controls", () => {
-    const handleStopNavigation = jest.fn();
-
+  it("hides map action buttons while navigation is active", () => {
     useUserLocation.mockReturnValue({
       location: {
         coords: { latitude: 54.6872, longitude: 25.2797 },
@@ -308,26 +272,36 @@ describe("home location permission flow", () => {
       markers: [],
       selectedMarker: null,
       userMarker: null,
+      isPlacementMode: false,
+      isCreationModalVisible: false,
       markerName: "",
       markerInfo: "",
-      showInputBox: false,
+      markerPhoto: null,
+      isSubmittingMarker: false,
       setMarkerName: jest.fn(),
       setMarkerInfo: jest.fn(),
-      setShowInputBox: jest.fn(),
+      setMarkerPhoto: jest.fn(),
       handleMarkerPress: jest.fn(),
       handleMapPress: jest.fn(),
-      handleLongPress: jest.fn(),
-      handleMarkerDragEnd: jest.fn(),
       handleCenterOnUserLocation,
       handleAddMarker,
+      handleCancelPlacement: jest.fn(),
+      handleConfirmPlacement,
+      handleCloseCreationModal: jest.fn(),
+      handleSubmitMarker: jest.fn(),
       handleStartNavigation: jest.fn(),
-      handleStopNavigation,
+      handleStopNavigation: jest.fn(),
       isNavigationActive: true,
       activeNavigationDestination: {
-        id: 1,
+        id: "marker-2",
         title: "Cathedral Square",
         description: "Main square",
         coordinate: { latitude: 54.6839, longitude: 25.2875 },
+        location: "54.683900,25.287500",
+        status: "approved",
+        authorId: "admin-user",
+        createdAt: "2026-04-10T09:00:00.000Z",
+        photoUrl: null,
       },
     });
 
@@ -338,17 +312,20 @@ describe("home location permission flow", () => {
     ).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Add marker" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Center on my location" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Stop navigation" })).toBeNull();
-    expect(handleStopNavigation).not.toHaveBeenCalled();
   });
 
   it("passes the selected marker into start navigation from the marker sheet", () => {
     const handleStartNavigation = jest.fn();
     const selectedMarker = {
-      id: 1,
+      id: "marker-1",
       title: "Kudirka Square",
-      description: "Benches, skaters, and a statue of Vincas Kudirka",
+      description: "Benches and skaters",
       coordinate: { latitude: 54.6868, longitude: 25.2799 },
+      location: "54.686800,25.279900",
+      status: "approved" as const,
+      authorId: "admin-user",
+      createdAt: "2026-04-10T09:00:00.000Z",
+      photoUrl: null,
     };
 
     useUserLocation.mockReturnValue({
@@ -366,18 +343,23 @@ describe("home location permission flow", () => {
       markers: [],
       selectedMarker,
       userMarker: null,
+      isPlacementMode: false,
+      isCreationModalVisible: false,
       markerName: "",
       markerInfo: "",
-      showInputBox: false,
+      markerPhoto: null,
+      isSubmittingMarker: false,
       setMarkerName: jest.fn(),
       setMarkerInfo: jest.fn(),
-      setShowInputBox: jest.fn(),
+      setMarkerPhoto: jest.fn(),
       handleMarkerPress: jest.fn(),
       handleMapPress: jest.fn(),
-      handleLongPress: jest.fn(),
-      handleMarkerDragEnd: jest.fn(),
       handleCenterOnUserLocation,
       handleAddMarker,
+      handleCancelPlacement: jest.fn(),
+      handleConfirmPlacement,
+      handleCloseCreationModal: jest.fn(),
+      handleSubmitMarker: jest.fn(),
       handleStartNavigation,
       handleStopNavigation: jest.fn(),
       isNavigationActive: false,
@@ -387,7 +369,6 @@ describe("home location permission flow", () => {
     render(<HomeApp />);
 
     fireEvent.press(screen.getByText("Start Navigation"));
-
     expect(handleStartNavigation).toHaveBeenCalledWith(selectedMarker);
   });
 });

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Platform, Text, View } from "react-native";
+import { Asset } from "expo-asset";
 import * as Device from "expo-device";
 import {
-  Marker as GoogleMarker,
+  type Marker as GoogleMarker,
   MapColorScheme,
   MapViewController as GoogleMapViewController,
   NavigationNightMode,
@@ -10,10 +11,10 @@ import {
 } from "@googlemaps/react-native-navigation-sdk";
 
 import { ActionDialog, CustomButton } from "@/shared/components";
-import type { MarkerData } from "../../core";
 import { loadGoogleNavigationSdk } from "../../utils/googleNavigationSdk";
 import { NAVIGATION_UNAVAILABLE_TITLE } from "../../utils/navigation";
 import {
+  CUSTOM_MARKER_ASSET_MODULE,
   CUSTOM_MARKER_IMAGE_CANDIDATES,
   INITIAL_CAMERA,
   NAVIGATION_START_TIMEOUT_MS,
@@ -29,6 +30,7 @@ import type {
 import {
   createMapInteractionController,
   delay,
+  animateCamera,
   isInvalidImageError,
   isNavigatorNotReadyError,
   isNoViewControllerError,
@@ -36,6 +38,11 @@ import {
   toGoogleLatLng,
   toMapCoordinate,
 } from "./googleMapSurface.utils";
+import {
+  clusterBrowseMarkers,
+  isClusterMarkerRenderable,
+  type BrowseMarkerRenderable,
+} from "./googleMapSurface.clustering";
 import useBrowseMarkerSync from "./hooks/useBrowseMarkerSync";
 import useGoogleNavigationBindings from "./hooks/useGoogleNavigationBindings";
 import useGoogleNavigationStartup from "./hooks/useGoogleNavigationStartup";
@@ -52,6 +59,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   onStopNavigation,
   navigationSdk,
 }) => {
+  const quantizeBrowseZoom = useCallback((zoom: number) => {
+    return Math.round(zoom);
+  }, []);
   const {
     MapView,
     NavigationSessionStatus,
@@ -81,7 +91,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const currentLocationRef = useRef(currentLocation);
   const previousNavigationModeRef = useRef<boolean | null>(null);
   const hasAttemptedInitialCleanupRef = useRef(false);
-  const markerLookupRef = useRef<Map<string, MarkerData>>(new Map());
+  const resolvedDefaultMarkerImagePathRef = useRef<string | null>(null);
+  const markerLookupRef = useRef<Map<string, BrowseMarkerRenderable>>(new Map());
+  const browseZoomRef = useRef(quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5));
+  const [isDefaultMarkerAssetReady, setIsDefaultMarkerAssetReady] = useState(
+    Platform.OS !== "ios",
+  );
   const [isBrowseMapReady, setIsBrowseMapReady] = useState(false);
   const [isNavigationMapReady, setIsNavigationMapReady] = useState(false);
   const [isPreparingNavigation, setIsPreparingNavigation] = useState(false);
@@ -91,6 +106,9 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     useState(false);
   const [isNavigationViewControllerReady, setIsNavigationViewControllerReady] =
     useState(false);
+  const [browseZoom, setBrowseZoom] = useState(
+    quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5),
+  );
 
   const navigationSessionOk = NavigationSessionStatus.OK;
   const routeOk = RouteStatus.OK;
@@ -108,6 +126,10 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   const isVisibleSurfaceReady = isNavigationSurfaceVisible
     ? isNavigationMapReady
     : isBrowseMapReady;
+  const clusteredMarkers = useMemo(
+    () => clusterBrowseMarkers(markers, browseZoom),
+    [browseZoom, markers],
+  );
 
   parentMapControllerRef.current = mapControllerRef;
   navigationControllerRef.current = navigationController;
@@ -116,6 +138,44 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   useEffect(() => {
     currentLocationRef.current = currentLocation;
   }, [currentLocation]);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") {
+      return;
+    }
+
+    let isActive = true;
+
+    const prepareDefaultMarkerAsset = async () => {
+      try {
+        const asset = Asset.fromModule(CUSTOM_MARKER_ASSET_MODULE);
+
+        if (!asset.localUri) {
+          await asset.downloadAsync();
+        }
+
+        if (!isActive) {
+          return;
+        }
+
+        resolvedDefaultMarkerImagePathRef.current = asset.localUri || asset.uri || null;
+      } catch (error) {
+        if (__DEV__) {
+          console.warn("Failed to prepare the default iOS marker asset.", error);
+        }
+      } finally {
+        if (isActive) {
+          setIsDefaultMarkerAssetReady(true);
+        }
+      }
+    };
+
+    void prepareDefaultMarkerAsset();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const resetNavigationSessionState = useCallback(() => {
     navigationSessionInitializedRef.current = false;
@@ -231,21 +291,44 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
         position: GoogleLatLng;
         title?: string;
         snippet?: string;
+        imgPath?: string | null;
+        draggable?: boolean;
+        zIndex?: number;
       },
     ) => {
-      const iconCandidates = [...CUSTOM_MARKER_IMAGE_CANDIDATES, undefined];
+      const { imgPath: _imgPath, ...markerOptions } = marker;
+      const iconCandidates =
+        marker.imgPath === null
+          ? [undefined]
+          : marker.imgPath
+            ? [marker.imgPath]
+            : [
+                ...(resolvedDefaultMarkerImagePathRef.current
+                  ? [resolvedDefaultMarkerImagePathRef.current]
+                  : []),
+                ...CUSTOM_MARKER_IMAGE_CANDIDATES.filter(
+                  (candidate) => candidate !== resolvedDefaultMarkerImagePathRef.current,
+                ),
+                undefined,
+              ];
       let lastError: unknown;
 
       for (const iconCandidate of iconCandidates) {
         try {
-          return await retryTransientNativeCommand(
+          const nativeMarker = await retryTransientNativeCommand(
             () =>
               controller.addMarker({
-                ...marker,
+                ...markerOptions,
                 ...(iconCandidate ? { imgPath: iconCandidate } : {}),
               }),
             isNoViewControllerError,
           );
+
+          if (!marker.imgPath && iconCandidate) {
+            resolvedDefaultMarkerImagePathRef.current = iconCandidate;
+          }
+
+          return nativeMarker;
         } catch (error) {
           lastError = error;
 
@@ -327,6 +410,57 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
   }, [shouldRenderNavigationSurface]);
 
   useEffect(() => {
+    if (
+      !isBrowseMapReady ||
+      !isBrowseMapControllerReady ||
+      !browseMapControllerRef.current ||
+      isNavigationSurfaceVisible
+    ) {
+      return;
+    }
+
+    let isActive = true;
+
+    const syncCameraZoom = async () => {
+      try {
+        const controller = browseMapControllerRef.current;
+
+        if (!controller) {
+          return;
+        }
+
+        const camera = await controller.getCameraPosition();
+
+        if (!isActive || typeof camera.zoom !== "number") {
+          return;
+        }
+
+        const nextZoomBucket = quantizeBrowseZoom(camera.zoom);
+
+        if (Math.abs(nextZoomBucket - browseZoomRef.current) >= 0.49) {
+          browseZoomRef.current = nextZoomBucket;
+          setBrowseZoom(nextZoomBucket);
+        }
+      } catch {}
+    };
+
+    void syncCameraZoom();
+    const intervalId = setInterval(() => {
+      void syncCameraZoom();
+    }, 750);
+
+    return () => {
+      isActive = false;
+      clearInterval(intervalId);
+    };
+  }, [
+    isBrowseMapControllerReady,
+    isBrowseMapReady,
+    isNavigationSurfaceVisible,
+    quantizeBrowseZoom,
+  ]);
+
+  useEffect(() => {
     if (!isNavigationActive || !isPreparingNavigation) {
       return;
     }
@@ -347,11 +481,12 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
     addMarkerWithFallback,
     browseMapControllerRef,
     draftMarker,
+    isDefaultMarkerAssetReady,
     isBrowseMapControllerReady,
     isBrowseMapReady,
     isNavigationSurfaceVisible,
     markerLookupRef,
-    markers,
+    markers: clusteredMarkers,
   });
 
   useGoogleNavigationStartup({
@@ -409,17 +544,38 @@ const GoogleMapSurfaceInner: React.FC<GoogleMapSurfaceInnerProps> = ({
           setIsBrowseMapReady(true);
         }}
         onMapClick={(coordinate) => {
+          // The patched native wrapper forwards draft-marker drag end through
+          // this callback on both platforms, so taps and drag placement updates
+          // share the same draft-coordinate path.
           onMapPress(toMapCoordinate(coordinate));
         }}
         onMarkerClick={(marker: GoogleMarker) => {
           const selectedMarker = markerLookupRef.current.get(marker.id);
 
           if (selectedMarker) {
+            if (isClusterMarkerRenderable(selectedMarker)) {
+              const controller = browseMapControllerRef.current;
+
+              if (controller) {
+                const nextZoom = Math.min(browseZoomRef.current + 2, 18.5);
+                const nextZoomBucket = quantizeBrowseZoom(nextZoom);
+                browseZoomRef.current = nextZoomBucket;
+                setBrowseZoom(nextZoomBucket);
+                void animateCamera(controller, {
+                  target: toGoogleLatLng(selectedMarker.coordinate),
+                  zoom: nextZoom,
+                });
+              }
+
+              return;
+            }
+
             onMarkerPress(selectedMarker);
           }
         }}
         onMapViewControllerCreated={(controller) => {
           browseMapControllerRef.current = controller;
+          browseZoomRef.current = quantizeBrowseZoom(INITIAL_CAMERA.zoom ?? 14.5);
           setIsBrowseMapControllerReady(true);
           mapControllerRef.current = createMapInteractionController(controller);
         }}

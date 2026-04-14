@@ -1,6 +1,6 @@
 export { default as CircleButton } from "./components/CircleButton";
 export { default as InfoWindow } from "./components/InfoWindow";
-export { DEFAULT_MARKERS } from "./core";
+export { default as MarkerPlacementCard } from "./components/MarkerPlacementCard";
 export { MarkerProvider, useMarkerContext } from "./context/MarkerContext";
 export { default as useMapInteractions } from "./hooks/useMapInteractions";
 export { GoogleMapSurface } from "./providers/google-native";

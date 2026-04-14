@@ -16,10 +16,10 @@ const InfoBox: React.FC<InfoBoxProps> = ({
 }) => {
   return (
     <View className={containerStyles}>
-      <Text className={`text-white text-center font-psemibold ${titleStyles}`}>
+      <Text className={`text-center font-psemibold text-white ${titleStyles}`}>
         {title}
       </Text>
-      <Text className="text-sm text-gray-100 text-center font-pregular">{subtitle}</Text>
+      <Text className="text-center font-pregular text-sm text-gray-100">{subtitle}</Text>
     </View>
   );
 };

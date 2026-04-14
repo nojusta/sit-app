@@ -21,7 +21,7 @@ const CircleButton: React.FC<CircleButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`bg-[#2D2D2D] w-16 h-16 rounded-full shadow-lg justify-center items-center ${
+      className={`h-16 w-16 items-center justify-center rounded-full bg-[#2D2D2D] shadow-lg ${
         disabled ? "opacity-40" : ""
       } ${style}`}
       onPress={onPress}
@@ -33,7 +33,7 @@ const CircleButton: React.FC<CircleButtonProps> = ({
       {isCenterOnUser ? (
         <MaterialIcons name="my-location" size={24} color="white" />
       ) : (
-        <Text className="text-white text-3xl font-bold">{icon}</Text>
+        <Text className="text-3xl font-bold text-white">{icon}</Text>
       )}
     </TouchableOpacity>
   );

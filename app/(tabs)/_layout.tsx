@@ -41,9 +41,9 @@ const TabIcon: React.FC<TabIconProps> = ({ icon, color, name, focused }) => {
 const TabLayout: React.FC = () => {
   const { loading, isLogged } = useAuthContext();
   const tabLayoutTranslateY = useRef(new Animated.Value(0)).current;
-  const { isMarkerSelected, isNavigationActive } = useMarkerContext();
+  const { isMarkerSelected, isNavigationActive, isPlacementActive } = useMarkerContext();
   const shouldSlideTabBar = isMarkerSelected && !isNavigationActive;
-  const shouldHideTabBar = isNavigationActive;
+  const shouldHideTabBar = isNavigationActive || isPlacementActive;
 
   useEffect(() => {
     Animated.timing(tabLayoutTranslateY, {

@@ -13,7 +13,7 @@ const Loader: React.FC<LoaderProps> = ({ isLoading }) => {
 
   return (
     <View
-      className="absolute flex justify-center items-center w-full h-full bg-primary/60 z-10"
+      className="absolute z-10 flex h-full w-full items-center justify-center bg-primary/60"
       style={{
         height: screenHeight,
       }}

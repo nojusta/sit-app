@@ -90,6 +90,72 @@ When changing a feature:
 - Avoid `useSafeAreaInsets` by default unless there is a proven need.
 - Keep `CircleButton` and `InfoWindow` feature-local until there is actual reuse elsewhere.
 
+## Product and data guidance
+
+Treat this section as intended business/domain behavior unless current implementation or explicit user direction says otherwise. Some of this is still draft product guidance and should not be overclaimed as already complete in runtime.
+
+### Appwrite domain model
+
+- Appwrite native auth owns sessions and email/password authentication.
+- The main business entity is a sitting-place marker, not a generic map POI.
+- Planned/expected collections:
+  - `Markers`
+  - `Ratings`
+  - `Favorites`
+- Marker documents conceptually include:
+  - `markerId`
+  - `title`
+  - `description`
+  - `latitude`
+  - `longitude`
+  - `imageUrl`
+  - `authorId`
+  - `status`
+  - `averageRating`
+  - `attributes`
+  - `createdAt`
+- Marker titles should be contextual, not just street names.
+- `imageUrl` should point to Appwrite Storage-backed assets.
+- Marker `status` is core business logic and should be treated as:
+  - `pending_approval`
+  - `approved`
+  - `rejected`
+- `averageRating` is derived from ratings data.
+- `attributes` is a string-array filter surface, for example `shade`, `quiet`, `work_friendly`.
+- Ratings conceptually map `userId + markerId + score`.
+- Favorites conceptually map `userId + markerId`.
+
+### Business rules
+
+- Registration:
+  - email/password flow
+  - password length at least `8`
+  - valid email required
+  - duplicate emails blocked
+  - successful registration should auto-login and redirect to the main map
+- Marker creation:
+  - authenticated users can create markers
+  - title, description, and location are required
+  - photo is optional but preferred
+  - new markers default to `pending_approval`
+  - pending markers should not be public
+- Moderation:
+  - admin review flow should approve or reject pending markers
+- Seed data:
+  - expect at least `100` prefilled verified markers sourced from OpenStreetMap
+- Navigation:
+  - approved markers are the browse-map source of truth
+  - start navigation requires location permission
+  - start navigation swaps standard browse behavior into Google Navigation SDK guidance
+  - cancel navigation must confirm before returning to browse mode
+- Ratings:
+  - authenticated users can submit `1-5` ratings
+  - rating writes should trigger marker `averageRating` recomputation
+- Filtering and weather:
+  - filters operate on marker `attributes`
+  - users should be able to clear all filters
+  - weather context is expected to come from Meteo.lt and help indicate whether sitting outside is favorable
+
 ## Validation
 
 Always end meaningful changes with:

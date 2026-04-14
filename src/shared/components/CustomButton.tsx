@@ -49,7 +49,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`${containerVariantStyles} rounded-xl min-h-[62px] px-4 flex flex-row justify-center items-center ${containerStyles} ${
+      className={`${containerVariantStyles} flex min-h-[52px] flex-row items-center justify-center rounded-xl px-4 py-3 ${containerStyles} ${
         isDisabled ? "opacity-50" : ""
       }`}
       disabled={isDisabled}

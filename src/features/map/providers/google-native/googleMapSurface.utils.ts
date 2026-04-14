@@ -149,6 +149,21 @@ export const createMapInteractionController = (
       zoom: FOCUS_ZOOM,
     });
   },
+  clearSelectedMarker: () => {
+    try {
+      const result = controller.clearSelectedMarker() as unknown;
+      if (
+        result &&
+        typeof result === "object" &&
+        "catch" in result &&
+        typeof result.catch === "function"
+      ) {
+        void result.catch(() => {});
+      }
+    } catch {
+      // Ignore best-effort native marker deselection failures.
+    }
+  },
   restoreBrowseCamera: (camera) => {
     void animateCamera(controller, {
       target: toGoogleLatLng(camera.target),

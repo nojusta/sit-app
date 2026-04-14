@@ -1,13 +1,13 @@
-import { useMemo, useReducer } from "react";
+import { useMemo, useState } from "react";
+import type React from "react";
 import { Alert } from "react-native";
 import { LocationObject } from "expo-location";
+
+import { createMarker, type UploadableImage } from "@/services/appwrite";
 import {
+  type MapCameraSnapshot,
   type MapCoordinate,
   type MapInteractionController,
-  createInitialMapSessionState,
-  DEFAULT_MARKERS,
-  mapSessionReducer,
-  selectIsNavigationActive,
   type MarkerData,
 } from "../core";
 import {
@@ -18,29 +18,64 @@ import {
 interface UseMapInteractionsOptions {
   mapControllerRef: React.RefObject<MapInteractionController | null>;
   location: LocationObject | null;
+  markers: MarkerData[];
+  currentUserId?: string | null;
+  isAuthenticated?: boolean;
   isLocationPermissionDenied?: boolean;
+  onMarkerCreated?: () => Promise<void> | void;
   onMarkerSelectionChange?: (selected: boolean) => void;
 }
+
+const initialDraftValues = {
+  title: "",
+  description: "",
+};
+
+const coordinatesMatch = (left: MapCoordinate | null, right: MapCoordinate | null) =>
+  left?.latitude === right?.latitude && left?.longitude === right?.longitude;
 
 const useMapInteractions = ({
   mapControllerRef,
   location,
+  markers,
+  currentUserId,
+  isAuthenticated = false,
   isLocationPermissionDenied = false,
+  onMarkerCreated,
   onMarkerSelectionChange,
 }: UseMapInteractionsOptions) => {
-  const [session, dispatch] = useReducer(
-    mapSessionReducer,
-    undefined,
-    createInitialMapSessionState,
+  const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
+  const [browseCamera, setBrowseCamera] = useState<MapCameraSnapshot | null>(null);
+  const [draftMarker, setDraftMarker] = useState<MapCoordinate | null>(null);
+  const [isPlacementMode, setIsPlacementMode] = useState(false);
+  const [isCreationModalVisible, setIsCreationModalVisible] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(initialDraftValues.title);
+  const [draftDescription, setDraftDescription] = useState(
+    initialDraftValues.description,
   );
+  const [draftPhoto, setDraftPhoto] = useState<UploadableImage | null>(null);
+  const [isSubmittingMarker, setIsSubmittingMarker] = useState(false);
+  const [navigationDestination, setNavigationDestination] = useState<MarkerData | null>(
+    null,
+  );
+
   const currentLocationCoordinate = useMemo(
     () => getLocationCoordinate(location),
     [location],
   );
-  const isNavigationActive = selectIsNavigationActive(session);
+  const isNavigationActive = navigationDestination !== null;
+
+  const resetDraftState = () => {
+    setDraftMarker(null);
+    setIsPlacementMode(false);
+    setIsCreationModalVisible(false);
+    setDraftTitle(initialDraftValues.title);
+    setDraftDescription(initialDraftValues.description);
+    setDraftPhoto(null);
+  };
 
   const handleMarkerPress = (marker: MarkerData) => {
-    if (isNavigationActive) {
+    if (isNavigationActive || isPlacementMode) {
       return;
     }
 
@@ -49,7 +84,7 @@ const useMapInteractions = ({
         .captureBrowseCamera()
         .then((camera) => {
           if (camera) {
-            dispatch({ type: "captureBrowseCamera", payload: camera });
+            setBrowseCamera(camera);
           }
         })
         .catch((error) => {
@@ -62,24 +97,31 @@ const useMapInteractions = ({
         });
     }
 
-    dispatch({ type: "selectMarker", payload: marker });
+    setSelectedMarker(marker);
     onMarkerSelectionChange?.(true);
     mapControllerRef.current?.focusCoordinate(marker.coordinate);
   };
 
   const handleMapPress = (coordinate?: MapCoordinate) => {
-    if ((session.draftMarker || session.isMarkerInputVisible) && coordinate) {
-      dispatch({ type: "setDraftMarker", payload: coordinate });
-      dispatch({ type: "setMarkerInputVisible", payload: true });
-      onMarkerSelectionChange?.(false);
+    if (isPlacementMode) {
+      if (coordinate) {
+        setDraftMarker((current) =>
+          coordinatesMatch(current, coordinate) ? current : coordinate,
+        );
+        onMarkerSelectionChange?.(false);
+      }
+
       return;
     }
 
-    if (session.selectedMarker || session.draftMarker || session.isMarkerInputVisible) {
-      dispatch({ type: "dismissTransientUi" });
+    if (selectedMarker || draftMarker || isCreationModalVisible) {
+      mapControllerRef.current?.clearSelectedMarker();
+      setSelectedMarker(null);
+      setIsCreationModalVisible(false);
       onMarkerSelectionChange?.(false);
-      if (session.browseCamera && !isNavigationActive) {
-        mapControllerRef.current?.restoreBrowseCamera(session.browseCamera);
+
+      if (browseCamera && !isNavigationActive) {
+        mapControllerRef.current?.restoreBrowseCamera(browseCamera);
       }
     }
   };
@@ -104,33 +146,52 @@ const useMapInteractions = ({
   };
 
   const handleAddMarker = () => {
-    if (currentLocationCoordinate) {
-      dispatch({
-        type: "setDraftMarker",
-        payload: currentLocationCoordinate,
-      });
-      dispatch({ type: "setMarkerInputVisible", payload: true });
-    } else {
+    if (!isAuthenticated || !currentUserId) {
+      Alert.alert(
+        "Sign in required",
+        "You need an account to submit a new sitting place.",
+      );
+      return;
+    }
+
+    if (!currentLocationCoordinate) {
       Alert.alert("Location not available", "Unable to get your current location.");
+      return;
+    }
+
+    setSelectedMarker(null);
+    onMarkerSelectionChange?.(false);
+    setDraftMarker(currentLocationCoordinate);
+    setIsPlacementMode(true);
+    setIsCreationModalVisible(false);
+  };
+
+  const handleCancelPlacement = () => {
+    resetDraftState();
+    onMarkerSelectionChange?.(false);
+
+    if (browseCamera && !isNavigationActive) {
+      mapControllerRef.current?.restoreBrowseCamera(browseCamera);
     }
   };
 
-  const handleLongPress = (coordinate: MapCoordinate) => {
-    dispatch({
-      type: "setDraftMarker",
-      payload: coordinate,
-    });
-    dispatch({ type: "setMarkerInputVisible", payload: true });
+  const handleConfirmPlacement = () => {
+    if (!draftMarker) {
+      Alert.alert(
+        "Select a spot",
+        "Move the marker to choose where the sitting place is.",
+      );
+      return;
+    }
+
+    setIsCreationModalVisible(true);
   };
 
-  const handleMarkerDragEnd = (coordinate: MapCoordinate) => {
-    dispatch({
-      type: "setDraftMarker",
-      payload: coordinate,
-    });
+  const handleCloseCreationModal = () => {
+    setIsCreationModalVisible(false);
   };
 
-  const handleStartNavigation = (marker: MarkerData | null = session.selectedMarker) => {
+  const handleStartNavigation = (marker: MarkerData | null = selectedMarker) => {
     if (!marker) {
       return;
     }
@@ -148,41 +209,93 @@ const useMapInteractions = ({
       return;
     }
 
-    dispatch({ type: "startNavigation", payload: marker });
+    setNavigationDestination(marker);
+    setSelectedMarker(null);
+    resetDraftState();
     onMarkerSelectionChange?.(false);
   };
 
   const handleStopNavigation = () => {
-    dispatch({ type: "stopNavigation" });
+    setNavigationDestination(null);
 
-    if (session.browseCamera) {
-      mapControllerRef.current?.restoreBrowseCamera(session.browseCamera);
+    if (browseCamera) {
+      mapControllerRef.current?.restoreBrowseCamera(browseCamera);
+    }
+  };
+
+  const handleSubmitMarker = async () => {
+    if (!draftMarker) {
+      Alert.alert("Select a spot", "Drag the marker to choose a location first.");
+      return;
+    }
+
+    if (!currentUserId) {
+      Alert.alert(
+        "Sign in required",
+        "You need an account to submit a new sitting place.",
+      );
+      return;
+    }
+
+    if (!draftTitle.trim() || !draftDescription.trim()) {
+      Alert.alert(
+        "Missing information",
+        "Both title and description are required before you can submit.",
+      );
+      return;
+    }
+
+    setIsSubmittingMarker(true);
+
+    try {
+      await createMarker({
+        title: draftTitle,
+        description: draftDescription,
+        coordinate: draftMarker,
+        authorId: currentUserId,
+        photo: draftPhoto,
+      });
+      resetDraftState();
+      await onMarkerCreated?.();
+      Alert.alert(
+        "Marker submitted",
+        "Your sitting place is pending approval and will appear after review.",
+      );
+    } catch (error) {
+      Alert.alert(
+        "Submission failed",
+        error instanceof Error ? error.message : "Could not create the marker.",
+      );
+    } finally {
+      setIsSubmittingMarker(false);
     }
   };
 
   return {
-    markers: DEFAULT_MARKERS,
-    selectedMarker: session.selectedMarker,
-    userMarker: session.draftMarker,
-    markerName: session.markerDraftFields.name,
-    markerInfo: session.markerDraftFields.info,
-    showInputBox: session.isMarkerInputVisible,
-    setMarkerName: (value: string) =>
-      dispatch({ type: "setMarkerDraftName", payload: value }),
-    setMarkerInfo: (value: string) =>
-      dispatch({ type: "setMarkerDraftInfo", payload: value }),
-    setShowInputBox: (value: boolean) =>
-      dispatch({ type: "setMarkerInputVisible", payload: value }),
+    markers,
+    selectedMarker,
+    userMarker: draftMarker,
+    isPlacementMode,
+    isCreationModalVisible,
+    markerName: draftTitle,
+    markerInfo: draftDescription,
+    markerPhoto: draftPhoto,
+    isSubmittingMarker,
+    setMarkerName: setDraftTitle,
+    setMarkerInfo: setDraftDescription,
+    setMarkerPhoto: setDraftPhoto,
     handleMarkerPress,
     handleMapPress,
-    handleLongPress,
-    handleMarkerDragEnd,
     handleCenterOnUserLocation,
     handleAddMarker,
+    handleCancelPlacement,
+    handleConfirmPlacement,
+    handleCloseCreationModal,
+    handleSubmitMarker,
     handleStartNavigation,
     handleStopNavigation,
     isNavigationActive,
-    activeNavigationDestination: session.navigationDestination,
+    activeNavigationDestination: navigationDestination,
   };
 };
 

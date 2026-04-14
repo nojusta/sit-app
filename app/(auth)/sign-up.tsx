@@ -84,7 +84,7 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="h-full bg-primary">
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -94,7 +94,7 @@ const SignUp = () => {
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <View
-            className="w-full flex justify-center px-4 my-6"
+            className="my-6 flex w-full justify-center px-4"
             style={{
               minHeight: Dimensions.get("window").height - 100,
               marginTop: 5,
@@ -104,10 +104,10 @@ const SignUp = () => {
             <Image
               source={images.logo}
               resizeMode="contain"
-              className="w-[100px] h-[54px] mb-4"
+              className="mb-4 h-[54px] w-[100px]"
             />
 
-            <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
+            <Text className="mt-10 font-psemibold text-2xl font-semibold text-white">
               Sign Up to SIT
             </Text>
 
@@ -148,11 +148,11 @@ const SignUp = () => {
               isLoading={isSubmitting}
             />
 
-            <View className="flex justify-center pt-5 flex-row gap-2">
-              <Text className="text-lg text-gray-100 font-pregular">
+            <View className="flex flex-row justify-center gap-2 pt-5">
+              <Text className="font-pregular text-lg text-gray-100">
                 Have an account already?
               </Text>
-              <Link href="/sign-in" className="text-lg font-psemibold text-secondary">
+              <Link href="/sign-in" className="font-psemibold text-lg text-secondary">
                 Login
               </Link>
             </View>

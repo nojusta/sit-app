@@ -5,7 +5,9 @@ import type { MapInteractionController, MarkerData } from "../../../core";
 import GoogleMapSurface from "../GoogleMapSurface";
 
 const mockClearMapView = jest.fn();
+const mockClearSelectedMarker = jest.fn();
 const mockAddMarker = jest.fn();
+const mockRemoveMarker = jest.fn();
 const mockGetCameraPosition = jest.fn();
 const mockGetMyLocation = jest.fn();
 const mockMoveCamera = jest.fn();
@@ -69,16 +71,26 @@ jest.mock("react-native-safe-area-context", () => ({
 
 const MARKERS: MarkerData[] = [
   {
-    id: 1,
+    id: "1",
     title: "Kudirka Square",
     description: "Skaters and benches",
     coordinate: { latitude: 54.6868, longitude: 25.2799 },
+    location: "54.686800,25.279900",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T09:00:00.000Z",
+    photoUrl: null,
   },
   {
-    id: 2,
+    id: "2",
     title: "Cathedral Square",
     description: "Main square",
     coordinate: { latitude: 54.6839, longitude: 25.2875 },
+    location: "54.683900,25.287500",
+    status: "approved",
+    authorId: "admin-user",
+    createdAt: "2026-04-10T08:00:00.000Z",
+    photoUrl: null,
   },
 ];
 
@@ -93,10 +105,12 @@ describe("GoogleMapSurface", () => {
     jest.spyOn(console, "warn").mockImplementation(() => {});
 
     mockClearMapView.mockResolvedValue(undefined);
+    mockClearSelectedMarker.mockResolvedValue(undefined);
     mockAddMarker.mockImplementation(async ({ id }: { id: string }) => ({ id }));
+    mockRemoveMarker.mockImplementation(() => {});
     mockGetCameraPosition.mockResolvedValue({
       target: { lat: 54.6872, lng: 25.2797 },
-      zoom: 14.3,
+      zoom: 16.3,
       bearing: 5,
       tilt: 25,
     });
@@ -151,7 +165,9 @@ describe("GoogleMapSurface", () => {
         React.useEffect(() => {
           onMapViewControllerCreated?.({
             clearMapView: mockClearMapView,
+            clearSelectedMarker: mockClearSelectedMarker,
             addMarker: mockAddMarker,
+            removeMarker: mockRemoveMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
             animateCamera: mockAnimateCamera,
@@ -190,7 +206,9 @@ describe("GoogleMapSurface", () => {
         React.useEffect(() => {
           onMapViewControllerCreated?.({
             clearMapView: mockClearMapView,
+            clearSelectedMarker: mockClearSelectedMarker,
             addMarker: mockAddMarker,
+            removeMarker: mockRemoveMarker,
             getCameraPosition: mockGetCameraPosition,
             getMyLocation: mockGetMyLocation,
             animateCamera: mockAnimateCamera,
@@ -270,26 +288,31 @@ describe("GoogleMapSurface", () => {
       />,
     );
 
-    await waitFor(() => expect(mockClearMapView).toHaveBeenCalled());
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      1,
+    await waitFor(() =>
+      expect(mockAddMarker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "marker-1",
+          imgPath: expect.any(String),
+        }),
+      ),
+    );
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-1",
         imgPath: expect.any(String),
       }),
     );
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      2,
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "marker-2",
         imgPath: expect.any(String),
       }),
     );
-    expect(mockAddMarker).toHaveBeenNthCalledWith(
-      3,
+    expect(mockAddMarker).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "draft-marker",
-        imgPath: expect.any(String),
+        draggable: true,
+        zIndex: 1000,
       }),
     );
 
@@ -455,6 +478,34 @@ describe("GoogleMapSurface", () => {
         zoom: 17.5,
       }),
     );
+  });
+
+  it("clears the native selected marker through the shared controller", async () => {
+    const mapControllerRef: React.MutableRefObject<MapInteractionController | null> = {
+      current: null,
+    };
+
+    render(
+      <GoogleMapSurface
+        mapControllerRef={mapControllerRef}
+        markers={MARKERS}
+        draftMarker={null}
+        navigationDestination={null}
+        currentLocation={{ latitude: 54.6872, longitude: 25.2797 }}
+        showsUserLocation
+        onMarkerPress={jest.fn()}
+        onMapPress={jest.fn()}
+        onStopNavigation={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => expect(mapControllerRef.current).not.toBeNull());
+
+    act(() => {
+      mapControllerRef.current?.clearSelectedMarker();
+    });
+
+    expect(mockClearSelectedMarker).toHaveBeenCalled();
   });
 
   it("restores browse markers after navigation startup times out", async () => {
