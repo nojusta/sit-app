@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import type { MarkerData } from "../core";
+import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
 import { BottomSheet, CustomButton, PhotoLightbox } from "@/shared/components";
 
 const COLLAPSED_HEIGHT = 292;
@@ -90,6 +91,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   onStartNavigation,
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const weather = useMarkerWeather(selectedMarker);
   const previewPhotos = selectedMarker?.photoUrls?.length
     ? selectedMarker.photoUrls
     : selectedMarker?.photoUrl
@@ -131,6 +133,15 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                 </Text>
               </View>
             </View>
+
+            <MarkerWeatherCard
+              markerId={selectedMarker?.id}
+              snapshot={weather.snapshot}
+              isLoading={weather.isLoading}
+              errorMessage={weather.errorMessage}
+              noticeMessage={weather.noticeMessage}
+              changeMessage={weather.changeMessage}
+            />
           </View>
         }
         bodyStyle={{ minHeight: 0 }}

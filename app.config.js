@@ -94,6 +94,7 @@ export default {
       APPWRITE_STORAGE_ID: process.env.APPWRITE_STORAGE_ID,
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
       ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+      WEATHER_TEST_SCENARIO: process.env.WEATHER_TEST_SCENARIO,
     },
   },
 };
