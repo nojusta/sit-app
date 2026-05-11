@@ -23,8 +23,8 @@ type ExpoExtra = {
 
 export type UploadableImage = {
   uri: string;
-  name: string;
-  type: string;
+  name?: string | null;
+  type?: string | null;
   size?: number;
 };
 
@@ -349,11 +349,74 @@ const normalizeUploadFileName = (value: string | undefined, fallback: string) =>
   return normalized || fallback;
 };
 
-const buildUploadPayload = (file: UploadableImage) => ({
-  uri: file.uri,
-  name: normalizeUploadFileName(file.name, `upload-${Date.now()}.jpg`),
-  type: file.type || "image/jpeg",
-});
+const SUPPORTED_IMAGE_MIME_BY_EXTENSION: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+  heic: "image/heic",
+  heif: "image/heif",
+  bmp: "image/bmp",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+};
+
+const MIME_EXTENSION_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/heic": "heic",
+  "image/heif": "heif",
+  "image/bmp": "bmp",
+  "image/tiff": "tiff",
+  "image/x-heic": "heic",
+  "image/x-heif": "heif",
+};
+
+const getFileExtension = (value?: string | null) => {
+  const match = value?.trim().match(/\.([a-zA-Z0-9]+)(?:[?#].*)?$/u);
+  return match?.[1]?.toLowerCase() ?? null;
+};
+
+const normalizeImageMimeType = (file: UploadableImage) => {
+  const declaredType = file.type?.trim().toLowerCase();
+  const typeFromName = getFileExtension(file.name);
+  const typeFromUri = getFileExtension(file.uri);
+  const extension = typeFromName ?? typeFromUri;
+
+  if (declaredType && MIME_EXTENSION_BY_TYPE[declaredType]) {
+    return SUPPORTED_IMAGE_MIME_BY_EXTENSION[MIME_EXTENSION_BY_TYPE[declaredType]];
+  }
+
+  return extension
+    ? (SUPPORTED_IMAGE_MIME_BY_EXTENSION[extension] ?? "image/jpeg")
+    : "image/jpeg";
+};
+
+export const normalizeUploadableImage = (file: UploadableImage) => {
+  const mimeType = normalizeImageMimeType(file);
+  const declaredExtension = getFileExtension(file.name);
+  const uriExtension = getFileExtension(file.uri);
+  const fallbackExtension =
+    MIME_EXTENSION_BY_TYPE[mimeType] ?? declaredExtension ?? uriExtension ?? "jpg";
+  const baseName = normalizeUploadFileName(
+    file.name ?? undefined,
+    `upload-${Date.now()}.${fallbackExtension}`,
+  );
+  const hasSupportedExtension = Boolean(
+    SUPPORTED_IMAGE_MIME_BY_EXTENSION[getFileExtension(baseName) ?? ""],
+  );
+  const name = hasSupportedExtension ? baseName : `${baseName}.${fallbackExtension}`;
+
+  return {
+    uri: file.uri,
+    name,
+    type: mimeType,
+  };
+};
 
 const createStorageFile = async (
   file: UploadableImage,
@@ -365,7 +428,7 @@ const createStorageFile = async (
     const formData = new FormData();
 
     formData.append("fileId", "unique()");
-    formData.append("file", buildUploadPayload(file) as unknown as Blob);
+    formData.append("file", normalizeUploadableImage(file) as unknown as Blob);
     permissions.forEach((permission) => {
       formData.append("permissions[]", permission);
     });

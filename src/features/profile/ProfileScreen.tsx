@@ -14,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthContext } from "@/features/auth";
+import { useMarkerContext } from "@/features/map";
 import { MarkerGalleryTile } from "@/features/markers";
 import {
   signOut,
@@ -85,6 +86,7 @@ const MarkerGallerySkeleton: React.FC = () => (
 
 const ProfileScreen: React.FC = () => {
   const { user, setUser, setIsLogged, loading, setLoading } = useAuthContext();
+  const { setIsPlacementActive } = useMarkerContext();
   const router = useRouter();
   const [highlightedMarkerId, setHighlightedMarkerId] = useState<string | null>(null);
   const [markerBeingEdited, setMarkerBeingEdited] = useState<MarkerRecord | null>(null);
@@ -127,6 +129,18 @@ const ProfileScreen: React.FC = () => {
     setHighlightedMarkerId(null);
     markersListRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, [currentPage]);
+
+  useEffect(() => {
+    const isEditingMarker = markerBeingEdited !== null;
+
+    setIsPlacementActive(isEditingMarker);
+
+    return () => {
+      if (isEditingMarker) {
+        setIsPlacementActive(false);
+      }
+    };
+  }, [markerBeingEdited, setIsPlacementActive]);
 
   const handleSignOut = async () => {
     setLoading(true);

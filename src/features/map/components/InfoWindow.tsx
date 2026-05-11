@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import type { MarkerData } from "../core";
 import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
@@ -34,8 +26,8 @@ const MarkerGalleryImageCard: React.FC<{
         onLoadEnd={() => setIsLoading(false)}
       />
       {isLoading ? (
-        <View className="absolute inset-0 items-center justify-center bg-slate-200/80">
-          <ActivityIndicator size="small" color="#475569" />
+        <View className="absolute inset-0 bg-slate-200">
+          <View className="h-full w-full bg-slate-300/70" />
         </View>
       ) : null}
     </Pressable>
@@ -62,7 +54,7 @@ const MarkerPreviewHero: React.FC<{
   }
 
   return (
-    <>
+    <View className="relative h-full w-full">
       <Image
         source={{ uri: photo }}
         resizeMode="cover"
@@ -71,11 +63,11 @@ const MarkerPreviewHero: React.FC<{
         onLoadEnd={() => setIsLoading(false)}
       />
       {isLoading ? (
-        <View className="absolute inset-0 items-center justify-center bg-slate-200/80">
-          <ActivityIndicator size="small" color="#475569" />
+        <View className="absolute inset-0 bg-slate-200">
+          <View className="h-full w-full bg-slate-300/70" />
         </View>
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -91,6 +83,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   onStartNavigation,
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const weather = useMarkerWeather(selectedMarker);
   const previewPhotos = selectedMarker?.photoUrls?.length
     ? selectedMarker.photoUrls
@@ -100,6 +93,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
 
   useEffect(() => {
     setLightboxIndex(null);
+    setIsDescriptionExpanded(false);
   }, [selectedMarker?.id]);
 
   return (
@@ -125,12 +119,27 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                 <Text className="font-psemibold text-xl leading-7 text-slate-950">
                   {selectedMarker?.title ?? ""}
                 </Text>
-                <Text
-                  className="mt-2 font-pregular text-sm leading-6 text-slate-600"
-                  numberOfLines={2}
+                <Pressable
+                  onPress={() => setIsDescriptionExpanded((current) => !current)}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    isDescriptionExpanded
+                      ? "Collapse marker description"
+                      : "Expand marker description"
+                  }
                 >
-                  {selectedMarker?.description ?? ""}
-                </Text>
+                  <Text
+                    className="mt-2 font-pregular text-sm leading-6 text-slate-600"
+                    numberOfLines={isDescriptionExpanded ? undefined : 2}
+                  >
+                    {selectedMarker?.description ?? ""}
+                  </Text>
+                  {selectedMarker?.description ? (
+                    <Text className="mt-1 font-psemibold text-xs text-slate-500">
+                      {isDescriptionExpanded ? "Show less" : "Show more"}
+                    </Text>
+                  ) : null}
+                </Pressable>
               </View>
             </View>
 
