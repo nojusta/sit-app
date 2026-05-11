@@ -8,9 +8,7 @@ import type {
 
 const OPEN_METEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
 const DEFAULT_UPCOMING_HOURS = 4;
-const OPEN_METEO_MODELS = ["icon_eu", "ecmwf_ifs025", "icon_global"] as const;
 const WEATHER_REQUEST_TIMEOUT_MS = 8000;
-type OpenMeteoModel = (typeof OPEN_METEO_MODELS)[number];
 
 const CURRENT_FIELDS = [
   "temperature_2m",
@@ -194,10 +192,10 @@ const buildUpcomingForecast = (
     .slice(0, upcomingHours);
 };
 
-export const buildOpenMeteoForecastUrl = (
-  { coordinate, upcomingHours }: FetchWeatherSnapshotInput,
-  model: OpenMeteoModel = OPEN_METEO_MODELS[0],
-): string => {
+export const buildOpenMeteoForecastUrl = ({
+  coordinate,
+  upcomingHours,
+}: FetchWeatherSnapshotInput): string => {
   const forecastHours = clampUpcomingHours(upcomingHours) + 1;
   const params = new URLSearchParams({
     latitude: String(coordinate.latitude),
@@ -206,7 +204,6 @@ export const buildOpenMeteoForecastUrl = (
     hourly: HOURLY_FIELDS.join(","),
     timezone: "auto",
     forecast_hours: String(forecastHours),
-    models: model,
     temperature_unit: "celsius",
     wind_speed_unit: "kmh",
     precipitation_unit: "mm",
@@ -249,34 +246,28 @@ export const normalizeOpenMeteoWeather = (
 export const fetchOpenMeteoWeatherSnapshot = async (
   input: FetchWeatherSnapshotInput,
 ): Promise<MarkerWeatherSnapshot> => {
-  let lastError: unknown = null;
+  try {
+    const response = await fetchWithTimeout(buildOpenMeteoForecastUrl(input));
 
-  for (const model of OPEN_METEO_MODELS) {
-    try {
-      const response = await fetchWithTimeout(buildOpenMeteoForecastUrl(input, model));
-
-      if (!response.ok) {
-        throw new WeatherProviderError(
-          "Weather forecast is temporarily unavailable.",
-          response.status,
-        );
-      }
-
-      const data = (await response.json()) as OpenMeteoForecastResponse;
-      return normalizeOpenMeteoWeather(data, {
-        sourceLocationLabel: input.sourceLocationLabel,
-        upcomingHours: input.upcomingHours,
-      });
-    } catch (error) {
-      lastError = error;
+    if (!response.ok) {
+      throw new WeatherProviderError(
+        "Weather forecast is temporarily unavailable.",
+        response.status,
+      );
     }
-  }
 
-  if (lastError instanceof WeatherProviderError) {
-    throw lastError;
-  }
+    const data = (await response.json()) as OpenMeteoForecastResponse;
+    return normalizeOpenMeteoWeather(data, {
+      sourceLocationLabel: input.sourceLocationLabel,
+      upcomingHours: input.upcomingHours,
+    });
+  } catch (error) {
+    if (error instanceof WeatherProviderError) {
+      throw error;
+    }
 
-  throw new WeatherProviderError("Weather forecast is temporarily unavailable.");
+    throw new WeatherProviderError("Weather forecast is temporarily unavailable.");
+  }
 };
 
 export const openMeteoWeatherProvider = {

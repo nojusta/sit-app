@@ -1,6 +1,22 @@
-import { buildOpenMeteoForecastUrl, normalizeOpenMeteoWeather } from "@/services/weather";
+import {
+  buildOpenMeteoForecastUrl,
+  fetchOpenMeteoWeatherSnapshot,
+  normalizeOpenMeteoWeather,
+  WeatherProviderError,
+} from "@/services/weather";
 
 describe("Open-Meteo weather service", () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
   it("builds a compact forecast URL for marker coordinates", () => {
     const url = buildOpenMeteoForecastUrl({
       coordinate: { latitude: 54.6872, longitude: 25.2797 },
@@ -12,7 +28,7 @@ describe("Open-Meteo weather service", () => {
     expect(url).toContain("longitude=25.2797");
     expect(url).toContain("timezone=auto");
     expect(url).toContain("forecast_hours=5");
-    expect(url).toContain("models=icon_eu");
+    expect(url).not.toContain("models=");
     expect(url).toContain("current=temperature_2m");
     expect(url).toContain("hourly=temperature_2m");
   });
@@ -113,5 +129,66 @@ describe("Open-Meteo weather service", () => {
       conditionCode: 0,
       conditionLabel: "Clear",
     });
+  });
+
+  it("uses one best-match request instead of serial model retries", async () => {
+    const mockedFetch = jest.mocked(global.fetch);
+
+    mockedFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        current: {
+          time: "2026-05-01T12:00",
+          temperature_2m: 14,
+          apparent_temperature: 13,
+          precipitation: 0,
+          precipitation_probability: 20,
+          weather_code: 61,
+          wind_speed_10m: 12,
+          relative_humidity_2m: 70,
+          cloud_cover: 80,
+        },
+        hourly: {
+          time: ["2026-05-01T12:00", "2026-05-01T13:00"],
+          temperature_2m: [14, 15],
+          apparent_temperature: [13, 14],
+          precipitation: [0, 0.1],
+          precipitation_probability: [20, 25],
+          weather_code: [61, 61],
+        },
+      }),
+    } as Response);
+
+    await fetchOpenMeteoWeatherSnapshot({
+      coordinate: { latitude: 54.6872, longitude: 25.2797 },
+      sourceLocationLabel: "Bench near Cathedral",
+      upcomingHours: 4,
+    });
+
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
+    expect(String(mockedFetch.mock.calls[0]?.[0])).not.toContain("models=");
+  });
+
+  it("throws a provider error when the best-match request fails", async () => {
+    const mockedFetch = jest.mocked(global.fetch);
+
+    mockedFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+    } as Response);
+
+    await expect(
+      fetchOpenMeteoWeatherSnapshot({
+        coordinate: { latitude: 54.6872, longitude: 25.2797 },
+      }),
+    ).rejects.toEqual(
+      expect.objectContaining<Partial<WeatherProviderError>>({
+        name: "WeatherProviderError",
+        message: "Weather forecast is temporarily unavailable.",
+        status: 502,
+      }),
+    );
+
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
   });
 });
