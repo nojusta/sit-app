@@ -14,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthContext } from "@/features/auth";
+import { useMarkerContext } from "@/features/map";
 import { MarkerGalleryTile } from "@/features/markers";
 import {
   signOut,
@@ -62,29 +63,15 @@ const getProfileInitials = (value?: string) =>
 const PROFILE_CARD_HEIGHT = 188;
 const PROFILE_CARD_GAP = 14;
 
-const MarkerGallerySkeleton: React.FC = () => (
-  <View className="flex-row flex-wrap justify-between gap-y-4 pt-2">
-    {Array.from({ length: 6 }).map((_, index) => (
-      <View
-        key={`marker-skeleton-${index}`}
-        className="overflow-hidden rounded-[24px] border border-slate-700 bg-slate-800"
-        style={{
-          width: "48%",
-          height: PROFILE_CARD_HEIGHT,
-        }}
-      >
-        <View className="h-[128px] bg-slate-700" />
-        <View className="px-3 py-3">
-          <View className="h-4 rounded-full bg-slate-600" />
-          <View className="mt-2 h-3 w-20 rounded-full bg-slate-700" />
-        </View>
-      </View>
-    ))}
+const MarkerGalleryLoadingState: React.FC = () => (
+  <View className="items-center justify-center rounded-[24px] bg-slate-800 py-12">
+    <ActivityIndicator color="#CBD5E1" size="small" />
   </View>
 );
 
 const ProfileScreen: React.FC = () => {
   const { user, setUser, setIsLogged, loading, setLoading } = useAuthContext();
+  const { setIsPlacementActive } = useMarkerContext();
   const router = useRouter();
   const [highlightedMarkerId, setHighlightedMarkerId] = useState<string | null>(null);
   const [markerBeingEdited, setMarkerBeingEdited] = useState<MarkerRecord | null>(null);
@@ -127,6 +114,18 @@ const ProfileScreen: React.FC = () => {
     setHighlightedMarkerId(null);
     markersListRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, [currentPage]);
+
+  useEffect(() => {
+    const isEditingMarker = markerBeingEdited !== null;
+
+    setIsPlacementActive(isEditingMarker);
+
+    return () => {
+      if (isEditingMarker) {
+        setIsPlacementActive(false);
+      }
+    };
+  }, [markerBeingEdited, setIsPlacementActive]);
 
   const handleSignOut = async () => {
     setLoading(true);
@@ -283,7 +282,7 @@ const ProfileScreen: React.FC = () => {
         ListEmptyComponent={() => (
           <View className="py-6">
             {markersLoading ? (
-              <MarkerGallerySkeleton />
+              <MarkerGalleryLoadingState />
             ) : (
               <EmptyState
                 title="No submitted markers yet"

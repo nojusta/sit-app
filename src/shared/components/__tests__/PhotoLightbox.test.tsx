@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 
 import PhotoLightbox from "../PhotoLightbox";
 
@@ -55,5 +55,26 @@ describe("PhotoLightbox", () => {
 
     expect(getByText("Bench by the river")).toBeTruthy();
     expect(getByText("1 / 1")).toBeTruthy();
+  });
+
+  it("navigates between multiple images with explicit controls", () => {
+    const { getByLabelText, getByText } = render(
+      <PhotoLightbox
+        visible
+        photos={["https://example.com/photo-1.jpg", "https://example.com/photo-2.jpg"]}
+        title="Bench by the river"
+        onClose={jest.fn()}
+      />,
+    );
+
+    expect(getByText("1 / 2")).toBeTruthy();
+
+    fireEvent.press(getByLabelText("Next image"));
+
+    expect(getByText("2 / 2")).toBeTruthy();
+
+    fireEvent.press(getByLabelText("Previous image"));
+
+    expect(getByText("1 / 2")).toBeTruthy();
   });
 });

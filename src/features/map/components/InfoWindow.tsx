@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import type { MarkerData } from "../core";
-import { BottomSheet, CustomButton, PhotoLightbox } from "@/shared/components";
+import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
+import {
+  BottomSheet,
+  CustomButton,
+  ImageLoadingPlaceholder,
+  PhotoLightbox,
+} from "@/shared/components";
 
 const COLLAPSED_HEIGHT = 292;
 
@@ -32,11 +30,7 @@ const MarkerGalleryImageCard: React.FC<{
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
       />
-      {isLoading ? (
-        <View className="absolute inset-0 items-center justify-center bg-slate-200/80">
-          <ActivityIndicator size="small" color="#475569" />
-        </View>
-      ) : null}
+      {isLoading ? <ImageLoadingPlaceholder fill /> : null}
     </Pressable>
   );
 };
@@ -61,7 +55,7 @@ const MarkerPreviewHero: React.FC<{
   }
 
   return (
-    <>
+    <View className="relative h-full w-full">
       <Image
         source={{ uri: photo }}
         resizeMode="cover"
@@ -69,12 +63,8 @@ const MarkerPreviewHero: React.FC<{
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
       />
-      {isLoading ? (
-        <View className="absolute inset-0 items-center justify-center bg-slate-200/80">
-          <ActivityIndicator size="small" color="#475569" />
-        </View>
-      ) : null}
-    </>
+      {isLoading ? <ImageLoadingPlaceholder fill /> : null}
+    </View>
   );
 };
 
@@ -90,6 +80,8 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   onStartNavigation,
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const weather = useMarkerWeather(selectedMarker);
   const previewPhotos = selectedMarker?.photoUrls?.length
     ? selectedMarker.photoUrls
     : selectedMarker?.photoUrl
@@ -98,6 +90,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
 
   useEffect(() => {
     setLightboxIndex(null);
+    setIsDescriptionExpanded(false);
   }, [selectedMarker?.id]);
 
   return (
@@ -123,14 +116,38 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                 <Text className="font-psemibold text-xl leading-7 text-slate-950">
                   {selectedMarker?.title ?? ""}
                 </Text>
-                <Text
-                  className="mt-2 font-pregular text-sm leading-6 text-slate-600"
-                  numberOfLines={2}
+                <Pressable
+                  onPress={() => setIsDescriptionExpanded((current) => !current)}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    isDescriptionExpanded
+                      ? "Collapse marker description"
+                      : "Expand marker description"
+                  }
                 >
-                  {selectedMarker?.description ?? ""}
-                </Text>
+                  <Text
+                    className="mt-2 font-pregular text-sm leading-6 text-slate-600"
+                    numberOfLines={isDescriptionExpanded ? undefined : 2}
+                  >
+                    {selectedMarker?.description ?? ""}
+                  </Text>
+                  {selectedMarker?.description ? (
+                    <Text className="mt-1 font-psemibold text-xs text-slate-500">
+                      {isDescriptionExpanded ? "Show less" : "Show more"}
+                    </Text>
+                  ) : null}
+                </Pressable>
               </View>
             </View>
+
+            <MarkerWeatherCard
+              markerId={selectedMarker?.id}
+              snapshot={weather.snapshot}
+              isLoading={weather.isLoading}
+              errorMessage={weather.errorMessage}
+              noticeMessage={weather.noticeMessage}
+              changeMessage={weather.changeMessage}
+            />
           </View>
         }
         bodyStyle={{ minHeight: 0 }}

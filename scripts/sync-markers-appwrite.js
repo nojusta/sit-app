@@ -22,8 +22,26 @@ const PRIMARY_SEED_PATH = path.join(repoRoot, "new-markers.json");
 const FALLBACK_SEED_PATH = path.join(repoRoot, "test-run-unique.json");
 const SEED_PATH = fs.existsSync(PRIMARY_SEED_PATH)
   ? PRIMARY_SEED_PATH
-  : FALLBACK_SEED_PATH;
+  : fs.existsSync(FALLBACK_SEED_PATH)
+    ? FALLBACK_SEED_PATH
+    : null;
 const PHOTOS_DIR = path.join(repoRoot, "photos-for-markers");
+const SUPPORTED_IMAGE_EXTENSIONS = [
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "gif",
+  "heic",
+  "heif",
+  "bmp",
+  "tif",
+  "tiff",
+];
+const SUPPORTED_IMAGE_EXTENSION_PATTERN = new RegExp(
+  `\\.(${SUPPORTED_IMAGE_EXTENSIONS.join("|")})$`,
+  "iu",
+);
 const ADMIN_PROFILE_IMAGE_PATH = path.join(repoRoot, "assets/images/profile.png");
 const MAX_POLL_ATTEMPTS = 30;
 const POLL_DELAY_MS = 1000;
@@ -131,7 +149,11 @@ async function main() {
   const collectionId = config.collectionId || (await resolveCollectionId(databaseId));
 
   console.log(`Using Appwrite database ${databaseId} and collection ${collectionId}.`);
-  console.log(`Using seed file ${path.relative(repoRoot, SEED_PATH)}.`);
+  console.log(
+    SEED_PATH
+      ? `Using seed file ${path.relative(repoRoot, SEED_PATH)}.`
+      : "No marker seed file found; schema and storage sync will continue.",
+  );
 
   const collectionBefore = await getCollection(databaseId, collectionId);
   console.log("Updating collection security...");
@@ -150,6 +172,28 @@ async function main() {
   await ensureIndexes(databaseId, collectionId);
   console.log("Removing legacy duplicate marker attributes...");
   await cleanupLegacyAttributes(databaseId, collectionId);
+
+  if (!SEED_PATH) {
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          databaseId,
+          collectionId,
+          bucketId: config.bucketId,
+          seeded: {
+            total: 0,
+            created: 0,
+            skipped: 0,
+            photoAttachments: 0,
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    return;
+  }
 
   console.log("Resolving admin seed owner...");
   const adminUser = await resolveAdminUser();
@@ -294,7 +338,7 @@ async function updateBucketSecurity() {
       name: bucket.name,
       enabled: bucket.enabled,
       maximumFileSize: bucket.maximumFileSize,
-      allowedFileExtensions: bucket.allowedFileExtensions,
+      allowedFileExtensions: mergeAllowedFileExtensions(bucket.allowedFileExtensions),
       compression: bucket.compression,
       encryption: bucket.encryption,
       antivirus: bucket.antivirus,
@@ -471,7 +515,7 @@ function loadPhotoMatches() {
 
   const files = fs
     .readdirSync(PHOTOS_DIR)
-    .filter((fileName) => /\.(png|jpe?g|webp)$/iu.test(fileName))
+    .filter((fileName) => SUPPORTED_IMAGE_EXTENSION_PATTERN.test(fileName))
     .sort((left, right) => left.localeCompare(right));
   const photoMatches = new Map();
 
@@ -618,15 +662,33 @@ function formatLocation(latitude, longitude) {
 function getMimeType(filePath) {
   const extension = path.extname(filePath).toLowerCase();
 
-  if (extension === ".png") {
-    return "image/png";
+  switch (extension) {
+    case ".png":
+      return "image/png";
+    case ".webp":
+      return "image/webp";
+    case ".gif":
+      return "image/gif";
+    case ".heic":
+      return "image/heic";
+    case ".heif":
+      return "image/heif";
+    case ".bmp":
+      return "image/bmp";
+    case ".tif":
+    case ".tiff":
+      return "image/tiff";
+    default:
+      return "image/jpeg";
   }
+}
 
-  if (extension === ".webp") {
-    return "image/webp";
-  }
+function mergeAllowedFileExtensions(existingExtensions) {
+  const existing = Array.isArray(existingExtensions)
+    ? existingExtensions.map((extension) => String(extension).toLowerCase())
+    : [];
 
-  return "image/jpeg";
+  return Array.from(new Set([...existing, ...SUPPORTED_IMAGE_EXTENSIONS]));
 }
 
 function isDuplicateLocationError(error) {
