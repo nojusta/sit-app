@@ -50,6 +50,7 @@ jest.mock("@/shared/components", () => {
         <Text>{title}</Text>
       </TouchableOpacity>
     ),
+    ImageLoadingPlaceholder: () => <View testID="image-loading-placeholder" />,
     PhotoLightbox: () => null,
   };
 });

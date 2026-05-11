@@ -3,7 +3,12 @@ import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native
 
 import type { MarkerData } from "../core";
 import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
-import { BottomSheet, CustomButton, PhotoLightbox } from "@/shared/components";
+import {
+  BottomSheet,
+  CustomButton,
+  ImageLoadingPlaceholder,
+  PhotoLightbox,
+} from "@/shared/components";
 
 const COLLAPSED_HEIGHT = 292;
 
@@ -25,11 +30,7 @@ const MarkerGalleryImageCard: React.FC<{
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
       />
-      {isLoading ? (
-        <View className="absolute inset-0 bg-slate-200">
-          <View className="h-full w-full bg-slate-300/70" />
-        </View>
-      ) : null}
+      {isLoading ? <ImageLoadingPlaceholder fill /> : null}
     </Pressable>
   );
 };
@@ -62,11 +63,7 @@ const MarkerPreviewHero: React.FC<{
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
       />
-      {isLoading ? (
-        <View className="absolute inset-0 bg-slate-200">
-          <View className="h-full w-full bg-slate-300/70" />
-        </View>
-      ) : null}
+      {isLoading ? <ImageLoadingPlaceholder fill /> : null}
     </View>
   );
 };

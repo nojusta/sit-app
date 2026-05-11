@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Modal,
@@ -39,6 +40,7 @@ interface ZoomablePhotoProps {
 }
 
 const ZoomablePhoto: React.FC<ZoomablePhotoProps> = ({ uri, width, height }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -53,6 +55,7 @@ const ZoomablePhoto: React.FC<ZoomablePhotoProps> = ({ uri, width, height }) => 
     translateY.value = 0;
     savedTranslateX.value = 0;
     savedTranslateY.value = 0;
+    setIsLoading(true);
   }, [savedScale, savedTranslateX, savedTranslateY, scale, translateX, translateY, uri]);
 
   const pinchGesture = useMemo(
@@ -118,11 +121,20 @@ const ZoomablePhoto: React.FC<ZoomablePhotoProps> = ({ uri, width, height }) => 
             resizeMode="contain"
             style={{
               width: width - 32,
-              height: height - 160,
+              height,
             }}
+            onLoadStart={() => setIsLoading(true)}
+            onLoadEnd={() => setIsLoading(false)}
           />
         </Animated.View>
       </GestureDetector>
+      {isLoading ? (
+        <View className="absolute inset-0 items-center justify-center">
+          <View className="bg-black/55 h-12 w-12 items-center justify-center rounded-full">
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -137,6 +149,9 @@ const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
   const { width, height } = useWindowDimensions();
   const listRef = useRef<FlatList<string> | null>(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const imageFrameHeight = Math.max(280, height - 188);
+  const canGoPrevious = activeIndex > 0;
+  const canGoNext = activeIndex < photos.length - 1;
 
   useEffect(() => {
     if (!visible) {
@@ -159,6 +174,15 @@ const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
     setActiveIndex(nextIndex);
   };
 
+  const goToPhoto = (index: number) => {
+    const nextIndex = Math.min(Math.max(index, 0), photos.length - 1);
+    setActiveIndex(nextIndex);
+    listRef.current?.scrollToIndex({
+      index: nextIndex,
+      animated: true,
+    });
+  };
+
   if (!visible || photos.length === 0) {
     return null;
   }
@@ -175,7 +199,7 @@ const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
         <View className="flex-1 bg-black/95">
           <Pressable className="absolute inset-0" onPress={onClose} />
 
-          <View className="px-5 pb-4 pt-16">
+          <View className="px-5 pb-3 pt-14">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">
                 {title ? (
@@ -183,9 +207,6 @@ const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
                     {title}
                   </Text>
                 ) : null}
-                <Text className="mt-1 font-pregular text-sm text-slate-300">
-                  {activeIndex + 1} / {photos.length}
-                </Text>
               </View>
 
               <Pressable
@@ -199,28 +220,82 @@ const PhotoLightbox: React.FC<PhotoLightboxProps> = ({
             </View>
           </View>
 
-          <FlatList
-            ref={listRef}
-            data={photos}
-            horizontal
-            pagingEnabled
-            keyExtractor={(item, index) => `${item}-${index}`}
-            showsHorizontalScrollIndicator={false}
-            initialNumToRender={1}
-            maxToRenderPerBatch={1}
-            windowSize={2}
-            removeClippedSubviews
-            onScrollToIndexFailed={() => {}}
-            onMomentumScrollEnd={handleScrollEnd}
-            getItemLayout={(_, index) => ({
-              length: width,
-              offset: width * index,
-              index,
-            })}
-            renderItem={({ item }) => (
-              <ZoomablePhoto uri={item} width={width} height={height} />
-            )}
-          />
+          <View className="flex-1 justify-center">
+            <FlatList
+              ref={listRef}
+              data={photos}
+              horizontal
+              pagingEnabled
+              keyExtractor={(item, index) => `${item}-${index}`}
+              showsHorizontalScrollIndicator={false}
+              initialNumToRender={1}
+              maxToRenderPerBatch={1}
+              windowSize={2}
+              removeClippedSubviews
+              onScrollToIndexFailed={() => {}}
+              onMomentumScrollEnd={handleScrollEnd}
+              getItemLayout={(_, index) => ({
+                length: width,
+                offset: width * index,
+                index,
+              })}
+              renderItem={({ item }) => (
+                <ZoomablePhoto uri={item} width={width} height={imageFrameHeight} />
+              )}
+            />
+          </View>
+
+          {photos.length > 1 ? (
+            <View className="flex-row items-center justify-center gap-4 px-5 pb-9 pt-3">
+              <Pressable
+                onPress={() => goToPhoto(activeIndex - 1)}
+                disabled={!canGoPrevious}
+                className={`h-12 w-12 items-center justify-center rounded-full ${
+                  canGoPrevious ? "bg-white/12" : "bg-white/5"
+                }`}
+                accessibilityRole="button"
+                accessibilityLabel="Previous image"
+                accessibilityState={{ disabled: !canGoPrevious }}
+              >
+                <MaterialIcons
+                  name="chevron-left"
+                  size={28}
+                  color={canGoPrevious ? "#FFFFFF" : "#64748B"}
+                />
+              </Pressable>
+
+              <View className="min-w-[72px] items-center rounded-full bg-white/10 px-4 py-2">
+                <Text className="font-pmedium text-sm text-white">
+                  {activeIndex + 1} / {photos.length}
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={() => goToPhoto(activeIndex + 1)}
+                disabled={!canGoNext}
+                className={`h-12 w-12 items-center justify-center rounded-full ${
+                  canGoNext ? "bg-white/12" : "bg-white/5"
+                }`}
+                accessibilityRole="button"
+                accessibilityLabel="Next image"
+                accessibilityState={{ disabled: !canGoNext }}
+              >
+                <MaterialIcons
+                  name="chevron-right"
+                  size={28}
+                  color={canGoNext ? "#FFFFFF" : "#64748B"}
+                />
+              </Pressable>
+            </View>
+          ) : (
+            <View className="items-center px-5 pb-9 pt-3">
+              <View className="min-w-[72px] items-center rounded-full bg-white/10 px-4 py-2">
+                <Text className="font-pmedium text-sm text-white">
+                  {activeIndex + 1} / {photos.length}
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
       </GestureHandlerRootView>
     </Modal>

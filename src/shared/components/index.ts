@@ -7,6 +7,7 @@ export { ExternalLink } from "./ExternalLink";
 export { default as FormField } from "./FormField";
 export { HelloWave } from "./HelloWave";
 export { default as InfoBox } from "./InfoBox";
+export { default as ImageLoadingPlaceholder } from "./ImageLoadingPlaceholder";
 export { default as Loader } from "./Loader";
 export { default as NoticeBanner } from "./NoticeBanner";
 export { default as Pagination } from "./Pagination";
