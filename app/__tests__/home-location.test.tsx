@@ -5,6 +5,7 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import HomeApp from "../(tabs)/home";
 
+const mockRouterPush = jest.fn();
 const setIsMarkerSelected = jest.fn();
 const setIsNavigationActive = jest.fn();
 const setIsPlacementActive = jest.fn();
@@ -13,6 +14,12 @@ const handleAddMarker = jest.fn();
 const handleConfirmPlacement = jest.fn();
 const refreshLocation = jest.fn();
 const refetchMarkers = jest.fn();
+
+jest.mock("expo-router", () => ({
+  useRouter: () => ({
+    push: mockRouterPush,
+  }),
+}));
 
 jest.mock("@react-navigation/native", () => ({
   useIsFocused: jest.fn(),
@@ -52,6 +59,11 @@ jest.mock("@/features/auth", () => ({
 
 jest.mock("@/shared/hooks", () => ({
   useAppwrite: jest.fn(),
+}));
+
+jest.mock("@/services/appwrite", () => ({
+  listApprovedMarkers: jest.fn(),
+  subscribeToMarkerChanges: jest.fn(() => () => {}),
 }));
 
 jest.mock("@/features/markers", () => ({

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { Alert } from "react-native";
 import { LocationObject } from "expo-location";
@@ -64,6 +64,20 @@ const useMapInteractions = ({
     [location],
   );
   const isNavigationActive = navigationDestination !== null;
+
+  useEffect(() => {
+    if (!selectedMarker) {
+      return;
+    }
+
+    const refreshedSelectedMarker = markers.find(
+      (marker) => marker.id === selectedMarker.id,
+    );
+
+    if (refreshedSelectedMarker) {
+      setSelectedMarker(refreshedSelectedMarker);
+    }
+  }, [markers, selectedMarker]);
 
   const resetDraftState = () => {
     setDraftMarker(null);
