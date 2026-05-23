@@ -95,7 +95,7 @@ export interface SubmitMarkerRatingInput {
 
 export interface SubmitMarkerRatingResult {
   rating: MarkerRatingRecord;
-  averageRating: number;
+  averageRating: number | null;
 }
 
 export interface MarkerRatingPageResult {
@@ -188,10 +188,19 @@ const account = appwriteReady ? new Account(client) : null;
 const databases = databaseConfigured ? new Databases(client) : null;
 const storage = storageReady ? new Storage(client) : null;
 
+const throwConfigurationError = (developerMessage: string, userMessage: string) => {
+  if (__DEV__) {
+    console.warn(developerMessage);
+  }
+
+  throw new Error(userMessage);
+};
+
 const ensureReady = () => {
   if (!appwriteReady) {
-    throw new Error(
+    throwConfigurationError(
       "Appwrite configuration is missing. Check your env variables in app.config.js.",
+      "App connection is temporarily unavailable.",
     );
   }
 };
@@ -200,8 +209,9 @@ const ensureDatabaseConfigured = () => {
   ensureReady();
 
   if (!databaseConfigured) {
-    throw new Error(
+    throwConfigurationError(
       "Appwrite database is not configured. Check APPWRITE_DATABASE_ID in app.config.js.",
+      "App data is temporarily unavailable.",
     );
   }
 };
@@ -210,18 +220,20 @@ const ensureMarkersReady = () => {
   ensureDatabaseConfigured();
 
   if (!markersReady) {
-    throw new Error(
+    throwConfigurationError(
       "Appwrite markers database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_MARKERS_COLLECTION_ID.",
+      "Sitting spot data is temporarily unavailable.",
     );
   }
 };
 
 const ensureRatingsReady = () => {
-  ensureDatabaseConfigured();
+  ensureReady();
 
   if (!ratingsReady) {
-    throw new Error(
+    throwConfigurationError(
       "Appwrite ratings database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_RATINGS_COLLECTION_ID.",
+      "Ratings are temporarily unavailable.",
     );
   }
 };
@@ -230,7 +242,10 @@ const ensureStorageReady = () => {
   ensureReady();
 
   if (!storageReady) {
-    throw new Error("Appwrite storage is not configured.");
+    throwConfigurationError(
+      "Appwrite storage is not configured. Check APPWRITE_STORAGE_ID.",
+      "Photo uploads are temporarily unavailable.",
+    );
   }
 };
 
@@ -466,9 +481,9 @@ const normalizeRatingScore = (value: number) => {
 
 const roundAverageRating = (value: number) => Math.round(value * 100) / 100;
 
-const calculateAverageRating = (scores: number[]) => {
+const calculateAverageRating = (scores: number[]): number | null => {
   if (scores.length === 0) {
-    return 0;
+    return null;
   }
 
   return roundAverageRating(
@@ -1062,7 +1077,7 @@ export async function submitMarkerRating({
         buildRatingDocumentPermissions(normalizedUserId),
       );
 
-  let averageRating: number;
+  let averageRating: number | null;
 
   try {
     averageRating = await updateMarkerAverageRating(normalizedMarkerId);

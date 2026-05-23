@@ -166,7 +166,15 @@ const useMarkerRating = ({
       setHasExistingRating(true);
       setDisplayAverageRating(result.averageRating);
       await loadReviews();
-      await onRatingSaved?.();
+
+      try {
+        await onRatingSaved?.();
+      } catch (error) {
+        if (__DEV__) {
+          console.warn("Marker refresh after rating save failed.", error);
+        }
+      }
+
       Alert.alert(
         hasExistingRating ? "Rating updated" : "Rating saved",
         "Your rating has been recorded for this sitting spot.",

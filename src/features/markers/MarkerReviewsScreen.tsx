@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -39,11 +40,12 @@ const MarkerReviewsScreen: React.FC<MarkerReviewsScreenProps> = ({
   if (!markerId) {
     return (
       <SafeAreaView className="flex-1 bg-[#F6F5F1] px-5 py-6">
+        <StatusBar backgroundColor="#F6F5F1" style="dark" />
         <Pressable
           onPress={() => router.back()}
-          className="self-start rounded-full bg-white px-4 py-2.5"
+          className="self-start rounded-full bg-slate-200 px-4 py-2.5"
         >
-          <Text className="font-pmedium text-sm text-slate-700">Back</Text>
+          <Text className="font-pmedium text-sm text-slate-900">Back</Text>
         </Pressable>
         <View className="flex-1 items-center justify-center">
           <Text className="font-psemibold text-lg text-slate-900">
@@ -59,14 +61,15 @@ const MarkerReviewsScreen: React.FC<MarkerReviewsScreenProps> = ({
 
   return (
     <SafeAreaView className="flex-1 bg-[#F6F5F1]">
+      <StatusBar backgroundColor="#F6F5F1" style="dark" />
       <View className="px-5 pb-4 pt-3">
         <Pressable
           onPress={() => router.back()}
           accessibilityRole="button"
           accessibilityLabel="Go back"
-          className="self-start rounded-full bg-white px-4 py-2.5"
+          className="self-start rounded-full bg-slate-200 px-4 py-2.5"
         >
-          <Text className="font-pmedium text-sm text-slate-700">Back</Text>
+          <Text className="font-pmedium text-sm text-slate-900">Back</Text>
         </Pressable>
 
         <View className="mt-5 rounded-[30px] bg-white px-5 py-5">
@@ -95,6 +98,7 @@ const MarkerReviewsScreen: React.FC<MarkerReviewsScreenProps> = ({
           renderItem={() => (
             <>
               <MarkerReviewsCard
+                title="All reviews"
                 reviews={reviews}
                 isLoading={false}
                 errorMessage={errorMessage}

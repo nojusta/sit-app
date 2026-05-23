@@ -81,10 +81,17 @@ const {
 } = require("@/services/appwrite");
 
 describe("rating persistence", () => {
+  let consoleWarnSpy: jest.SpyInstance;
+
   beforeEach(() => {
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(jest.fn());
     mockListDocuments.mockReset();
     mockCreateDocument.mockReset();
     mockUpdateDocument.mockReset();
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
   });
 
   it("creates a new rating and updates the marker average rating", async () => {
@@ -379,5 +386,16 @@ describe("rating persistence", () => {
     const averageRating = await getMarkerAverageRating("marker-1");
 
     expect(averageRating).toBe(4);
+  });
+
+  it("preserves the no-ratings state when no scores exist", async () => {
+    mockListDocuments.mockResolvedValueOnce({
+      documents: [],
+      total: 0,
+    });
+
+    const averageRating = await getMarkerAverageRating("marker-1");
+
+    expect(averageRating).toBeNull();
   });
 });

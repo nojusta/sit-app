@@ -7,6 +7,7 @@ interface MarkerReviewsCardProps {
   reviews: MarkerRatingRecord[];
   isLoading: boolean;
   errorMessage: string | null;
+  title?: string;
   onViewAllPress?: () => void;
 }
 
@@ -33,11 +34,12 @@ const MarkerReviewsCard: React.FC<MarkerReviewsCardProps> = ({
   reviews,
   isLoading,
   errorMessage,
+  title = "Recent reviews",
   onViewAllPress,
 }) => (
   <View className="mt-6 rounded-[28px] bg-white px-5 py-5">
     <View className="flex-row items-center justify-between">
-      <Text className="font-psemibold text-base text-slate-950">Recent reviews</Text>
+      <Text className="font-psemibold text-base text-slate-950">{title}</Text>
       {onViewAllPress ? (
         <Pressable
           onPress={onViewAllPress}
