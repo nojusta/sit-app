@@ -30,6 +30,7 @@ export type MarkerData = {
   createdAt: string;
   photoUrl?: string | null;
   photoUrls?: string[];
+  averageRating?: number | null;
 };
 
 export type MarkerDraftFields = {

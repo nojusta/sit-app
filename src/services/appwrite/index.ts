@@ -18,6 +18,7 @@ type ExpoExtra = {
   APPWRITE_PROJECT_ID?: string;
   APPWRITE_DATABASE_ID?: string;
   APPWRITE_MARKERS_COLLECTION_ID?: string;
+  APPWRITE_RATINGS_COLLECTION_ID?: string;
   APPWRITE_STORAGE_ID?: string;
 };
 
@@ -46,6 +47,7 @@ export interface MarkerRecord {
   createdAt: string;
   photoUrl: string | null;
   photoUrls?: string[];
+  averageRating?: number | null;
 }
 
 export interface MarkerPageResult {
@@ -72,6 +74,38 @@ export interface UpdateMarkerInput {
   newPhotos?: UploadableImage[];
 }
 
+export interface MarkerRatingRecord {
+  id: string;
+  markerId: string;
+  userId: string;
+  authorName: string | null;
+  score: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubmitMarkerRatingInput {
+  markerId: string;
+  userId: string;
+  authorName?: string;
+  score: number;
+  comment?: string;
+}
+
+export interface SubmitMarkerRatingResult {
+  rating: MarkerRatingRecord;
+  averageRating: number | null;
+}
+
+export interface MarkerRatingPageResult {
+  ratings: MarkerRatingRecord[];
+  total: number;
+  offset: number;
+  pageSize: number;
+  hasMore: boolean;
+}
+
 interface AppwriteMarkerFields {
   title: string;
   description: string;
@@ -83,9 +117,22 @@ interface AppwriteMarkerFields {
   photo_urls?: string[] | null;
   latitude: number;
   longitude: number;
+  average_rating?: number | null;
 }
 
 type AppwriteMarkerDocument = Models.Document & AppwriteMarkerFields;
+
+interface AppwriteRatingFields {
+  marker_id: string;
+  user_id: string;
+  author_name?: string | null;
+  score: number;
+  comment?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+type AppwriteRatingDocument = Models.Document & AppwriteRatingFields;
 
 const constantsWithUntypedManifest = Constants as typeof Constants & {
   manifest?: { extra?: ExpoExtra } | null;
@@ -103,6 +150,7 @@ const {
   APPWRITE_PROJECT_ID,
   APPWRITE_DATABASE_ID,
   APPWRITE_MARKERS_COLLECTION_ID,
+  APPWRITE_RATINGS_COLLECTION_ID,
   APPWRITE_STORAGE_ID,
 } = expoExtra;
 
@@ -111,6 +159,7 @@ export const appwriteConfig = {
   projectId: APPWRITE_PROJECT_ID,
   databaseId: APPWRITE_DATABASE_ID,
   markersCollectionId: APPWRITE_MARKERS_COLLECTION_ID,
+  ratingsCollectionId: APPWRITE_RATINGS_COLLECTION_ID,
   storageId: APPWRITE_STORAGE_ID,
 };
 
@@ -121,14 +170,12 @@ const baseConfig = {
 };
 const databaseConfig = {
   databaseId: appwriteConfig.databaseId,
-  markersCollectionId: appwriteConfig.markersCollectionId,
 };
 const missingBaseConfig = Object.entries(baseConfig).filter(([, value]) => !value);
-const missingDatabaseConfig = Object.entries(databaseConfig).filter(
-  ([, value]) => !value,
-);
 const appwriteReady = missingBaseConfig.length === 0;
-const databaseReady = appwriteReady && missingDatabaseConfig.length === 0;
+const databaseConfigured = appwriteReady && Boolean(databaseConfig.databaseId);
+const markersReady = databaseConfigured && Boolean(appwriteConfig.markersCollectionId);
+const ratingsReady = databaseConfigured && Boolean(appwriteConfig.ratingsCollectionId);
 const storageReady = appwriteReady && Boolean(appwriteConfig.storageId);
 
 if (appwriteReady) {
@@ -138,23 +185,55 @@ if (appwriteReady) {
 }
 
 const account = appwriteReady ? new Account(client) : null;
-const databases = databaseReady ? new Databases(client) : null;
+const databases = databaseConfigured ? new Databases(client) : null;
 const storage = storageReady ? new Storage(client) : null;
+
+const throwConfigurationError = (developerMessage: string, userMessage: string) => {
+  if (__DEV__) {
+    console.warn(developerMessage);
+  }
+
+  throw new Error(userMessage);
+};
 
 const ensureReady = () => {
   if (!appwriteReady) {
-    throw new Error(
+    throwConfigurationError(
       "Appwrite configuration is missing. Check your env variables in app.config.js.",
+      "App connection is temporarily unavailable.",
     );
   }
 };
 
-const ensureDatabaseReady = () => {
+const ensureDatabaseConfigured = () => {
   ensureReady();
 
-  if (!databaseReady) {
-    throw new Error(
+  if (!databaseConfigured) {
+    throwConfigurationError(
+      "Appwrite database is not configured. Check APPWRITE_DATABASE_ID in app.config.js.",
+      "App data is temporarily unavailable.",
+    );
+  }
+};
+
+const ensureMarkersReady = () => {
+  ensureDatabaseConfigured();
+
+  if (!markersReady) {
+    throwConfigurationError(
       "Appwrite markers database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_MARKERS_COLLECTION_ID.",
+      "Sitting spot data is temporarily unavailable.",
+    );
+  }
+};
+
+const ensureRatingsReady = () => {
+  ensureReady();
+
+  if (!ratingsReady) {
+    throwConfigurationError(
+      "Appwrite ratings database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_RATINGS_COLLECTION_ID.",
+      "Ratings are temporarily unavailable.",
     );
   }
 };
@@ -163,7 +242,10 @@ const ensureStorageReady = () => {
   ensureReady();
 
   if (!storageReady) {
-    throw new Error("Appwrite storage is not configured.");
+    throwConfigurationError(
+      "Appwrite storage is not configured. Check APPWRITE_STORAGE_ID.",
+      "Photo uploads are temporarily unavailable.",
+    );
   }
 };
 
@@ -173,7 +255,7 @@ const getAccountClient = () => {
 };
 
 const getDatabasesClient = () => {
-  ensureDatabaseReady();
+  ensureDatabaseConfigured();
   return databases!;
 };
 
@@ -183,13 +265,18 @@ const getStorageClient = () => {
 };
 
 const getDatabaseId = () => {
-  ensureDatabaseReady();
+  ensureDatabaseConfigured();
   return appwriteConfig.databaseId!;
 };
 
 const getMarkersCollectionId = () => {
-  ensureDatabaseReady();
+  ensureMarkersReady();
   return appwriteConfig.markersCollectionId!;
+};
+
+const getRatingsCollectionId = () => {
+  ensureRatingsReady();
+  return appwriteConfig.ratingsCollectionId!;
 };
 
 const getStorageId = () => {
@@ -224,6 +311,20 @@ const isExpectedUnauthenticatedError = (error: unknown) => {
     message.includes("missing scopes") ||
     message.includes("role: guests") ||
     message.includes("current session not found")
+  );
+};
+
+const isAuthorizationError = (error: unknown) => {
+  const code = getErrorCode(error);
+  const message = getErrorMessage(error).toLowerCase();
+
+  return (
+    code === 401 ||
+    code === 403 ||
+    message.includes("not authorized") ||
+    message.includes("not authorised") ||
+    message.includes("permission") ||
+    message.includes("missing scopes")
   );
 };
 
@@ -270,6 +371,19 @@ const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
             (value): value is string => typeof value === "string" && value.length > 0,
           )
         : [],
+  averageRating:
+    typeof document.average_rating === "number" ? document.average_rating : null,
+});
+
+const mapRatingDocument = (document: AppwriteRatingDocument): MarkerRatingRecord => ({
+  id: document.$id,
+  markerId: document.marker_id,
+  userId: document.user_id,
+  authorName: typeof document.author_name === "string" ? document.author_name : null,
+  score: document.score,
+  comment: typeof document.comment === "string" ? document.comment : "",
+  createdAt: document.created_at,
+  updatedAt: document.updated_at,
 });
 
 const buildMarkerDocumentPermissions = (status: MarkerStatus, authorId: string) => {
@@ -283,7 +397,7 @@ const buildMarkerDocumentPermissions = (status: MarkerStatus, authorId: string) 
 
   if (status === "approved") {
     permissions.unshift(Permission.read(Role.users()));
-    permissions.unshift(Permission.read(Role.guests()));
+    permissions.unshift(Permission.read(Role.any()));
   }
 
   return permissions;
@@ -300,7 +414,7 @@ const buildMarkerFilePermissions = (status: MarkerStatus, ownerId: string) => {
 
   if (status === "approved") {
     permissions.unshift(Permission.read(Role.users()));
-    permissions.unshift(Permission.read(Role.guests()));
+    permissions.unshift(Permission.read(Role.any()));
   }
 
   return permissions;
@@ -308,12 +422,20 @@ const buildMarkerFilePermissions = (status: MarkerStatus, ownerId: string) => {
 
 const buildProfilePhotoPermissions = (ownerId: string) => [
   Permission.read(Role.users()),
-  Permission.read(Role.guests()),
+  Permission.read(Role.any()),
+  Permission.update(Role.user(ownerId)),
+  Permission.delete(Role.user(ownerId)),
+];
+
+const buildRatingDocumentPermissions = (ownerId: string) => [
+  Permission.read(Role.users()),
+  Permission.read(Role.any()),
   Permission.update(Role.user(ownerId)),
   Permission.delete(Role.user(ownerId)),
 ];
 
 const APPWRITE_RESPONSE_FORMAT = "1.8.0";
+const RATING_PAGE_SIZE = 100;
 
 const ensureTrailingSlash = (value: string) =>
   value.endsWith("/") ? value : `${value}/`;
@@ -337,6 +459,36 @@ const parseJsonResponse = (value: string) => {
   } catch {
     return null;
   }
+};
+
+const normalizeOptionalComment = (value?: string | null) => {
+  const normalized = value?.trim() ?? "";
+  return normalized.length > 0 ? normalized : "";
+};
+
+const normalizeOptionalAuthorName = (value?: string | null) => {
+  const normalized = value?.trim() ?? "";
+  return normalized.length > 0 ? normalized : "";
+};
+
+const normalizeRatingScore = (value: number) => {
+  if (!Number.isInteger(value) || value < 1 || value > 5) {
+    throw new Error("Rating must be an integer between 1 and 5.");
+  }
+
+  return value;
+};
+
+const roundAverageRating = (value: number) => Math.round(value * 100) / 100;
+
+const calculateAverageRating = (scores: number[]): number | null => {
+  if (scores.length === 0) {
+    return null;
+  }
+
+  return roundAverageRating(
+    scores.reduce((total, score) => total + score, 0) / scores.length,
+  );
 };
 
 const normalizeUploadFileName = (value: string | undefined, fallback: string) => {
@@ -594,7 +746,7 @@ export async function uploadProfilePicture(file: UploadableImage) {
 export async function listApprovedMarkers(
   _signal?: AbortSignal,
 ): Promise<MarkerRecord[]> {
-  ensureDatabaseReady();
+  ensureMarkersReady();
 
   const response = await getDatabasesClient().listDocuments(
     getDatabaseId(),
@@ -620,7 +772,7 @@ export async function listMarkersByAuthorPage(
   authorId: string,
   options?: { page?: number; pageSize?: number },
 ): Promise<MarkerPageResult> {
-  ensureDatabaseReady();
+  ensureMarkersReady();
 
   const page = Math.max(1, options?.page ?? 1);
   const pageSize = Math.max(1, Math.min(options?.pageSize ?? 10, 100));
@@ -659,7 +811,7 @@ export async function createMarker({
   authorId,
   photo = null,
 }: CreateMarkerInput): Promise<MarkerRecord> {
-  ensureDatabaseReady();
+  ensureMarkersReady();
 
   const normalizedTitle = title.trim();
   const normalizedDescription = description.trim();
@@ -707,7 +859,7 @@ export async function updateMarker({
   existingPhotoUrls = [],
   newPhotos = [],
 }: UpdateMarkerInput): Promise<MarkerRecord> {
-  ensureDatabaseReady();
+  ensureMarkersReady();
 
   const normalizedDescription = description.trim();
 
@@ -739,8 +891,219 @@ export async function updateMarker({
   return mapMarkerDocument(document as AppwriteMarkerDocument);
 }
 
+const findExistingMarkerRatingDocument = async (
+  markerId: string,
+  userId: string,
+): Promise<AppwriteRatingDocument | null> => {
+  ensureRatingsReady();
+
+  const response = await getDatabasesClient().listDocuments(
+    getDatabaseId(),
+    getRatingsCollectionId(),
+    [Query.equal("marker_id", markerId), Query.equal("user_id", userId), Query.limit(1)],
+  );
+
+  const [document] = response.documents;
+  return document ? (document as AppwriteRatingDocument) : null;
+};
+
+const listAllMarkerRatingScores = async (markerId: string) => {
+  ensureRatingsReady();
+
+  const scores: number[] = [];
+  let offset = 0;
+  let total = 0;
+
+  do {
+    const response = await getDatabasesClient().listDocuments(
+      getDatabaseId(),
+      getRatingsCollectionId(),
+      [
+        Query.equal("marker_id", markerId),
+        Query.limit(RATING_PAGE_SIZE),
+        Query.offset(offset),
+      ],
+    );
+
+    total = response.total;
+    scores.push(
+      ...response.documents
+        .map((document) => Number((document as AppwriteRatingDocument).score))
+        .filter((score) => Number.isFinite(score)),
+    );
+    offset += response.documents.length;
+  } while (offset < total);
+
+  return scores;
+};
+
+export const getMarkerAverageRating = async (markerId: string) => {
+  ensureRatingsReady();
+  const scores = await listAllMarkerRatingScores(markerId);
+
+  return calculateAverageRating(scores);
+};
+
+const updateMarkerAverageRating = async (markerId: string) => {
+  ensureMarkersReady();
+  const averageRating = await getMarkerAverageRating(markerId);
+
+  await getDatabasesClient().updateDocument(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    markerId,
+    {
+      average_rating: averageRating,
+    },
+  );
+
+  return averageRating;
+};
+
+export async function getUserMarkerRating(
+  markerId: string,
+  userId: string,
+): Promise<MarkerRatingRecord | null> {
+  const existingDocument = await findExistingMarkerRatingDocument(markerId, userId);
+
+  return existingDocument ? mapRatingDocument(existingDocument) : null;
+}
+
+export async function listMarkerRatings(
+  markerId: string,
+  options?: { limit?: number },
+): Promise<MarkerRatingRecord[]> {
+  const response = await listMarkerRatingsPage(markerId, {
+    pageSize: options?.limit,
+    offset: 0,
+  });
+
+  return response.ratings;
+}
+
+export async function listMarkerRatingsPage(
+  markerId: string,
+  options?: { pageSize?: number; offset?: number },
+): Promise<MarkerRatingPageResult> {
+  ensureRatingsReady();
+
+  const normalizedMarkerId = markerId.trim();
+
+  if (!normalizedMarkerId) {
+    throw new Error("Marker ID is required.");
+  }
+
+  const pageSize = Math.max(1, Math.min(options?.pageSize ?? 10, 50));
+  const offset = Math.max(0, options?.offset ?? 0);
+  const response = await getDatabasesClient().listDocuments(
+    getDatabaseId(),
+    getRatingsCollectionId(),
+    [
+      Query.equal("marker_id", normalizedMarkerId),
+      Query.orderDesc("updated_at"),
+      Query.limit(pageSize),
+      Query.offset(offset),
+    ],
+  );
+
+  const ratings = response.documents.map((document) =>
+    mapRatingDocument(document as AppwriteRatingDocument),
+  );
+
+  return {
+    ratings,
+    total: response.total,
+    offset,
+    pageSize,
+    hasMore: offset + ratings.length < response.total,
+  };
+}
+
+export async function submitMarkerRating({
+  markerId,
+  userId,
+  authorName = "",
+  score,
+  comment = "",
+}: SubmitMarkerRatingInput): Promise<SubmitMarkerRatingResult> {
+  ensureRatingsReady();
+  ensureMarkersReady();
+
+  const normalizedMarkerId = markerId.trim();
+  const normalizedUserId = userId.trim();
+  const normalizedAuthorName = normalizeOptionalAuthorName(authorName);
+  const normalizedScore = normalizeRatingScore(score);
+  const normalizedComment = normalizeOptionalComment(comment);
+
+  if (!normalizedMarkerId) {
+    throw new Error("Marker ID is required.");
+  }
+
+  if (!normalizedUserId) {
+    throw new Error("User ID is required.");
+  }
+
+  const timestamp = new Date().toISOString();
+  const existingDocument = await findExistingMarkerRatingDocument(
+    normalizedMarkerId,
+    normalizedUserId,
+  );
+
+  const ratingDocument = existingDocument
+    ? await getDatabasesClient().updateDocument(
+        getDatabaseId(),
+        getRatingsCollectionId(),
+        existingDocument.$id,
+        {
+          author_name: normalizedAuthorName || null,
+          score: normalizedScore,
+          comment: normalizedComment || null,
+          updated_at: timestamp,
+        },
+      )
+    : await getDatabasesClient().createDocument(
+        getDatabaseId(),
+        getRatingsCollectionId(),
+        ID.unique(),
+        {
+          marker_id: normalizedMarkerId,
+          user_id: normalizedUserId,
+          author_name: normalizedAuthorName || null,
+          score: normalizedScore,
+          comment: normalizedComment || null,
+          created_at: timestamp,
+          updated_at: timestamp,
+        },
+        buildRatingDocumentPermissions(normalizedUserId),
+      );
+
+  let averageRating: number | null;
+
+  try {
+    averageRating = await updateMarkerAverageRating(normalizedMarkerId);
+  } catch (error) {
+    if (!isAuthorizationError(error)) {
+      throw error;
+    }
+
+    if (__DEV__) {
+      console.warn(
+        "Marker average rating could not be persisted from the current client session. Falling back to computed rating value.",
+        error,
+      );
+    }
+
+    averageRating = await getMarkerAverageRating(normalizedMarkerId);
+  }
+
+  return {
+    rating: mapRatingDocument(ratingDocument as AppwriteRatingDocument),
+    averageRating,
+  };
+}
+
 export const subscribeToMarkerChanges = (callback: () => void) => {
-  if (!databaseReady || Platform.OS !== "web") {
+  if (!markersReady || Platform.OS !== "web") {
     return () => {};
   }
 

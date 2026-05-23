@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
+import { MarkerRatingCard, MarkerReviewsCard, useMarkerRating } from "@/features/markers";
 import type { MarkerData } from "../core";
 import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
 import {
@@ -72,16 +73,25 @@ interface InfoWindowProps {
   selectedMarker: MarkerData | null;
   initialHeight?: number;
   onStartNavigation?: () => void;
+  onMarkerUpdated?: () => Promise<void> | void;
+  onViewAllReviews?: () => void;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
   selectedMarker,
   initialHeight = COLLAPSED_HEIGHT,
   onStartNavigation,
+  onMarkerUpdated,
+  onViewAllReviews,
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const weather = useMarkerWeather(selectedMarker);
+  const markerRating = useMarkerRating({
+    markerId: selectedMarker?.id,
+    averageRating: selectedMarker?.averageRating,
+    onRatingSaved: onMarkerUpdated,
+  });
   const previewPhotos = selectedMarker?.photoUrls?.length
     ? selectedMarker.photoUrls
     : selectedMarker?.photoUrl
@@ -199,6 +209,27 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
               {selectedMarker?.description ?? ""}
             </Text>
           </View>
+
+          <MarkerRatingCard
+            averageRating={markerRating.averageRating}
+            score={markerRating.score}
+            comment={markerRating.comment}
+            errorMessage={markerRating.errorMessage}
+            hasExistingRating={markerRating.hasExistingRating}
+            isAuthenticated={markerRating.isAuthenticated}
+            isLoadingExistingRating={markerRating.isLoadingExistingRating}
+            isSubmitting={markerRating.isSubmitting}
+            onScoreChange={markerRating.handleScoreChange}
+            onCommentChange={markerRating.handleCommentChange}
+            onSubmit={markerRating.handleSubmit}
+          />
+
+          <MarkerReviewsCard
+            reviews={markerRating.reviews}
+            isLoading={markerRating.isLoadingReviews}
+            errorMessage={markerRating.reviewsErrorMessage}
+            onViewAllPress={onViewAllReviews}
+          />
 
           <View className="mt-6">
             <CustomButton

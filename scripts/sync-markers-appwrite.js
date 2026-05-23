@@ -110,6 +110,11 @@ const markerAttributes = [
     kind: "float",
     payload: { key: "longitude", required: true, min: -180, max: 180, array: false },
   },
+  {
+    key: "average_rating",
+    kind: "float",
+    payload: { key: "average_rating", required: false, min: 0, max: 5, array: false },
+  },
 ];
 
 const markerIndexes = [
@@ -319,7 +324,7 @@ async function updateCollectionSecurity(databaseId, collection) {
         name: collection.name,
         enabled: collection.enabled,
         documentSecurity: true,
-        permissions: ['read("guests")', 'read("users")', 'create("users")'],
+        permissions: ['read("any")', 'read("users")', 'create("users")'],
       },
     },
   );
@@ -345,7 +350,7 @@ async function updateBucketSecurity() {
       fileSecurity: true,
       permissions: [
         'create("users")',
-        'read("guests")',
+        'read("any")',
         'read("users")',
         'update("users")',
         'delete("users")',
@@ -574,7 +579,7 @@ async function uploadMarkerPhoto(photoPath, adminUserId) {
       lastModified: Date.now(),
     }),
   );
-  formData.append("permissions[]", 'read("guests")');
+  formData.append("permissions[]", 'read("any")');
   formData.append("permissions[]", 'read("users")');
   formData.append("permissions[]", `update("user:${adminUserId}")`);
   formData.append("permissions[]", `delete("user:${adminUserId}")`);
@@ -624,7 +629,7 @@ async function createSeedDocument({
           longitude: item.longitude,
         },
         permissions: [
-          'read("guests")',
+          'read("any")',
           'read("users")',
           `update("user:${adminUserId}")`,
           `delete("user:${adminUserId}")`,

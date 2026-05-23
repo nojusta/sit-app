@@ -19,6 +19,39 @@ jest.mock("@/features/weather", () => {
   };
 });
 
+jest.mock("@/features/markers", () => {
+  const { Text, View } = require("react-native");
+
+  return {
+    MarkerRatingCard: () => (
+      <View>
+        <Text>Rating card</Text>
+      </View>
+    ),
+    MarkerReviewsCard: () => (
+      <View>
+        <Text>Reviews card</Text>
+      </View>
+    ),
+    useMarkerRating: () => ({
+      averageRating: 4.2,
+      score: 0,
+      comment: "",
+      reviews: [],
+      errorMessage: null,
+      hasExistingRating: false,
+      isAuthenticated: true,
+      isLoadingExistingRating: false,
+      isLoadingReviews: false,
+      isSubmitting: false,
+      reviewsErrorMessage: null,
+      handleScoreChange: jest.fn(),
+      handleCommentChange: jest.fn(),
+      handleSubmit: jest.fn(),
+    }),
+  };
+});
+
 jest.mock("@/shared/components", () => {
   const React = require("react");
   const { Text, TouchableOpacity, View } = require("react-native");
@@ -70,6 +103,7 @@ const marker: MarkerData = {
   createdAt: "2026-05-11T09:00:00.000Z",
   photoUrl: "https://example.com/photo.jpg",
   photoUrls: ["https://example.com/photo.jpg"],
+  averageRating: 4.2,
 };
 
 describe("InfoWindow", () => {

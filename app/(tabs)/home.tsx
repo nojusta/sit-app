@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import {
   AppState,
@@ -47,6 +48,7 @@ const cameraPickerOptions: ImagePicker.ImagePickerOptions = {
 };
 
 const HomeApp: React.FC = () => {
+  const router = useRouter();
   const { isLogged, user } = useAuthContext();
   const { setIsMarkerSelected, setIsNavigationActive, setIsPlacementActive } =
     useMarkerContext();
@@ -383,6 +385,16 @@ const HomeApp: React.FC = () => {
               selectedMarker={selectedMarker}
               initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
               onStartNavigation={() => handleStartNavigation(selectedMarker)}
+              onMarkerUpdated={refetchMarkers}
+              onViewAllReviews={() =>
+                router.push({
+                  pathname: "/marker-reviews",
+                  params: {
+                    markerId: selectedMarker.id,
+                    markerTitle: selectedMarker.title,
+                  },
+                })
+              }
             />
           )}
         <MarkerCreationModal
