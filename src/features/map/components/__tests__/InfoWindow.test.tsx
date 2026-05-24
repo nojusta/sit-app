@@ -4,6 +4,14 @@ import { fireEvent, render } from "@testing-library/react-native";
 import type { MarkerData } from "../../core";
 import InfoWindow from "../InfoWindow";
 
+jest.mock("@expo/vector-icons/MaterialIcons", () => {
+  const { Text } = require("react-native");
+
+  const MockMaterialIcons = ({ name }: { name: string }) => <Text>{name}</Text>;
+  MockMaterialIcons.displayName = "MockMaterialIcons";
+  return MockMaterialIcons;
+});
+
 jest.mock("@/features/weather", () => {
   const { Text } = require("react-native");
 
@@ -185,5 +193,23 @@ describe("InfoWindow", () => {
     const { getByText } = render(<InfoWindow selectedMarker={marker} />);
 
     expect(getByText("Marker tags: quiet, waterfront")).toBeTruthy();
+  });
+
+  it("disables the favorite action while favorite status is loading", () => {
+    const onToggleFavorite = jest.fn();
+    const { getByLabelText } = render(
+      <InfoWindow
+        selectedMarker={marker}
+        isAuthenticated
+        isFavoriteStateReady={false}
+        onToggleFavorite={onToggleFavorite}
+      />,
+    );
+
+    const favoriteButton = getByLabelText("Favorite status loading");
+
+    expect(favoriteButton.props.accessibilityState.disabled).toBe(true);
+    fireEvent.press(favoriteButton);
+    expect(onToggleFavorite).not.toHaveBeenCalled();
   });
 });

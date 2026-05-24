@@ -287,6 +287,36 @@ describe("useMapInteractions", () => {
     expect(result.current.selectedMarker).toBeNull();
   });
 
+  it("clears marker details when the selected marker is removed from the visible marker set", async () => {
+    const mapController = createMapControllerRef();
+    const onMarkerSelectionChange = jest.fn();
+
+    const { result, rerender } = renderHook(
+      ({ markers }) =>
+        useMapInteractions({
+          mapControllerRef: mapController.mapControllerRef,
+          location: null,
+          markers,
+          onMarkerSelectionChange,
+        }),
+      {
+        initialProps: { markers: MARKERS },
+      },
+    );
+
+    act(() => {
+      result.current.handleMarkerPress(MARKERS[0]);
+    });
+
+    await waitFor(() => expect(mapController.captureBrowseCamera).toHaveBeenCalled());
+
+    rerender({ markers: [MARKERS[1]] });
+
+    await waitFor(() => expect(result.current.selectedMarker).toBeNull());
+    expect(mapController.clearSelectedMarker).toHaveBeenCalled();
+    expect(onMarkerSelectionChange).toHaveBeenLastCalledWith(false);
+  });
+
   it("requires authentication before entering placement mode", () => {
     const mapController = createMapControllerRef();
     const location = {

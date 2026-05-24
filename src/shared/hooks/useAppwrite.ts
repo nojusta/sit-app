@@ -7,7 +7,7 @@ interface UseAppwriteResult<T> {
   loading: boolean;
   refreshing: boolean;
   error: Error | null;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 /**
@@ -62,7 +62,7 @@ const useAppwrite = <T>(fn: FetchFunction<T>): UseAppwriteResult<T> => {
   }, [fetchData]);
 
   const refetch = useCallback(() => {
-    void fetchData({ refresh: true });
+    return fetchData({ refresh: true });
   }, [fetchData]);
 
   return { data, loading, refreshing, error, refetch };

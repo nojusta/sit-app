@@ -9,8 +9,10 @@ import {
   Alert,
   Keyboard,
   Platform,
+  Pressable,
+  Text,
 } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import * as Device from "expo-device";
 import * as ImagePicker from "expo-image-picker";
 
@@ -19,15 +21,22 @@ import {
   CircleButton,
   GoogleMapSurface,
   InfoWindow,
+  MarkerFilterSheet,
   MarkerPlacementCard,
   type MapInteractionController,
   isGoogleNavigationSdkNativeAvailable,
   useMapInteractions,
+  useMarkerFilters,
   useMarkerContext,
   useUserLocation,
 } from "@/features/map";
 import { MarkerCreationModal } from "@/features/markers";
-import { listApprovedMarkers, subscribeToMarkerChanges } from "@/services/appwrite";
+import {
+  listApprovedMarkers,
+  listUserFavoriteMarkerIds,
+  subscribeToMarkerChanges,
+  toggleMarkerFavorite,
+} from "@/services/appwrite";
 import { useAppwrite } from "@/shared/hooks";
 import { NoticeBanner } from "@/shared/components";
 
@@ -47,6 +56,26 @@ const cameraPickerOptions: ImagePicker.ImagePickerOptions = {
   cameraType: ImagePicker.CameraType.back,
 };
 
+const MarkerFilterEmptyOverlay: React.FC<{
+  onClear: () => void;
+}> = ({ onClear }) => (
+  <View pointerEvents="box-none" className="absolute inset-x-5 top-32 items-center">
+    <View className="w-full rounded-2xl bg-white/95 px-5 py-4 shadow-lg">
+      <Text className="text-center font-psemibold text-base text-slate-950">
+        No markers have been found
+      </Text>
+      <Pressable
+        onPress={onClear}
+        accessibilityRole="button"
+        accessibilityLabel="Clear all filters"
+        className="mt-3 min-h-[44px] items-center justify-center rounded-2xl bg-slate-900 px-4"
+      >
+        <Text className="font-psemibold text-sm text-white">Clear all filters</Text>
+      </Pressable>
+    </View>
+  </View>
+);
+
 const HomeApp: React.FC = () => {
   const router = useRouter();
   const { isLogged, user } = useAuthContext();
@@ -63,6 +92,18 @@ const HomeApp: React.FC = () => {
     error: markersError,
     refetch: refetchMarkers,
   } = useAppwrite(fetchApprovedMarkers);
+  const fetchFavoriteMarkerIds = useCallback(
+    () =>
+      isLogged && user?.$id ? listUserFavoriteMarkerIds(user.$id) : Promise.resolve([]),
+    [isLogged, user?.$id],
+  );
+  const {
+    data: favoriteMarkerIds,
+    loading: favoritesLoading,
+    refreshing: favoritesRefreshing,
+    error: favoritesError,
+    refetch: refetchFavoriteMarkerIds,
+  } = useAppwrite(fetchFavoriteMarkerIds);
   const currentLocation = useMemo(
     () =>
       location
@@ -77,6 +118,15 @@ const HomeApp: React.FC = () => {
   const [pendingPickerMode, setPendingPickerMode] = useState<"camera" | "library" | null>(
     null,
   );
+  const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
+  const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+  const favoriteIds = favoriteMarkerIds ?? [];
+  const { filters, filteredMarkers, activeFilterCount, applyFilters, clearFilters } =
+    useMarkerFilters({
+      markers: approvedMarkers ?? [],
+      currentLocation,
+      favoriteMarkerIds: favoriteIds,
+    });
   const {
     markers,
     selectedMarker,
@@ -107,13 +157,67 @@ const HomeApp: React.FC = () => {
   } = useMapInteractions({
     mapControllerRef,
     location,
-    markers: approvedMarkers ?? [],
+    markers: filteredMarkers,
     currentUserId: user?.$id,
     isAuthenticated: isLogged,
     isLocationPermissionDenied: isPermissionDenied,
     onMarkerCreated: refetchMarkers,
     onMarkerSelectionChange: setIsMarkerSelected,
   });
+  const selectedMarkerIsFavorite = selectedMarker
+    ? favoriteIds.includes(selectedMarker.id)
+    : false;
+  const isFavoriteStateReady =
+    !isLogged ||
+    (Array.isArray(favoriteMarkerIds) &&
+      !favoritesLoading &&
+      !favoritesRefreshing &&
+      !favoritesError);
+  const isBrowseModeIdle =
+    !isNavigationActive &&
+    !isPlacementMode &&
+    !isCreationModalVisible &&
+    !selectedMarker &&
+    isNativeGoogleMapAvailable;
+  const shouldShowNoFilterResults =
+    activeFilterCount > 0 &&
+    (approvedMarkers?.length ?? 0) > 0 &&
+    markers.length === 0 &&
+    !isNavigationActive &&
+    !isPlacementMode &&
+    !isCreationModalVisible;
+
+  const handleToggleSelectedMarkerFavorite = useCallback(async () => {
+    if (!selectedMarker || !user?.$id) {
+      Alert.alert(
+        "Sign in required",
+        "You need an account to save favorite sitting places.",
+      );
+      return;
+    }
+
+    if (!isFavoriteStateReady) {
+      Alert.alert(
+        "Favorites unavailable",
+        "Wait until your favorite places finish loading, then try again.",
+      );
+      return;
+    }
+
+    setIsTogglingFavorite(true);
+
+    try {
+      await toggleMarkerFavorite(selectedMarker.id, user.$id);
+      await refetchFavoriteMarkerIds();
+    } catch (error) {
+      Alert.alert(
+        "Favorite unavailable",
+        error instanceof Error ? error.message : "Could not update this favorite place.",
+      );
+    } finally {
+      setIsTogglingFavorite(false);
+    }
+  }, [isFavoriteStateReady, refetchFavoriteMarkerIds, selectedMarker, user?.$id]);
 
   const handleMarkerPhotoChange = useCallback(
     (result: ImagePicker.ImagePickerResult) => {
@@ -249,9 +353,10 @@ const HomeApp: React.FC = () => {
   useEffect(() => {
     if (isFocused) {
       void refreshLocation({ requestPermission: false });
-      refetchMarkers();
+      void refetchMarkers();
+      void refetchFavoriteMarkerIds();
     }
-  }, [isFocused, refetchMarkers, refreshLocation]);
+  }, [isFocused, refetchFavoriteMarkerIds, refetchMarkers, refreshLocation]);
 
   useEffect(() => {
     if (!isFocused) {
@@ -298,13 +403,19 @@ const HomeApp: React.FC = () => {
   }, [isNavigationActive, setIsNavigationActive]);
 
   useEffect(() => {
-    const isPlacementFlowActive = isPlacementMode || isCreationModalVisible;
-    setIsPlacementActive(isPlacementFlowActive);
+    const isOverlayFlowActive =
+      isPlacementMode || isCreationModalVisible || isFilterSheetVisible;
+    setIsPlacementActive(isOverlayFlowActive);
 
     return () => {
       setIsPlacementActive(false);
     };
-  }, [isCreationModalVisible, isPlacementMode, setIsPlacementActive]);
+  }, [
+    isCreationModalVisible,
+    isFilterSheetVisible,
+    isPlacementMode,
+    setIsPlacementActive,
+  ]);
 
   useEffect(() => {
     if (Platform.OS !== "android") {
@@ -361,6 +472,14 @@ const HomeApp: React.FC = () => {
             onAction={refetchMarkers}
           />
         )}
+        {favoritesError && isLogged && (
+          <NoticeBanner
+            title="Favorites unavailable"
+            description="Favorite places could not be loaded right now."
+            actionLabel="Retry"
+            onAction={refetchFavoriteMarkerIds}
+          />
+        )}
         <GoogleMapSurface
           mapControllerRef={mapControllerRef}
           markers={markers}
@@ -388,6 +507,11 @@ const HomeApp: React.FC = () => {
               initialHeight={INITIAL_INFO_WINDOW_HEIGHT}
               onStartNavigation={() => handleStartNavigation(selectedMarker)}
               onMarkerUpdated={refetchMarkers}
+              isAuthenticated={isLogged}
+              isFavorite={selectedMarkerIsFavorite}
+              isFavoriteStateReady={isFavoriteStateReady}
+              isTogglingFavorite={isTogglingFavorite}
+              onToggleFavorite={handleToggleSelectedMarkerFavorite}
               onViewAllReviews={() =>
                 router.push({
                   pathname: "/marker-reviews",
@@ -422,6 +546,19 @@ const HomeApp: React.FC = () => {
         !selectedMarker &&
         isNativeGoogleMapAvailable ? (
           <>
+            <SafeAreaView
+              pointerEvents="box-none"
+              edges={["top"]}
+              className="absolute right-5 top-0"
+            >
+              <CircleButton
+                materialIconName="tune"
+                size="medium"
+                badgeCount={activeFilterCount}
+                onPress={() => setIsFilterSheetVisible(true)}
+                accessibilityLabel="Open marker filters"
+              />
+            </SafeAreaView>
             <CircleButton
               onPress={handleCenterOnUserLocation}
               icon="⌖"
@@ -438,6 +575,19 @@ const HomeApp: React.FC = () => {
             />
           </>
         ) : null}
+        {shouldShowNoFilterResults ? (
+          <MarkerFilterEmptyOverlay onClear={clearFilters} />
+        ) : null}
+        <MarkerFilterSheet
+          visible={isFilterSheetVisible && isBrowseModeIdle}
+          filters={filters}
+          resultCount={markers.length}
+          isAuthenticated={isLogged}
+          hasCurrentLocation={currentLocation !== null}
+          onClose={() => setIsFilterSheetVisible(false)}
+          onApply={applyFilters}
+          onClear={clearFilters}
+        />
       </View>
     </SafeAreaProvider>
   );

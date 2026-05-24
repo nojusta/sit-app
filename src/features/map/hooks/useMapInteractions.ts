@@ -81,8 +81,13 @@ const useMapInteractions = ({
 
     if (refreshedSelectedMarker) {
       setSelectedMarker(refreshedSelectedMarker);
+      return;
     }
-  }, [markers, selectedMarker]);
+
+    mapControllerRef.current?.clearSelectedMarker();
+    setSelectedMarker(null);
+    onMarkerSelectionChange?.(false);
+  }, [mapControllerRef, markers, onMarkerSelectionChange, selectedMarker]);
 
   const resetDraftState = () => {
     setDraftMarker(null);

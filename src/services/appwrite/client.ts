@@ -7,6 +7,7 @@ type ExpoExtra = {
   APPWRITE_DATABASE_ID?: string;
   APPWRITE_MARKERS_COLLECTION_ID?: string;
   APPWRITE_RATINGS_COLLECTION_ID?: string;
+  APPWRITE_FAVORITES_COLLECTION_ID?: string;
   APPWRITE_STORAGE_ID?: string;
 };
 
@@ -27,6 +28,7 @@ const {
   APPWRITE_DATABASE_ID,
   APPWRITE_MARKERS_COLLECTION_ID,
   APPWRITE_RATINGS_COLLECTION_ID,
+  APPWRITE_FAVORITES_COLLECTION_ID,
   APPWRITE_STORAGE_ID,
 } = expoExtra;
 
@@ -36,6 +38,7 @@ export const appwriteConfig = {
   databaseId: APPWRITE_DATABASE_ID,
   markersCollectionId: APPWRITE_MARKERS_COLLECTION_ID,
   ratingsCollectionId: APPWRITE_RATINGS_COLLECTION_ID,
+  favoritesCollectionId: APPWRITE_FAVORITES_COLLECTION_ID,
   storageId: APPWRITE_STORAGE_ID,
 };
 
@@ -55,6 +58,8 @@ export const markersReady =
   databaseConfigured && Boolean(appwriteConfig.markersCollectionId);
 export const ratingsReady =
   databaseConfigured && Boolean(appwriteConfig.ratingsCollectionId);
+export const favoritesReady =
+  databaseConfigured && Boolean(appwriteConfig.favoritesCollectionId);
 const storageReady = appwriteReady && Boolean(appwriteConfig.storageId);
 
 if (appwriteReady) {
@@ -117,6 +122,17 @@ export const ensureRatingsReady = () => {
   }
 };
 
+export const ensureFavoritesReady = () => {
+  ensureReady();
+
+  if (!favoritesReady) {
+    throwConfigurationError(
+      "Appwrite favorites database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_FAVORITES_COLLECTION_ID.",
+      "Favorites are temporarily unavailable.",
+    );
+  }
+};
+
 export const ensureStorageReady = () => {
   ensureReady();
 
@@ -156,6 +172,11 @@ export const getMarkersCollectionId = () => {
 export const getRatingsCollectionId = () => {
   ensureRatingsReady();
   return appwriteConfig.ratingsCollectionId!;
+};
+
+export const getFavoritesCollectionId = () => {
+  ensureFavoritesReady();
+  return appwriteConfig.favoritesCollectionId!;
 };
 
 export const getStorageId = () => {
