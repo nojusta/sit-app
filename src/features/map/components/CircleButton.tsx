@@ -21,7 +21,7 @@ const CircleButton: React.FC<CircleButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`h-16 w-16 items-center justify-center rounded-full bg-[#2D2D2D] shadow-lg ${
+      className={`h-16 w-16 items-center justify-center rounded-full border border-[#4A4A4A] bg-[#2D2D2D] ${
         disabled ? "opacity-40" : ""
       } ${style}`}
       onPress={onPress}

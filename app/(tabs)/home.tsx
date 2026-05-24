@@ -65,7 +65,7 @@ const FilterMapButton: React.FC<{
     onPress={onPress}
     accessibilityRole="button"
     accessibilityLabel="Open marker filters"
-    className="h-14 w-14 items-center justify-center rounded-full bg-[#2D2D2D] shadow-lg"
+    className="h-14 w-14 items-center justify-center rounded-full border border-[#4A4A4A] bg-[#2D2D2D]"
   >
     <MaterialIcons name="tune" size={24} color="#FFFFFF" />
     {activeFilterCount > 0 ? (
