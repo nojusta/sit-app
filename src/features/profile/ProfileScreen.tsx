@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthContext } from "@/features/auth";
 import { useMarkerContext } from "@/features/map";
-import { MarkerGalleryTile } from "@/features/markers";
+import { MarkerGalleryTile, type MarkerTagId } from "@/features/markers";
 import {
   signOut,
   updateMarker,
@@ -76,6 +76,7 @@ const ProfileScreen: React.FC = () => {
   const [highlightedMarkerId, setHighlightedMarkerId] = useState<string | null>(null);
   const [markerBeingEdited, setMarkerBeingEdited] = useState<MarkerRecord | null>(null);
   const [markerEditDescription, setMarkerEditDescription] = useState("");
+  const [markerEditAttributes, setMarkerEditAttributes] = useState<MarkerTagId[]>([]);
   const [queuedMarkerPhotos, setQueuedMarkerPhotos] = useState<UploadableImage[]>([]);
   const [isSubmittingMarkerEdit, setIsSubmittingMarkerEdit] = useState(false);
   const { width: windowWidth } = useWindowDimensions();
@@ -145,12 +146,14 @@ const ProfileScreen: React.FC = () => {
   const openMarkerEditor = (marker: MarkerRecord) => {
     setMarkerBeingEdited(marker);
     setMarkerEditDescription(marker.description);
+    setMarkerEditAttributes(marker.attributes);
     setQueuedMarkerPhotos([]);
   };
 
   const closeMarkerEditor = () => {
     setMarkerBeingEdited(null);
     setMarkerEditDescription("");
+    setMarkerEditAttributes([]);
     setQueuedMarkerPhotos([]);
   };
 
@@ -225,6 +228,7 @@ const ProfileScreen: React.FC = () => {
         description: markerEditDescription,
         existingPhotoUrls: markerBeingEdited.photoUrls ?? [],
         newPhotos: queuedMarkerPhotos,
+        attributes: markerEditAttributes,
       });
       closeMarkerEditor();
       await refetchMarkers();
@@ -368,9 +372,11 @@ const ProfileScreen: React.FC = () => {
       <MarkerEditSheet
         marker={markerBeingEdited}
         description={markerEditDescription}
+        attributes={markerEditAttributes}
         queuedPhotos={queuedMarkerPhotos}
         isSubmitting={isSubmittingMarkerEdit}
         onDescriptionChange={setMarkerEditDescription}
+        onAttributesChange={setMarkerEditAttributes}
         onAddPhotos={handleAddMarkerPhotos}
         onRemoveQueuedPhoto={(index) =>
           setQueuedMarkerPhotos((current) =>

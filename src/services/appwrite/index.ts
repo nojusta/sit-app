@@ -13,6 +13,14 @@ import {
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
+import {
+  MARKER_TAG_IDS,
+  MAX_MARKER_ATTRIBUTES,
+  type MarkerTagId,
+} from "@/features/markers/constants/tags";
+
+export { MARKER_TAG_IDS, MAX_MARKER_ATTRIBUTES, type MarkerTagId };
+
 type ExpoExtra = {
   APPWRITE_ENDPOINT?: string;
   APPWRITE_PROJECT_ID?: string;
@@ -48,6 +56,7 @@ export interface MarkerRecord {
   photoUrl: string | null;
   photoUrls?: string[];
   averageRating?: number | null;
+  attributes: MarkerTagId[];
 }
 
 export interface MarkerPageResult {
@@ -64,6 +73,7 @@ export interface CreateMarkerInput {
   coordinate: MarkerCoordinate;
   authorId: string;
   photo?: UploadableImage | null;
+  attributes?: MarkerTagId[];
 }
 
 export interface UpdateMarkerInput {
@@ -72,6 +82,7 @@ export interface UpdateMarkerInput {
   description: string;
   existingPhotoUrls?: string[];
   newPhotos?: UploadableImage[];
+  attributes?: MarkerTagId[];
 }
 
 export interface MarkerRatingRecord {
@@ -118,6 +129,7 @@ interface AppwriteMarkerFields {
   latitude: number;
   longitude: number;
   average_rating?: number | null;
+  attributes?: string[] | null;
 }
 
 type AppwriteMarkerDocument = Models.Document & AppwriteMarkerFields;
@@ -350,6 +362,63 @@ const normalizeUser = (currentAccount: Models.User<Models.Preferences>) => ({
 const formatMarkerLocation = ({ latitude, longitude }: MarkerCoordinate) =>
   `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
 
+const markerTagIdSet = new Set<string>(MARKER_TAG_IDS);
+
+const mapMarkerAttributes = (value: unknown): MarkerTagId[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const normalized: MarkerTagId[] = [];
+
+  value.forEach((item) => {
+    if (
+      typeof item === "string" &&
+      markerTagIdSet.has(item) &&
+      !normalized.includes(item as MarkerTagId) &&
+      normalized.length < MAX_MARKER_ATTRIBUTES
+    ) {
+      normalized.push(item as MarkerTagId);
+    }
+  });
+
+  return normalized;
+};
+
+const normalizeMarkerAttributesForWrite = (
+  value: readonly MarkerTagId[] | null | undefined,
+): MarkerTagId[] => {
+  if (!value) {
+    return [];
+  }
+
+  const normalized: MarkerTagId[] = [];
+
+  value.forEach((item) => {
+    if (!markerTagIdSet.has(item)) {
+      throw new Error("Marker tag is not supported.");
+    }
+
+    if (!normalized.includes(item)) {
+      normalized.push(item);
+    }
+  });
+
+  if (normalized.length > MAX_MARKER_ATTRIBUTES) {
+    throw new Error(`Choose up to ${MAX_MARKER_ATTRIBUTES} marker tags.`);
+  }
+
+  return normalized;
+};
+
+const isMissingMarkerAttributesSchemaError = (error: unknown) =>
+  error instanceof Error && /unknown attribute:\s*"?attributes"?/iu.test(error.message);
+
+const toMarkerAttributesSchemaError = () =>
+  new Error(
+    "Marker tags are not enabled in Appwrite yet. Run npm run appwrite:sync-markers before submitting tagged markers.",
+  );
+
 const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
   id: document.$id,
   title: document.title,
@@ -373,6 +442,7 @@ const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
         : [],
   averageRating:
     typeof document.average_rating === "number" ? document.average_rating : null,
+  attributes: mapMarkerAttributes(document.attributes),
 });
 
 const mapRatingDocument = (document: AppwriteRatingDocument): MarkerRatingRecord => ({
@@ -810,11 +880,13 @@ export async function createMarker({
   coordinate,
   authorId,
   photo = null,
+  attributes = [],
 }: CreateMarkerInput): Promise<MarkerRecord> {
   ensureMarkersReady();
 
   const normalizedTitle = title.trim();
   const normalizedDescription = description.trim();
+  const normalizedAttributes = normalizeMarkerAttributesForWrite(attributes);
 
   if (!normalizedTitle) {
     throw new Error("Marker title is required.");
@@ -830,24 +902,35 @@ export async function createMarker({
     ? await createStorageFile(photo, buildMarkerFilePermissions(status, authorId))
     : null;
 
-  const document = await getDatabasesClient().createDocument(
-    getDatabaseId(),
-    getMarkersCollectionId(),
-    ID.unique(),
-    {
-      title: normalizedTitle,
-      description: normalizedDescription,
-      location: formatMarkerLocation(coordinate),
-      status,
-      author_id: authorId,
-      created_at: createdAt,
-      photo_url: photoUrl,
-      photo_urls: photoUrl ? [photoUrl] : [],
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-    },
-    buildMarkerDocumentPermissions(status, authorId),
-  );
+  let document: Models.Document;
+
+  try {
+    document = await getDatabasesClient().createDocument(
+      getDatabaseId(),
+      getMarkersCollectionId(),
+      ID.unique(),
+      {
+        title: normalizedTitle,
+        description: normalizedDescription,
+        location: formatMarkerLocation(coordinate),
+        status,
+        author_id: authorId,
+        created_at: createdAt,
+        photo_url: photoUrl,
+        photo_urls: photoUrl ? [photoUrl] : [],
+        latitude: coordinate.latitude,
+        longitude: coordinate.longitude,
+        attributes: normalizedAttributes,
+      },
+      buildMarkerDocumentPermissions(status, authorId),
+    );
+  } catch (error) {
+    if (isMissingMarkerAttributesSchemaError(error)) {
+      throw toMarkerAttributesSchemaError();
+    }
+
+    throw error;
+  }
 
   return mapMarkerDocument(document as AppwriteMarkerDocument);
 }
@@ -858,6 +941,7 @@ export async function updateMarker({
   description,
   existingPhotoUrls = [],
   newPhotos = [],
+  attributes,
 }: UpdateMarkerInput): Promise<MarkerRecord> {
   ensureMarkersReady();
 
@@ -874,19 +958,34 @@ export async function updateMarker({
       typeof value === "string" && value.length > 0 && values.indexOf(value) === index,
   );
   const primaryPhotoUrl = mergedPhotoUrls[0] ?? null;
+  const updatePayload: Record<string, unknown> = {
+    description: normalizedDescription,
+    status,
+    photo_url: primaryPhotoUrl,
+    photo_urls: mergedPhotoUrls,
+  };
 
-  const document = await getDatabasesClient().updateDocument(
-    getDatabaseId(),
-    getMarkersCollectionId(),
-    markerId,
-    {
-      description: normalizedDescription,
-      status,
-      photo_url: primaryPhotoUrl,
-      photo_urls: mergedPhotoUrls,
-    },
-    buildMarkerDocumentPermissions(status, authorId),
-  );
+  if (attributes !== undefined) {
+    updatePayload.attributes = normalizeMarkerAttributesForWrite(attributes);
+  }
+
+  let document: Models.Document;
+
+  try {
+    document = await getDatabasesClient().updateDocument(
+      getDatabaseId(),
+      getMarkersCollectionId(),
+      markerId,
+      updatePayload,
+      buildMarkerDocumentPermissions(status, authorId),
+    );
+  } catch (error) {
+    if (isMissingMarkerAttributesSchemaError(error)) {
+      throw toMarkerAttributesSchemaError();
+    }
+
+    throw error;
+  }
 
   return mapMarkerDocument(document as AppwriteMarkerDocument);
 }

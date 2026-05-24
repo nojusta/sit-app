@@ -53,6 +53,17 @@ const LEGACY_MARKER_ATTRIBUTE_KEYS = [
   "createdAt",
   "timestamp",
 ];
+const MARKER_TAG_IDS = [
+  "quiet",
+  "loud",
+  "shaded",
+  "clean",
+  "nature",
+  "urban",
+  "waterfront",
+  "scenic",
+  "work_friendly",
+];
 
 const markerAttributes = [
   {
@@ -114,6 +125,16 @@ const markerAttributes = [
     key: "average_rating",
     kind: "float",
     payload: { key: "average_rating", required: false, min: 0, max: 5, array: false },
+  },
+  {
+    key: "attributes",
+    kind: "enum",
+    payload: {
+      key: "attributes",
+      elements: MARKER_TAG_IDS,
+      required: false,
+      array: true,
+    },
   },
 ];
 
@@ -627,6 +648,7 @@ async function createSeedDocument({
           photo_urls: photoUrls,
           latitude: item.latitude,
           longitude: item.longitude,
+          attributes: [],
         },
         permissions: [
           'read("any")',
@@ -814,7 +836,14 @@ function loadDotEnv(filePath) {
   }
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  MARKER_TAG_IDS,
+  markerAttributes,
+};

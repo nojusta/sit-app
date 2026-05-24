@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
-import { MarkerRatingCard, MarkerReviewsCard, useMarkerRating } from "@/features/markers";
+import {
+  MarkerRatingCard,
+  MarkerReviewsCard,
+  MarkerTagList,
+  useMarkerRating,
+} from "@/features/markers";
 import type { MarkerData } from "../core";
 import { MarkerWeatherCard, useMarkerWeather } from "@/features/weather";
 import {
@@ -147,6 +152,11 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                     </Text>
                   ) : null}
                 </Pressable>
+                {selectedMarker?.attributes?.length ? (
+                  <View className="mt-3">
+                    <MarkerTagList attributes={selectedMarker.attributes} />
+                  </View>
+                ) : null}
               </View>
             </View>
 

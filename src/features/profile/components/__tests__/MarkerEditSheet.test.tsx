@@ -41,6 +41,7 @@ const marker: MarkerRecord = {
   createdAt: "2026-04-12T12:00:00.000Z",
   photoUrl: null,
   photoUrls: [],
+  attributes: ["quiet"],
 };
 
 describe("MarkerEditSheet", () => {
@@ -56,9 +57,11 @@ describe("MarkerEditSheet", () => {
         <MarkerEditSheet
           marker={marker}
           description={marker.description}
+          attributes={marker.attributes}
           queuedPhotos={[]}
           isSubmitting={false}
           onDescriptionChange={onDescriptionChange}
+          onAttributesChange={jest.fn()}
           onAddPhotos={jest.fn()}
           onRemoveQueuedPhoto={jest.fn()}
           onClose={jest.fn()}
@@ -73,5 +76,35 @@ describe("MarkerEditSheet", () => {
     );
 
     expect(onDescriptionChange).toHaveBeenCalledWith("Updated description");
+  });
+
+  it("allows changing selected marker tags", () => {
+    const onAttributesChange = jest.fn();
+    const { getByText } = render(
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 390, height: 844 },
+          insets: { top: 47, left: 0, right: 0, bottom: 34 },
+        }}
+      >
+        <MarkerEditSheet
+          marker={marker}
+          description={marker.description}
+          attributes={marker.attributes}
+          queuedPhotos={[]}
+          isSubmitting={false}
+          onDescriptionChange={jest.fn()}
+          onAttributesChange={onAttributesChange}
+          onAddPhotos={jest.fn()}
+          onRemoveQueuedPhoto={jest.fn()}
+          onClose={jest.fn()}
+          onSubmit={jest.fn()}
+        />
+      </SafeAreaProvider>,
+    );
+
+    fireEvent.press(getByText("Clean"));
+
+    expect(onAttributesChange).toHaveBeenCalledWith(["quiet", "clean"]);
   });
 });

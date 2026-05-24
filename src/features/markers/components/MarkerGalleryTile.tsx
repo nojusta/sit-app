@@ -89,12 +89,19 @@ const MarkerGalleryTile: React.FC<MarkerGalleryTileProps> = ({
   );
 };
 
+const markerAttributesMatch = (left: MarkerRecord, right: MarkerRecord) =>
+  left.attributes.length === right.attributes.length &&
+  left.attributes.every((tagId, index) => tagId === right.attributes[index]);
+
 const areEqual = (prevProps: MarkerGalleryTileProps, nextProps: MarkerGalleryTileProps) =>
   prevProps.isSelected === nextProps.isSelected &&
   prevProps.marker.id === nextProps.marker.id &&
   prevProps.marker.title === nextProps.marker.title &&
+  prevProps.marker.description === nextProps.marker.description &&
   prevProps.marker.status === nextProps.marker.status &&
   prevProps.marker.photoUrl === nextProps.marker.photoUrl &&
-  (prevProps.marker.photoUrls?.[0] ?? null) === (nextProps.marker.photoUrls?.[0] ?? null);
+  (prevProps.marker.photoUrls?.[0] ?? null) ===
+    (nextProps.marker.photoUrls?.[0] ?? null) &&
+  markerAttributesMatch(prevProps.marker, nextProps.marker);
 
 export default React.memo(MarkerGalleryTile, areEqual);

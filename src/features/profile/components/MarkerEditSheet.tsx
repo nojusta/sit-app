@@ -9,6 +9,8 @@ import {
   View,
 } from "react-native";
 
+import MarkerTagSelector from "@/features/markers/components/MarkerTagSelector";
+import type { MarkerTagId } from "@/features/markers/constants/tags";
 import type { MarkerRecord, UploadableImage } from "@/services/appwrite";
 import { BottomSheet, CustomButton } from "@/shared/components";
 
@@ -17,9 +19,11 @@ const COLLAPSED_HEIGHT = 166;
 interface MarkerEditSheetProps {
   marker: MarkerRecord | null;
   description: string;
+  attributes: MarkerTagId[];
   queuedPhotos: UploadableImage[];
   isSubmitting: boolean;
   onDescriptionChange: (value: string) => void;
+  onAttributesChange: (value: MarkerTagId[]) => void;
   onAddPhotos: () => void;
   onRemoveQueuedPhoto: (index: number) => void;
   onClose: () => void;
@@ -29,9 +33,11 @@ interface MarkerEditSheetProps {
 const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
   marker,
   description,
+  attributes,
   queuedPhotos,
   isSubmitting,
   onDescriptionChange,
+  onAttributesChange,
   onAddPhotos,
   onRemoveQueuedPhoto,
   onClose,
@@ -102,6 +108,14 @@ const MarkerEditSheet: React.FC<MarkerEditSheetProps> = ({
               autoCapitalize="sentences"
               textAlignVertical="top"
               className="mt-2 min-h-[148px] rounded-[26px] border border-slate-200 bg-white px-4 py-4 font-pmedium text-base text-slate-950"
+            />
+          </View>
+
+          <View className="mt-5">
+            <MarkerTagSelector
+              value={attributes}
+              onChange={onAttributesChange}
+              disabled={isSubmitting}
             />
           </View>
 

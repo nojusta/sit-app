@@ -13,6 +13,8 @@ import {
 import { type UploadableImage } from "@/services/appwrite";
 import { icons } from "@/shared/constants";
 import { BottomSheet, CustomButton } from "@/shared/components";
+import type { MarkerTagId } from "../constants/tags";
+import MarkerTagSelector from "./MarkerTagSelector";
 
 const COLLAPSED_HEIGHT = 170;
 
@@ -21,9 +23,11 @@ interface MarkerCreationModalProps {
   title: string;
   description: string;
   photo: UploadableImage | null;
+  attributes: MarkerTagId[];
   isSubmitting: boolean;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
+  onAttributesChange: (value: MarkerTagId[]) => void;
   onTakePhoto: () => void;
   onChooseFromLibrary: () => void;
   onRemovePhoto: () => void;
@@ -37,9 +41,11 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
   title,
   description,
   photo,
+  attributes,
   isSubmitting,
   onTitleChange,
   onDescriptionChange,
+  onAttributesChange,
   onTakePhoto,
   onChooseFromLibrary,
   onRemovePhoto,
@@ -128,6 +134,14 @@ const MarkerCreationModal: React.FC<MarkerCreationModalProps> = ({
               multiline
               textAlignVertical="top"
               className="mt-2 min-h-[148px] rounded-[26px] border border-slate-200 bg-white px-4 py-4 font-pmedium text-base text-slate-950"
+            />
+          </View>
+
+          <View className="mt-5">
+            <MarkerTagSelector
+              value={attributes}
+              onChange={onAttributesChange}
+              disabled={isSubmitting}
             />
           </View>
 

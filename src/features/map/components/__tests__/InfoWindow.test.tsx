@@ -33,6 +33,11 @@ jest.mock("@/features/markers", () => {
         <Text>Reviews card</Text>
       </View>
     ),
+    MarkerTagList: ({ attributes }: { attributes: string[] }) => (
+      <View>
+        <Text>Marker tags: {attributes.join(", ")}</Text>
+      </View>
+    ),
     useMarkerRating: () => ({
       averageRating: 4.2,
       score: 0,
@@ -104,6 +109,7 @@ const marker: MarkerData = {
   photoUrl: "https://example.com/photo.jpg",
   photoUrls: ["https://example.com/photo.jpg"],
   averageRating: 4.2,
+  attributes: ["quiet", "waterfront"],
 };
 
 describe("InfoWindow", () => {
@@ -122,5 +128,11 @@ describe("InfoWindow", () => {
     fireEvent.press(getByLabelText("Collapse marker description"));
 
     expect(getAllByText(marker.description)[0].props.numberOfLines).toBe(2);
+  });
+
+  it("shows marker tags in the marker details header", () => {
+    const { getByText } = render(<InfoWindow selectedMarker={marker} />);
+
+    expect(getByText("Marker tags: quiet, waterfront")).toBeTruthy();
   });
 });

@@ -3,7 +3,11 @@ import type React from "react";
 import { Alert } from "react-native";
 import { LocationObject } from "expo-location";
 
-import { createMarker, type UploadableImage } from "@/services/appwrite";
+import {
+  createMarker,
+  type MarkerTagId,
+  type UploadableImage,
+} from "@/services/appwrite";
 import {
   type MapCameraSnapshot,
   type MapCoordinate,
@@ -54,6 +58,7 @@ const useMapInteractions = ({
     initialDraftValues.description,
   );
   const [draftPhoto, setDraftPhoto] = useState<UploadableImage | null>(null);
+  const [draftAttributes, setDraftAttributes] = useState<MarkerTagId[]>([]);
   const [isSubmittingMarker, setIsSubmittingMarker] = useState(false);
   const [navigationDestination, setNavigationDestination] = useState<MarkerData | null>(
     null,
@@ -86,6 +91,7 @@ const useMapInteractions = ({
     setDraftTitle(initialDraftValues.title);
     setDraftDescription(initialDraftValues.description);
     setDraftPhoto(null);
+    setDraftAttributes([]);
   };
 
   const handleMarkerPress = (marker: MarkerData) => {
@@ -268,6 +274,7 @@ const useMapInteractions = ({
         coordinate: draftMarker,
         authorId: currentUserId,
         photo: draftPhoto,
+        attributes: draftAttributes,
       });
       resetDraftState();
       await onMarkerCreated?.();
@@ -294,10 +301,12 @@ const useMapInteractions = ({
     markerName: draftTitle,
     markerInfo: draftDescription,
     markerPhoto: draftPhoto,
+    markerAttributes: draftAttributes,
     isSubmittingMarker,
     setMarkerName: setDraftTitle,
     setMarkerInfo: setDraftDescription,
     setMarkerPhoto: setDraftPhoto,
+    setMarkerAttributes: setDraftAttributes,
     handleMarkerPress,
     handleMapPress,
     handleCenterOnUserLocation,
