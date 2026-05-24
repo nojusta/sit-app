@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react-native";
+import { fireEvent, render, waitFor } from "@testing-library/react-native";
 
 import type { MarkerRecord } from "@/services/appwrite";
 import ProfileScreen from "../ProfileScreen";
@@ -22,6 +22,7 @@ const marker: MarkerRecord = {
   createdAt: "2026-05-11T09:00:00.000Z",
   photoUrl: null,
   photoUrls: [],
+  attributes: ["quiet"],
 };
 
 jest.mock("expo-router", () => ({
@@ -114,13 +115,23 @@ jest.mock("../components/MarkerEditSheet", () => {
   return function MockMarkerEditSheet({
     marker,
     onClose,
+    onAttributesChange,
+    onSubmit,
   }: {
     marker: MarkerRecord | null;
     onClose: () => void;
+    onAttributesChange: (value: MarkerRecord["attributes"]) => void;
+    onSubmit: () => void;
   }) {
     return marker ? (
       <View>
         <Text>Editing {marker.title}</Text>
+        <TouchableOpacity onPress={() => onAttributesChange(["clean"])}>
+          <Text>Set clean tag</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onSubmit}>
+          <Text>Submit edits</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={onClose}>
           <Text>Close editor</Text>
         </TouchableOpacity>
@@ -149,5 +160,23 @@ describe("ProfileScreen", () => {
 
     unmount();
     expect(mockSetIsPlacementActive).toHaveBeenLastCalledWith(false);
+  });
+
+  it("submits edited marker tags with profile marker updates", async () => {
+    const { updateMarker } = jest.requireMock("@/services/appwrite");
+    const { getByText } = render(<ProfileScreen />);
+
+    fireEvent.press(getByText("Edit Bench near Cathedral"));
+    fireEvent.press(getByText("Set clean tag"));
+    fireEvent.press(getByText("Submit edits"));
+
+    await waitFor(() =>
+      expect(updateMarker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          markerId: "marker-1",
+          attributes: ["clean"],
+        }),
+      ),
+    );
   });
 });

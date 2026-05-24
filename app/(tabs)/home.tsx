@@ -31,7 +31,7 @@ import { listApprovedMarkers, subscribeToMarkerChanges } from "@/services/appwri
 import { useAppwrite } from "@/shared/hooks";
 import { NoticeBanner } from "@/shared/components";
 
-const INITIAL_INFO_WINDOW_HEIGHT = 170;
+const INITIAL_INFO_WINDOW_HEIGHT = 238;
 const libraryPickerOptions: ImagePicker.ImagePickerOptions = {
   mediaTypes: ["images"],
   quality: 0.86,
@@ -86,10 +86,12 @@ const HomeApp: React.FC = () => {
     markerName,
     markerInfo,
     markerPhoto,
+    markerAttributes,
     isSubmittingMarker,
     setMarkerName,
     setMarkerInfo,
     setMarkerPhoto,
+    setMarkerAttributes,
     handleMarkerPress,
     handleMapPress,
     handleCenterOnUserLocation,
@@ -402,9 +404,11 @@ const HomeApp: React.FC = () => {
           title={markerName}
           description={markerInfo}
           photo={markerPhoto}
+          attributes={markerAttributes}
           isSubmitting={isSubmittingMarker}
           onTitleChange={setMarkerName}
           onDescriptionChange={setMarkerInfo}
+          onAttributesChange={setMarkerAttributes}
           onTakePhoto={() => launchMarkerPicker("camera")}
           onChooseFromLibrary={() => launchMarkerPicker("library")}
           onRemovePhoto={() => setMarkerPhoto(null)}

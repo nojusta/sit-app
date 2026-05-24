@@ -80,6 +80,7 @@ const MARKERS: MarkerData[] = [
     authorId: "admin-user",
     createdAt: "2026-04-10T09:00:00.000Z",
     photoUrl: null,
+    attributes: [],
   },
   {
     id: "2",
@@ -91,6 +92,7 @@ const MARKERS: MarkerData[] = [
     authorId: "admin-user",
     createdAt: "2026-04-10T08:00:00.000Z",
     photoUrl: null,
+    attributes: [],
   },
 ];
 

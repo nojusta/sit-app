@@ -30,6 +30,7 @@ const MARKERS: MarkerData[] = [
     authorId: "admin-user",
     createdAt: "2026-04-10T09:00:00.000Z",
     photoUrl: null,
+    attributes: [],
   },
   {
     id: "marker-2",
@@ -41,6 +42,7 @@ const MARKERS: MarkerData[] = [
     authorId: "admin-user",
     createdAt: "2026-04-10T08:00:00.000Z",
     photoUrl: null,
+    attributes: [],
   },
 ];
 
@@ -333,6 +335,7 @@ describe("useMapInteractions", () => {
       authorId: "user-1",
       createdAt: "2026-04-10T10:10:00.000Z",
       photoUrl: null,
+      attributes: ["quiet", "shaded"],
     });
 
     const { result } = renderHook(() =>
@@ -350,6 +353,7 @@ describe("useMapInteractions", () => {
       result.current.handleAddMarker();
       result.current.setMarkerName("Bench near Cathedral");
       result.current.setMarkerInfo("Quiet in the morning");
+      result.current.setMarkerAttributes(["quiet", "shaded"]);
       result.current.handleConfirmPlacement();
     });
 
@@ -362,6 +366,7 @@ describe("useMapInteractions", () => {
         authorId: "user-1",
         title: "Bench near Cathedral",
         description: "Quiet in the morning",
+        attributes: ["quiet", "shaded"],
       }),
     );
     expect(onMarkerCreated).toHaveBeenCalled();
@@ -393,6 +398,7 @@ describe("useMapInteractions", () => {
       authorId: "user-1",
       createdAt: "2026-04-10T10:20:00.000Z",
       photoUrl: null,
+      attributes: [],
     });
 
     const { result } = renderHook(() =>

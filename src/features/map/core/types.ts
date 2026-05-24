@@ -1,3 +1,5 @@
+import type { MarkerTagId } from "@/services/appwrite";
+
 export type MapCoordinate = {
   latitude: number;
   longitude: number;
@@ -31,6 +33,7 @@ export type MarkerData = {
   photoUrl?: string | null;
   photoUrls?: string[];
   averageRating?: number | null;
+  attributes: MarkerTagId[];
 };
 
 export type MarkerDraftFields = {

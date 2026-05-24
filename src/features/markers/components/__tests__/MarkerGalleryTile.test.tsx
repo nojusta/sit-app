@@ -18,6 +18,7 @@ const createMarker = (overrides?: Partial<MarkerRecord>): MarkerRecord => ({
   createdAt: "2026-04-12T12:00:00.000Z",
   photoUrl: null,
   photoUrls: [],
+  attributes: [],
   ...overrides,
 });
 

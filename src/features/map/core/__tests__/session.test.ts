@@ -16,6 +16,7 @@ const MARKER: MarkerData = {
   status: "approved",
   authorId: "user-1",
   createdAt: "2026-04-10T10:00:00.000Z",
+  attributes: [],
 };
 
 const CAMERA: MapCameraSnapshot = {
