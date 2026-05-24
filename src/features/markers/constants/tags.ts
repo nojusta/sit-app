@@ -1,18 +1,11 @@
-export const MARKER_TAG_IDS = [
-  "quiet",
-  "loud",
-  "shaded",
-  "clean",
-  "nature",
-  "urban",
-  "waterfront",
-  "scenic",
-  "work_friendly",
-] as const;
+import {
+  MARKER_TAG_IDS,
+  MAX_MARKER_ATTRIBUTES,
+  type MarkerTagId,
+} from "@/services/appwrite/types";
 
-export type MarkerTagId = (typeof MARKER_TAG_IDS)[number];
-
-export const MAX_MARKER_ATTRIBUTES = 3;
+export { MARKER_TAG_IDS, MAX_MARKER_ATTRIBUTES };
+export type { MarkerTagId };
 
 type MarkerTagColors = {
   backgroundColor: string;
