@@ -22,7 +22,7 @@ describe("MarkerTagSelector", () => {
 
   it("renders selected tags with real background color, matching border, spacing, and selected feedback", () => {
     const quietTag = getMarkerTagDefinition("quiet");
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <MarkerTagSelector value={["quiet"]} onChange={jest.fn()} />,
     );
 
@@ -42,7 +42,17 @@ describe("MarkerTagSelector", () => {
     expect(quietPillStyles.borderColor).toBe(quietTag?.colors.textColor);
     expect(quietPillStyles.borderColor).not.toBe("black");
     expect(quietPillStyles.borderColor).not.toBe("#000");
+    expect(quietPillStyles.justifyContent).toBe("center");
+    expect(quietPillStyles.paddingVertical).toBe(0);
     expect(getByTestId("quiet-selected-indicator")).toBeTruthy();
+    expect(getByText("Quiet").props.style).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          includeFontPadding: false,
+          textAlignVertical: "center",
+        }),
+      ]),
+    );
     expect(containerStyles.columnGap).toBe(10);
     expect(containerStyles.rowGap).toBe(10);
   });

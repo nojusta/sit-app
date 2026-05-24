@@ -88,11 +88,12 @@ const MarkerTagPill: React.FC<MarkerTagPillProps> = ({
 
 const styles = StyleSheet.create({
   pill: {
-    minHeight: 36,
+    minHeight: 30,
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
+    justifyContent: "center",
     paddingHorizontal: 13,
-    paddingVertical: 8,
+    paddingVertical: 0,
   },
   selectedPill: {
     borderWidth: 1.25,
@@ -117,6 +118,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     lineHeight: 16,
+    includeFontPadding: false,
+    textAlignVertical: "center",
   },
 });
 
