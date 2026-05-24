@@ -4,6 +4,14 @@ import { fireEvent, render } from "@testing-library/react-native";
 import type { MarkerData } from "../../core";
 import InfoWindow from "../InfoWindow";
 
+jest.mock("@expo/vector-icons/MaterialIcons", () => {
+  const { Text } = require("react-native");
+
+  const MockMaterialIcons = ({ name }: { name: string }) => <Text>{name}</Text>;
+  MockMaterialIcons.displayName = "MockMaterialIcons";
+  return MockMaterialIcons;
+});
+
 jest.mock("@/features/weather", () => {
   const { Text } = require("react-native");
 

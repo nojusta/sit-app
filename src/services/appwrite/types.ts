@@ -100,3 +100,15 @@ export interface MarkerRatingPageResult {
   pageSize: number;
   hasMore: boolean;
 }
+
+export interface MarkerFavoriteRecord {
+  id: string;
+  markerId: string;
+  userId: string;
+  createdAt: string;
+}
+
+export interface ToggleMarkerFavoriteResult {
+  isFavorite: boolean;
+  favorite: MarkerFavoriteRecord | null;
+}

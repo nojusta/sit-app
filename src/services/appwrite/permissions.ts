@@ -52,3 +52,9 @@ export const buildRatingDocumentPermissions = (ownerId: string) => [
   Permission.update(Role.user(ownerId)),
   Permission.delete(Role.user(ownerId)),
 ];
+
+export const buildFavoriteDocumentPermissions = (ownerId: string) => [
+  Permission.read(Role.user(ownerId)),
+  Permission.update(Role.user(ownerId)),
+  Permission.delete(Role.user(ownerId)),
+];

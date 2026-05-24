@@ -23,10 +23,17 @@ export {
   listMarkerRatingsPage,
   submitMarkerRating,
 } from "./ratings";
+export {
+  addMarkerFavorite,
+  listUserFavoriteMarkerIds,
+  removeMarkerFavorite,
+  toggleMarkerFavorite,
+} from "./favorites";
 export { normalizeUploadableImage, uploadProfilePicture } from "./storage";
 export type {
   CreateMarkerInput,
   MarkerCoordinate,
+  MarkerFavoriteRecord,
   MarkerPageResult,
   MarkerRatingPageResult,
   MarkerRatingRecord,
@@ -35,6 +42,7 @@ export type {
   MarkerTagId,
   SubmitMarkerRatingInput,
   SubmitMarkerRatingResult,
+  ToggleMarkerFavoriteResult,
   UpdateMarkerInput,
   UploadableImage,
 } from "./types";

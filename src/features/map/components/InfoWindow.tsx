@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Alert, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import {
   MarkerRatingCard,
@@ -80,6 +81,10 @@ interface InfoWindowProps {
   onStartNavigation?: () => void;
   onMarkerUpdated?: () => Promise<void> | void;
   onViewAllReviews?: () => void;
+  isAuthenticated?: boolean;
+  isFavorite?: boolean;
+  isTogglingFavorite?: boolean;
+  onToggleFavorite?: () => Promise<void> | void;
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({
@@ -88,6 +93,10 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   onStartNavigation,
   onMarkerUpdated,
   onViewAllReviews,
+  isAuthenticated = false,
+  isFavorite = false,
+  isTogglingFavorite = false,
+  onToggleFavorite,
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -111,6 +120,17 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   }, [selectedMarker?.description, selectedMarker?.id]);
 
   const canExpandDescription = (descriptionLineCount ?? 0) > 2;
+  const handleFavoritePress = () => {
+    if (!isAuthenticated) {
+      Alert.alert(
+        "Sign in required",
+        "You need an account to save favorite sitting places.",
+      );
+      return;
+    }
+
+    void onToggleFavorite?.();
+  };
 
   return (
     <>
@@ -132,9 +152,32 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
               </View>
 
               <View className="flex-1">
-                <Text className="font-psemibold text-xl leading-7 text-slate-950">
-                  {selectedMarker?.title ?? ""}
-                </Text>
+                <View className="flex-row items-start justify-between gap-3">
+                  <Text className="flex-1 font-psemibold text-xl leading-7 text-slate-950">
+                    {selectedMarker?.title ?? ""}
+                  </Text>
+                  <Pressable
+                    onPress={handleFavoritePress}
+                    disabled={isTogglingFavorite}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      isFavorite ? "Remove from favorites" : "Add to favorites"
+                    }
+                    accessibilityState={{
+                      selected: isFavorite,
+                      disabled: isTogglingFavorite,
+                    }}
+                    className={`h-10 w-10 items-center justify-center rounded-full bg-white ${
+                      isTogglingFavorite ? "opacity-50" : ""
+                    }`}
+                  >
+                    <MaterialIcons
+                      name={isFavorite ? "favorite" : "favorite-border"}
+                      size={22}
+                      color={isFavorite ? "#DC2626" : "#0F172A"}
+                    />
+                  </Pressable>
+                </View>
                 <Pressable
                   onPress={
                     canExpandDescription
