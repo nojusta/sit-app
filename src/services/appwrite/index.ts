@@ -901,6 +901,22 @@ export async function createMarker({
   const photoUrl = photo
     ? await createStorageFile(photo, buildMarkerFilePermissions(status, authorId))
     : null;
+  const createPayload: Record<string, unknown> = {
+    title: normalizedTitle,
+    description: normalizedDescription,
+    location: formatMarkerLocation(coordinate),
+    status,
+    author_id: authorId,
+    created_at: createdAt,
+    photo_url: photoUrl,
+    photo_urls: photoUrl ? [photoUrl] : [],
+    latitude: coordinate.latitude,
+    longitude: coordinate.longitude,
+  };
+
+  if (normalizedAttributes.length > 0) {
+    createPayload.attributes = normalizedAttributes;
+  }
 
   let document: Models.Document;
 
@@ -909,19 +925,7 @@ export async function createMarker({
       getDatabaseId(),
       getMarkersCollectionId(),
       ID.unique(),
-      {
-        title: normalizedTitle,
-        description: normalizedDescription,
-        location: formatMarkerLocation(coordinate),
-        status,
-        author_id: authorId,
-        created_at: createdAt,
-        photo_url: photoUrl,
-        photo_urls: photoUrl ? [photoUrl] : [],
-        latitude: coordinate.latitude,
-        longitude: coordinate.longitude,
-        attributes: normalizedAttributes,
-      },
+      createPayload,
       buildMarkerDocumentPermissions(status, authorId),
     );
   } catch (error) {

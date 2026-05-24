@@ -144,6 +144,31 @@ describe("marker persistence", () => {
     );
   });
 
+  it("does not send empty marker tags when creating an untagged marker", async () => {
+    mockCreateDocument.mockResolvedValueOnce({
+      ...markerDocument,
+      $id: "generated-id",
+      status: "pending_approval",
+    });
+
+    await createMarker({
+      title: "Bench near Cathedral",
+      description: "Quiet in the morning",
+      coordinate: { latitude: 54.6872, longitude: 25.2797 },
+      authorId: "user-1",
+    });
+
+    expect(mockCreateDocument).toHaveBeenCalledWith(
+      "database-id",
+      "markers-collection-id",
+      "generated-id",
+      expect.not.objectContaining({
+        attributes: expect.anything(),
+      }),
+      expect.arrayContaining(["read:user:user-1", "update:user:user-1"]),
+    );
+  });
+
   it("persists selected tags when updating a marker", async () => {
     mockUpdateDocument.mockResolvedValueOnce({
       ...markerDocument,
