@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   AppState,
   BackHandler,
@@ -56,25 +55,6 @@ const cameraPickerOptions: ImagePicker.ImagePickerOptions = {
   allowsEditing: false,
   cameraType: ImagePicker.CameraType.back,
 };
-
-const FilterMapButton: React.FC<{
-  activeFilterCount: number;
-  onPress: () => void;
-}> = ({ activeFilterCount, onPress }) => (
-  <Pressable
-    onPress={onPress}
-    accessibilityRole="button"
-    accessibilityLabel="Open marker filters"
-    className="h-14 w-14 items-center justify-center rounded-full border border-[#4A4A4A] bg-[#2D2D2D]"
-  >
-    <MaterialIcons name="tune" size={24} color="#FFFFFF" />
-    {activeFilterCount > 0 ? (
-      <View className="min-h-6 min-w-6 absolute -right-1 -top-1 items-center justify-center rounded-full bg-red-600 px-1.5">
-        <Text className="font-psemibold text-xs text-white">{activeFilterCount}</Text>
-      </View>
-    ) : null}
-  </Pressable>
-);
 
 const MarkerFilterEmptyOverlay: React.FC<{
   onClear: () => void;
@@ -554,9 +534,12 @@ const HomeApp: React.FC = () => {
               edges={["top"]}
               className="absolute right-5 top-0"
             >
-              <FilterMapButton
-                activeFilterCount={activeFilterCount}
+              <CircleButton
+                materialIconName="tune"
+                size="medium"
+                badgeCount={activeFilterCount}
                 onPress={() => setIsFilterSheetVisible(true)}
+                accessibilityLabel="Open marker filters"
               />
             </SafeAreaView>
             <CircleButton
