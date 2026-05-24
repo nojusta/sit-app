@@ -194,4 +194,22 @@ describe("InfoWindow", () => {
 
     expect(getByText("Marker tags: quiet, waterfront")).toBeTruthy();
   });
+
+  it("disables the favorite action while favorite status is loading", () => {
+    const onToggleFavorite = jest.fn();
+    const { getByLabelText } = render(
+      <InfoWindow
+        selectedMarker={marker}
+        isAuthenticated
+        isFavoriteStateReady={false}
+        onToggleFavorite={onToggleFavorite}
+      />,
+    );
+
+    const favoriteButton = getByLabelText("Favorite status loading");
+
+    expect(favoriteButton.props.accessibilityState.disabled).toBe(true);
+    fireEvent.press(favoriteButton);
+    expect(onToggleFavorite).not.toHaveBeenCalled();
+  });
 });

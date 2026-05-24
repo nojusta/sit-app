@@ -174,14 +174,30 @@ jest.mock("@/features/map", () => {
       selectedMarker,
       onStartNavigation,
       onToggleFavorite,
+      isAuthenticated = false,
+      isFavoriteStateReady = true,
+      isTogglingFavorite = false,
     }: {
       selectedMarker: { title: string };
       onStartNavigation?: () => void;
       onToggleFavorite?: () => void;
+      isAuthenticated?: boolean;
+      isFavoriteStateReady?: boolean;
+      isTogglingFavorite?: boolean;
     }) => (
       <>
         <Text>{selectedMarker.title}</Text>
-        <Text onPress={onToggleFavorite}>Toggle favorite</Text>
+        <TouchableOpacity
+          onPress={onToggleFavorite}
+          disabled={isTogglingFavorite || (isAuthenticated && !isFavoriteStateReady)}
+          accessibilityRole="button"
+          accessibilityLabel="Toggle favorite"
+          accessibilityState={{
+            disabled: isTogglingFavorite || (isAuthenticated && !isFavoriteStateReady),
+          }}
+        >
+          <Text>Toggle favorite</Text>
+        </TouchableOpacity>
         <Text onPress={onStartNavigation}>Start Navigation</Text>
       </>
     ),
@@ -214,6 +230,7 @@ jest.mock("@/features/map", () => {
 
 const { useAuthContext } = jest.requireMock("@/features/auth");
 const { useAppwrite } = jest.requireMock("@/shared/hooks");
+const { toggleMarkerFavorite } = jest.requireMock("@/services/appwrite");
 const { useMapInteractions, useMarkerFilters, useMarkerContext, useUserLocation } =
   jest.requireMock("@/features/map");
 const mockedUseIsFocused = jest.mocked(useIsFocused);
@@ -221,11 +238,15 @@ const mockedUseIsFocused = jest.mocked(useIsFocused);
 const mockUseAppwriteData = ({
   markers = [],
   favorites = [],
+  favoriteLoading = false,
+  favoriteRefreshing = false,
   markerError = null,
   favoriteError = null,
 }: {
   markers?: unknown[];
   favorites?: string[];
+  favoriteLoading?: boolean;
+  favoriteRefreshing?: boolean;
   markerError?: Error | null;
   favoriteError?: Error | null;
 } = {}) => {
@@ -239,9 +260,9 @@ const mockUseAppwriteData = ({
       refetch: refetchMarkers,
     })
     .mockReturnValueOnce({
-      data: favorites,
-      loading: false,
-      refreshing: false,
+      data: favoriteLoading && favorites.length === 0 ? null : favorites,
+      loading: favoriteLoading,
+      refreshing: favoriteRefreshing,
       error: favoriteError,
       refetch: refetchFavoriteMarkerIds,
     })
@@ -469,6 +490,69 @@ describe("home location permission flow", () => {
 
     fireEvent.press(screen.getByText("Start Navigation"));
     expect(handleStartNavigation).toHaveBeenCalledWith(selectedMarker);
+  });
+
+  it("disables favorite toggling until favorite state is loaded", () => {
+    const selectedMarker = {
+      id: "marker-1",
+      title: "Kudirka Square",
+      description: "Benches and skaters",
+      coordinate: { latitude: 54.6868, longitude: 25.2799 },
+      location: "54.686800,25.279900",
+      status: "approved" as const,
+      authorId: "admin-user",
+      createdAt: "2026-04-10T09:00:00.000Z",
+      photoUrl: null,
+      attributes: [],
+    };
+
+    mockUseAppwriteData({ favoriteLoading: true });
+    useUserLocation.mockReturnValue({
+      location: {
+        coords: { latitude: 54.6872, longitude: 25.2797 },
+      },
+      permissionState: "granted",
+      isPermissionDenied: false,
+      isPermissionGranted: true,
+      isPermissionLoading: false,
+      refreshLocation,
+    });
+    useMapInteractions.mockReturnValue({
+      markers: [],
+      selectedMarker,
+      userMarker: null,
+      isPlacementMode: false,
+      isCreationModalVisible: false,
+      markerName: "",
+      markerInfo: "",
+      markerPhoto: null,
+      markerAttributes: [],
+      isSubmittingMarker: false,
+      setMarkerName: jest.fn(),
+      setMarkerInfo: jest.fn(),
+      setMarkerPhoto: jest.fn(),
+      setMarkerAttributes: jest.fn(),
+      handleMarkerPress: jest.fn(),
+      handleMapPress: jest.fn(),
+      handleCenterOnUserLocation,
+      handleAddMarker,
+      handleCancelPlacement: jest.fn(),
+      handleConfirmPlacement,
+      handleCloseCreationModal: jest.fn(),
+      handleSubmitMarker: jest.fn(),
+      handleStartNavigation: jest.fn(),
+      handleStopNavigation: jest.fn(),
+      isNavigationActive: false,
+      activeNavigationDestination: null,
+    });
+
+    render(<HomeApp />);
+
+    const favoriteButton = screen.getByRole("button", { name: "Toggle favorite" });
+    expect(favoriteButton.props.accessibilityState.disabled).toBe(true);
+
+    fireEvent.press(favoriteButton);
+    expect(toggleMarkerFavorite).not.toHaveBeenCalled();
   });
 
   it("opens the filter sheet from the browse map button and applies filters", () => {

@@ -83,6 +83,7 @@ interface InfoWindowProps {
   onViewAllReviews?: () => void;
   isAuthenticated?: boolean;
   isFavorite?: boolean;
+  isFavoriteStateReady?: boolean;
   isTogglingFavorite?: boolean;
   onToggleFavorite?: () => Promise<void> | void;
 }
@@ -95,6 +96,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   onViewAllReviews,
   isAuthenticated = false,
   isFavorite = false,
+  isFavoriteStateReady = true,
   isTogglingFavorite = false,
   onToggleFavorite,
 }) => {
@@ -120,12 +122,18 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   }, [selectedMarker?.description, selectedMarker?.id]);
 
   const canExpandDescription = (descriptionLineCount ?? 0) > 2;
+  const isFavoriteActionDisabled =
+    isTogglingFavorite || (isAuthenticated && !isFavoriteStateReady);
   const handleFavoritePress = () => {
     if (!isAuthenticated) {
       Alert.alert(
         "Sign in required",
         "You need an account to save favorite sitting places.",
       );
+      return;
+    }
+
+    if (!isFavoriteStateReady) {
       return;
     }
 
@@ -158,23 +166,33 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                   </Text>
                   <Pressable
                     onPress={handleFavoritePress}
-                    disabled={isTogglingFavorite}
+                    disabled={isFavoriteActionDisabled}
                     accessibilityRole="button"
                     accessibilityLabel={
-                      isFavorite ? "Remove from favorites" : "Add to favorites"
+                      isAuthenticated && !isFavoriteStateReady
+                        ? "Favorite status loading"
+                        : isFavorite
+                          ? "Remove from favorites"
+                          : "Add to favorites"
                     }
                     accessibilityState={{
                       selected: isFavorite,
-                      disabled: isTogglingFavorite,
+                      disabled: isFavoriteActionDisabled,
                     }}
                     className={`h-10 w-10 items-center justify-center rounded-full bg-white ${
-                      isTogglingFavorite ? "opacity-50" : ""
+                      isFavoriteActionDisabled ? "opacity-50" : ""
                     }`}
                   >
                     <MaterialIcons
                       name={isFavorite ? "favorite" : "favorite-border"}
                       size={22}
-                      color={isFavorite ? "#DC2626" : "#0F172A"}
+                      color={
+                        isAuthenticated && !isFavoriteStateReady
+                          ? "#94A3B8"
+                          : isFavorite
+                            ? "#DC2626"
+                            : "#0F172A"
+                      }
                     />
                   </Pressable>
                 </View>

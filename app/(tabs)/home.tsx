@@ -99,6 +99,8 @@ const HomeApp: React.FC = () => {
   );
   const {
     data: favoriteMarkerIds,
+    loading: favoritesLoading,
+    refreshing: favoritesRefreshing,
     error: favoritesError,
     refetch: refetchFavoriteMarkerIds,
   } = useAppwrite(fetchFavoriteMarkerIds);
@@ -165,6 +167,12 @@ const HomeApp: React.FC = () => {
   const selectedMarkerIsFavorite = selectedMarker
     ? favoriteIds.includes(selectedMarker.id)
     : false;
+  const isFavoriteStateReady =
+    !isLogged ||
+    (Array.isArray(favoriteMarkerIds) &&
+      !favoritesLoading &&
+      !favoritesRefreshing &&
+      !favoritesError);
   const isBrowseModeIdle =
     !isNavigationActive &&
     !isPlacementMode &&
@@ -188,6 +196,14 @@ const HomeApp: React.FC = () => {
       return;
     }
 
+    if (!isFavoriteStateReady) {
+      Alert.alert(
+        "Favorites unavailable",
+        "Wait until your favorite places finish loading, then try again.",
+      );
+      return;
+    }
+
     setIsTogglingFavorite(true);
 
     try {
@@ -201,7 +217,7 @@ const HomeApp: React.FC = () => {
     } finally {
       setIsTogglingFavorite(false);
     }
-  }, [refetchFavoriteMarkerIds, selectedMarker, user?.$id]);
+  }, [isFavoriteStateReady, refetchFavoriteMarkerIds, selectedMarker, user?.$id]);
 
   const handleMarkerPhotoChange = useCallback(
     (result: ImagePicker.ImagePickerResult) => {
@@ -493,6 +509,7 @@ const HomeApp: React.FC = () => {
               onMarkerUpdated={refetchMarkers}
               isAuthenticated={isLogged}
               isFavorite={selectedMarkerIsFavorite}
+              isFavoriteStateReady={isFavoriteStateReady}
               isTogglingFavorite={isTogglingFavorite}
               onToggleFavorite={handleToggleSelectedMarkerFavorite}
               onViewAllReviews={() =>
