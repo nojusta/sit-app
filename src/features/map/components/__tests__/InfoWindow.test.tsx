@@ -114,10 +114,18 @@ const marker: MarkerData = {
 
 describe("InfoWindow", () => {
   it("expands and collapses the header description", () => {
-    const { getByLabelText, getAllByText } = render(
+    const { getByLabelText, getAllByText, queryByText } = render(
       <InfoWindow selectedMarker={marker} />,
     );
     const [headerDescription] = getAllByText(marker.description);
+
+    expect(queryByText("Show more")).toBeNull();
+
+    fireEvent(headerDescription, "textLayout", {
+      nativeEvent: {
+        lines: [{ text: "line 1" }, { text: "line 2" }, { text: "line 3" }],
+      },
+    });
 
     expect(headerDescription.props.numberOfLines).toBe(2);
 
@@ -128,6 +136,49 @@ describe("InfoWindow", () => {
     fireEvent.press(getByLabelText("Collapse marker description"));
 
     expect(getAllByText(marker.description)[0].props.numberOfLines).toBe(2);
+  });
+
+  it("keeps long descriptions expandable after clamped text layout fires", () => {
+    const { getAllByText, getByText } = render(<InfoWindow selectedMarker={marker} />);
+    const [headerDescription] = getAllByText(marker.description);
+
+    fireEvent(headerDescription, "textLayout", {
+      nativeEvent: {
+        lines: [{ text: "line 1" }, { text: "line 2" }, { text: "line 3" }],
+      },
+    });
+
+    const [clampedHeaderDescription] = getAllByText(marker.description);
+    fireEvent(clampedHeaderDescription, "textLayout", {
+      nativeEvent: {
+        lines: [{ text: "line 1" }, { text: "line 2" }],
+      },
+    });
+
+    expect(getAllByText(marker.description)[0].props.numberOfLines).toBe(2);
+    expect(getByText("Show more")).toBeTruthy();
+  });
+
+  it("does not show the header description toggle when the text fits", () => {
+    const shortMarker = {
+      ...marker,
+      description: "Short description.",
+    };
+    const { getAllByText, queryByLabelText, queryByText } = render(
+      <InfoWindow selectedMarker={shortMarker} />,
+    );
+    const [headerDescription] = getAllByText(shortMarker.description);
+
+    fireEvent(headerDescription, "textLayout", {
+      nativeEvent: {
+        lines: [{ text: "Short description." }],
+      },
+    });
+
+    expect(queryByText("Show more")).toBeNull();
+    expect(queryByText("Show less")).toBeNull();
+    expect(queryByLabelText("Expand marker description")).toBeNull();
+    expect(getAllByText(shortMarker.description)[0].props.numberOfLines).toBeUndefined();
   });
 
   it("shows marker tags in the marker details header", () => {

@@ -91,6 +91,7 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
 }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [descriptionLineCount, setDescriptionLineCount] = useState<number | null>(null);
   const weather = useMarkerWeather(selectedMarker);
   const markerRating = useMarkerRating({
     markerId: selectedMarker?.id,
@@ -106,7 +107,10 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
   useEffect(() => {
     setLightboxIndex(null);
     setIsDescriptionExpanded(false);
-  }, [selectedMarker?.id]);
+    setDescriptionLineCount(null);
+  }, [selectedMarker?.description, selectedMarker?.id]);
+
+  const canExpandDescription = (descriptionLineCount ?? 0) > 2;
 
   return (
     <>
@@ -132,21 +136,44 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                   {selectedMarker?.title ?? ""}
                 </Text>
                 <Pressable
-                  onPress={() => setIsDescriptionExpanded((current) => !current)}
-                  accessibilityRole="button"
+                  onPress={
+                    canExpandDescription
+                      ? () => setIsDescriptionExpanded((current) => !current)
+                      : undefined
+                  }
+                  accessibilityRole={canExpandDescription ? "button" : undefined}
                   accessibilityLabel={
-                    isDescriptionExpanded
-                      ? "Collapse marker description"
-                      : "Expand marker description"
+                    canExpandDescription
+                      ? isDescriptionExpanded
+                        ? "Collapse marker description"
+                        : "Expand marker description"
+                      : undefined
                   }
                 >
                   <Text
                     className="mt-2 font-pregular text-sm leading-6 text-slate-600"
-                    numberOfLines={isDescriptionExpanded ? undefined : 2}
+                    numberOfLines={
+                      canExpandDescription && !isDescriptionExpanded ? 2 : undefined
+                    }
+                    onTextLayout={(event) => {
+                      const nextLineCount = event.nativeEvent.lines.length;
+
+                      setDescriptionLineCount((current) => {
+                        if (current === null) {
+                          return nextLineCount;
+                        }
+
+                        if (current > 2 && nextLineCount <= 2) {
+                          return current;
+                        }
+
+                        return nextLineCount > current ? nextLineCount : current;
+                      });
+                    }}
                   >
                     {selectedMarker?.description ?? ""}
                   </Text>
-                  {selectedMarker?.description ? (
+                  {selectedMarker?.description && canExpandDescription ? (
                     <Text className="mt-1 font-psemibold text-xs text-slate-500">
                       {isDescriptionExpanded ? "Show less" : "Show more"}
                     </Text>
