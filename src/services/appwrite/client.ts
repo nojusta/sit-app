@@ -8,6 +8,7 @@ type ExpoExtra = {
   APPWRITE_MARKERS_COLLECTION_ID?: string;
   APPWRITE_RATINGS_COLLECTION_ID?: string;
   APPWRITE_FAVORITES_COLLECTION_ID?: string;
+  APPWRITE_MODERATION_WARNINGS_ID?: string;
   APPWRITE_STORAGE_ID?: string;
 };
 
@@ -29,6 +30,7 @@ const {
   APPWRITE_MARKERS_COLLECTION_ID,
   APPWRITE_RATINGS_COLLECTION_ID,
   APPWRITE_FAVORITES_COLLECTION_ID,
+  APPWRITE_MODERATION_WARNINGS_ID,
   APPWRITE_STORAGE_ID,
 } = expoExtra;
 
@@ -39,6 +41,7 @@ export const appwriteConfig = {
   markersCollectionId: APPWRITE_MARKERS_COLLECTION_ID,
   ratingsCollectionId: APPWRITE_RATINGS_COLLECTION_ID,
   favoritesCollectionId: APPWRITE_FAVORITES_COLLECTION_ID,
+  moderationWarningsCollectionId: APPWRITE_MODERATION_WARNINGS_ID,
   storageId: APPWRITE_STORAGE_ID,
 };
 
@@ -60,6 +63,8 @@ export const ratingsReady =
   databaseConfigured && Boolean(appwriteConfig.ratingsCollectionId);
 export const favoritesReady =
   databaseConfigured && Boolean(appwriteConfig.favoritesCollectionId);
+export const moderationWarningsReady =
+  databaseConfigured && Boolean(appwriteConfig.moderationWarningsCollectionId);
 const storageReady = appwriteReady && Boolean(appwriteConfig.storageId);
 
 if (appwriteReady) {
@@ -133,6 +138,17 @@ export const ensureFavoritesReady = () => {
   }
 };
 
+export const ensureModerationWarningsReady = () => {
+  ensureDatabaseConfigured();
+
+  if (!moderationWarningsReady) {
+    throwConfigurationError(
+      "Appwrite moderation warnings database is not configured. Check APPWRITE_DATABASE_ID and APPWRITE_MODERATION_WARNINGS_ID.",
+      "Moderation data is temporarily unavailable.",
+    );
+  }
+};
+
 export const ensureStorageReady = () => {
   ensureReady();
 
@@ -177,6 +193,11 @@ export const getRatingsCollectionId = () => {
 export const getFavoritesCollectionId = () => {
   ensureFavoritesReady();
   return appwriteConfig.favoritesCollectionId!;
+};
+
+export const getModerationWarningsCollectionId = () => {
+  ensureModerationWarningsReady();
+  return appwriteConfig.moderationWarningsCollectionId!;
 };
 
 export const getStorageId = () => {

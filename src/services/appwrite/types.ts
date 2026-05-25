@@ -23,6 +23,8 @@ export type MarkerTagId = (typeof MARKER_TAG_IDS)[number];
 
 export const MAX_MARKER_ATTRIBUTES = 3;
 
+export const MAX_DAILY_MARKER_UPLOADS = 10;
+
 export type MarkerCoordinate = {
   latitude: number;
   longitude: number;
@@ -67,6 +69,13 @@ export interface UpdateMarkerInput {
   existingPhotoUrls?: string[];
   newPhotos?: UploadableImage[];
   attributes?: MarkerTagId[];
+}
+
+export interface RejectMarkerInput {
+  markerId: string;
+  authorId: string;
+  reviewerId?: string | null;
+  reason?: string | null;
 }
 
 export interface MarkerRatingRecord {
