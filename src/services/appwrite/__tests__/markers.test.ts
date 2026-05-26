@@ -1,6 +1,7 @@
 const mockListDocuments = jest.fn();
 const mockCreateDocument = jest.fn();
 const mockUpdateDocument = jest.fn();
+const mockGetDocument = jest.fn();
 
 jest.mock("expo-constants", () => ({
   expoConfig: {
@@ -34,11 +35,13 @@ jest.mock("appwrite", () => {
     listDocuments: typeof mockListDocuments;
     createDocument: typeof mockCreateDocument;
     updateDocument: typeof mockUpdateDocument;
+    getDocument: typeof mockGetDocument;
 
     constructor() {
       this.listDocuments = mockListDocuments;
       this.createDocument = mockCreateDocument;
       this.updateDocument = mockUpdateDocument;
+      this.getDocument = mockGetDocument;
     }
   }
 
@@ -110,6 +113,8 @@ describe("marker persistence", () => {
     });
     mockCreateDocument.mockReset();
     mockUpdateDocument.mockReset();
+    mockGetDocument.mockReset();
+    mockGetDocument.mockResolvedValue(markerDocument);
   });
 
   it("maps missing marker attributes to an empty tag list", async () => {
@@ -294,6 +299,10 @@ describe("marker persistence", () => {
   });
 
   it("creates a moderation warning when rejecting a marker", async () => {
+    mockGetDocument.mockResolvedValueOnce({
+      ...markerDocument,
+      status: "pending_approval",
+    });
     mockUpdateDocument.mockResolvedValueOnce({
       ...markerDocument,
       status: "rejected",
@@ -316,6 +325,11 @@ describe("marker persistence", () => {
       reason: "Photo does not show a sitting place.",
     });
 
+    expect(mockGetDocument).toHaveBeenCalledWith(
+      "database-id",
+      "markers-collection-id",
+      "marker-1",
+    );
     expect(mockUpdateDocument).toHaveBeenCalledWith(
       "database-id",
       "markers-collection-id",
@@ -334,6 +348,49 @@ describe("marker persistence", () => {
         created_by: "admin-1",
       }),
       expect.arrayContaining(["read:user:user-1", "read:user:admin-1"]),
+    );
+  });
+
+  it("rolls marker status back when rejection warning creation fails", async () => {
+    mockGetDocument.mockResolvedValueOnce({
+      ...markerDocument,
+      status: "pending_approval",
+    });
+    mockUpdateDocument
+      .mockResolvedValueOnce({
+        ...markerDocument,
+        status: "rejected",
+      })
+      .mockResolvedValueOnce({
+        ...markerDocument,
+        status: "pending_approval",
+      });
+    mockCreateDocument.mockRejectedValueOnce(new Error("Warning write failed"));
+
+    await expect(
+      rejectMarker({
+        markerId: "marker-1",
+        authorId: "user-1",
+        reviewerId: "admin-1",
+        reason: "Photo does not show a sitting place.",
+      }),
+    ).rejects.toThrow("Warning write failed");
+
+    expect(mockUpdateDocument).toHaveBeenNthCalledWith(
+      1,
+      "database-id",
+      "markers-collection-id",
+      "marker-1",
+      { status: "rejected" },
+      expect.arrayContaining(["read:user:user-1"]),
+    );
+    expect(mockUpdateDocument).toHaveBeenNthCalledWith(
+      2,
+      "database-id",
+      "markers-collection-id",
+      "marker-1",
+      { status: "pending_approval" },
+      expect.arrayContaining(["read:user:user-1"]),
     );
   });
 

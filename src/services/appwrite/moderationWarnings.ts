@@ -5,6 +5,7 @@ import {
   getDatabaseId,
   getDatabasesClient,
   getModerationWarningsCollectionId,
+  moderationWarningsReady,
 } from "./client";
 import { buildModerationWarningDocumentPermissions } from "./permissions";
 
@@ -85,10 +86,24 @@ export async function hasReachedModerationWarningLimit(userId: string): Promise<
 }
 
 export async function assertCanSubmitByModerationWarnings(userId: string) {
+  if (!moderationWarningsReady) {
+    if (__DEV__) {
+      console.warn(
+        "Skipping moderation warning gate because APPWRITE_MODERATION_WARNINGS_ID is not configured.",
+      );
+    }
+
+    return;
+  }
+
   if (await hasReachedModerationWarningLimit(userId)) {
     throw new Error(MARKER_CREATION_BLOCKED_BY_WARNINGS_MESSAGE);
   }
 }
+
+export const ensureCanRecordModerationWarning = () => {
+  ensureModerationWarningsReady();
+};
 
 export async function createModerationWarning({
   userId,

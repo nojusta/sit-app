@@ -16,6 +16,7 @@ import {
 import {
   assertCanSubmitByModerationWarnings,
   createModerationWarning,
+  ensureCanRecordModerationWarning,
 } from "./moderationWarnings";
 import { buildMarkerDocumentPermissions } from "./permissions";
 import { uploadMarkerPhotos } from "./storage";
@@ -313,9 +314,16 @@ export async function rejectMarker({
 
   const normalizedMarkerId = normalizeRequiredId(markerId, "Marker id");
   const normalizedAuthorId = normalizeRequiredId(authorId, "Marker author id");
+  ensureCanRecordModerationWarning();
 
   const reviewedAt = new Date().toISOString();
   const status: MarkerStatus = "rejected";
+  const existingDocument = (await getDatabasesClient().getDocument(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    normalizedMarkerId,
+  )) as AppwriteMarkerDocument;
+  const previousStatus = existingDocument.status;
   const document = await getDatabasesClient().updateDocument(
     getDatabaseId(),
     getMarkersCollectionId(),
@@ -324,13 +332,34 @@ export async function rejectMarker({
     buildMarkerDocumentPermissions(status, normalizedAuthorId),
   );
 
-  await createModerationWarning({
-    userId: normalizedAuthorId,
-    markerId: normalizedMarkerId,
-    reason,
-    reviewedAt,
-    createdBy: reviewerId,
-  });
+  try {
+    await createModerationWarning({
+      userId: normalizedAuthorId,
+      markerId: normalizedMarkerId,
+      reason,
+      reviewedAt,
+      createdBy: reviewerId,
+    });
+  } catch (error) {
+    try {
+      await getDatabasesClient().updateDocument(
+        getDatabaseId(),
+        getMarkersCollectionId(),
+        normalizedMarkerId,
+        { status: previousStatus },
+        buildMarkerDocumentPermissions(previousStatus, normalizedAuthorId),
+      );
+    } catch (rollbackError) {
+      if (__DEV__) {
+        console.warn(
+          "Failed to roll back marker rejection after moderation warning creation failed.",
+          rollbackError,
+        );
+      }
+    }
+
+    throw error;
+  }
 
   return mapMarkerDocument(document as AppwriteMarkerDocument);
 }
