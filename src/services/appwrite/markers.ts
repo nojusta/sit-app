@@ -13,15 +13,22 @@ import {
   isMissingMarkerAttributesSchemaError,
   toMarkerAttributesSchemaError,
 } from "./errors";
+import {
+  assertCanSubmitByModerationWarnings,
+  createModerationWarning,
+  ensureCanRecordModerationWarning,
+} from "./moderationWarnings";
 import { buildMarkerDocumentPermissions } from "./permissions";
 import { uploadMarkerPhotos } from "./storage";
 import {
   MARKER_TAG_IDS,
+  MAX_DAILY_MARKER_UPLOADS,
   MAX_MARKER_ATTRIBUTES,
   type CreateMarkerInput,
   type MarkerCoordinate,
   type MarkerPageResult,
   type MarkerRecord,
+  type RejectMarkerInput,
   type MarkerStatus,
   type MarkerTagId,
   type UpdateMarkerInput,
@@ -94,6 +101,21 @@ const normalizeMarkerAttributesForWrite = (
   }
 
   return normalized;
+};
+
+const getDailyUploadWindowStart = () =>
+  new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+export const MARKER_DAILY_UPLOAD_LIMIT_MESSAGE = `You have reached the upload limit of ${MAX_DAILY_MARKER_UPLOADS} sitting places in the last 24 hours.`;
+
+const normalizeRequiredId = (value: string, label: string) => {
+  const normalizedValue = value.trim();
+
+  if (!normalizedValue) {
+    throw new Error(`${label} is required.`);
+  }
+
+  return normalizedValue;
 };
 
 export const mapMarkerDocument = (document: AppwriteMarkerDocument): MarkerRecord => ({
@@ -183,6 +205,38 @@ export async function listMarkersByAuthorPage(
   };
 }
 
+export async function getUserMarkerUploadCountInLast24Hours(
+  authorId: string,
+): Promise<number> {
+  ensureMarkersReady();
+
+  const normalizedAuthorId = normalizeRequiredId(authorId, "Marker author id");
+  const response = await getDatabasesClient().listDocuments(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    [
+      Query.equal("author_id", normalizedAuthorId),
+      Query.greaterThanEqual("created_at", getDailyUploadWindowStart()),
+      Query.limit(MAX_DAILY_MARKER_UPLOADS),
+    ],
+  );
+
+  return response.total;
+}
+
+export async function assertCanSubmitByDailyUploadLimit(authorId: string) {
+  const uploadCount = await getUserMarkerUploadCountInLast24Hours(authorId);
+
+  if (uploadCount >= MAX_DAILY_MARKER_UPLOADS) {
+    throw new Error(MARKER_DAILY_UPLOAD_LIMIT_MESSAGE);
+  }
+}
+
+export async function assertCanCreateMarker(authorId: string) {
+  await assertCanSubmitByModerationWarnings(authorId);
+  await assertCanSubmitByDailyUploadLimit(authorId);
+}
+
 export async function createMarker({
   title,
   description,
@@ -204,6 +258,8 @@ export async function createMarker({
   if (!normalizedDescription) {
     throw new Error("Marker description is required.");
   }
+
+  await assertCanCreateMarker(authorId);
 
   const status: MarkerStatus = "pending_approval";
   const createdAt = new Date().toISOString();
@@ -240,6 +296,66 @@ export async function createMarker({
   } catch (error) {
     if (isMissingMarkerAttributesSchemaError(error)) {
       throw toMarkerAttributesSchemaError();
+    }
+
+    throw error;
+  }
+
+  return mapMarkerDocument(document as AppwriteMarkerDocument);
+}
+
+export async function rejectMarker({
+  markerId,
+  authorId,
+  reviewerId = null,
+  reason = null,
+}: RejectMarkerInput): Promise<MarkerRecord> {
+  ensureMarkersReady();
+
+  const normalizedMarkerId = normalizeRequiredId(markerId, "Marker id");
+  const normalizedAuthorId = normalizeRequiredId(authorId, "Marker author id");
+  ensureCanRecordModerationWarning();
+
+  const reviewedAt = new Date().toISOString();
+  const status: MarkerStatus = "rejected";
+  const existingDocument = (await getDatabasesClient().getDocument(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    normalizedMarkerId,
+  )) as AppwriteMarkerDocument;
+  const previousStatus = existingDocument.status;
+  const document = await getDatabasesClient().updateDocument(
+    getDatabaseId(),
+    getMarkersCollectionId(),
+    normalizedMarkerId,
+    { status },
+    buildMarkerDocumentPermissions(status, normalizedAuthorId),
+  );
+
+  try {
+    await createModerationWarning({
+      userId: normalizedAuthorId,
+      markerId: normalizedMarkerId,
+      reason,
+      reviewedAt,
+      createdBy: reviewerId,
+    });
+  } catch (error) {
+    try {
+      await getDatabasesClient().updateDocument(
+        getDatabaseId(),
+        getMarkersCollectionId(),
+        normalizedMarkerId,
+        { status: previousStatus },
+        buildMarkerDocumentPermissions(previousStatus, normalizedAuthorId),
+      );
+    } catch (rollbackError) {
+      if (__DEV__) {
+        console.warn(
+          "Failed to roll back marker rejection after moderation warning creation failed.",
+          rollbackError,
+        );
+      }
     }
 
     throw error;

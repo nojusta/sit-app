@@ -8,14 +8,27 @@ export {
   signOut,
 } from "./auth";
 export {
+  assertCanCreateMarker,
+  assertCanSubmitByDailyUploadLimit,
   createMarker,
   formatMarkerLocation,
+  getUserMarkerUploadCountInLast24Hours,
   listApprovedMarkers,
   listMarkersByAuthor,
   listMarkersByAuthorPage,
+  MARKER_DAILY_UPLOAD_LIMIT_MESSAGE,
+  rejectMarker,
   subscribeToMarkerChanges,
   updateMarker,
 } from "./markers";
+export {
+  assertCanSubmitByModerationWarnings,
+  createModerationWarning,
+  getUserModerationWarningCount,
+  hasReachedModerationWarningLimit,
+  MARKER_CREATION_BLOCKED_BY_WARNINGS_MESSAGE,
+  MAX_MODERATION_WARNINGS,
+} from "./moderationWarnings";
 export {
   getMarkerAverageRating,
   getUserMarkerRating,
@@ -40,10 +53,11 @@ export type {
   MarkerRecord,
   MarkerStatus,
   MarkerTagId,
+  RejectMarkerInput,
   SubmitMarkerRatingInput,
   SubmitMarkerRatingResult,
   ToggleMarkerFavoriteResult,
   UpdateMarkerInput,
   UploadableImage,
 } from "./types";
-export { MARKER_TAG_IDS, MAX_MARKER_ATTRIBUTES } from "./types";
+export { MARKER_TAG_IDS, MAX_DAILY_MARKER_UPLOADS, MAX_MARKER_ATTRIBUTES } from "./types";
