@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Alert, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 
@@ -18,12 +18,69 @@ import {
 } from "@/shared/components";
 
 const COLLAPSED_HEIGHT = 292;
+const IMAGE_LOAD_FALLBACK_MS = 9000;
+
+const useRemoteImageLoadingState = (uri?: string | null) => {
+  const [isLoading, setIsLoading] = useState(Boolean(uri));
+  const [hasFailed, setHasFailed] = useState(false);
+  const fallbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearFallbackTimeout = useCallback(() => {
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+      fallbackTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startFallbackTimeout = useCallback(() => {
+    clearFallbackTimeout();
+    fallbackTimeoutRef.current = setTimeout(() => {
+      setIsLoading(false);
+    }, IMAGE_LOAD_FALLBACK_MS);
+  }, [clearFallbackTimeout]);
+
+  useEffect(() => {
+    setHasFailed(false);
+    setIsLoading(Boolean(uri));
+
+    if (uri) {
+      startFallbackTimeout();
+    }
+
+    return clearFallbackTimeout;
+  }, [clearFallbackTimeout, startFallbackTimeout, uri]);
+
+  const handleLoadStart = () => {
+    setHasFailed(false);
+    setIsLoading(true);
+    startFallbackTimeout();
+  };
+
+  const handleLoadSettled = () => {
+    clearFallbackTimeout();
+    setIsLoading(false);
+  };
+
+  const handleError = () => {
+    setHasFailed(true);
+    handleLoadSettled();
+  };
+
+  return {
+    hasFailed,
+    isLoading,
+    handleError,
+    handleLoadSettled,
+    handleLoadStart,
+  };
+};
 
 const MarkerGalleryImageCard: React.FC<{
   photo: string;
   onPress: () => void;
 }> = ({ photo, onPress }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const { hasFailed, isLoading, handleError, handleLoadSettled, handleLoadStart } =
+    useRemoteImageLoadingState(photo);
 
   return (
     <Pressable
@@ -31,13 +88,24 @@ const MarkerGalleryImageCard: React.FC<{
       className="mr-3 h-56 w-72 overflow-hidden rounded-[28px] bg-slate-200"
     >
       <Image
+        key={photo}
+        testID="marker-gallery-image"
         source={{ uri: photo }}
         resizeMode="cover"
         className="h-full w-full"
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
+        onLoadStart={handleLoadStart}
+        onLoad={handleLoadSettled}
+        onError={handleError}
+        onLoadEnd={handleLoadSettled}
       />
       {isLoading ? <ImageLoadingPlaceholder fill /> : null}
+      {hasFailed ? (
+        <View className="absolute inset-0 items-center justify-center bg-slate-200 px-4">
+          <Text className="text-center font-pmedium text-xs leading-5 text-slate-600">
+            Image unavailable
+          </Text>
+        </View>
+      ) : null}
     </Pressable>
   );
 };
@@ -45,17 +113,14 @@ const MarkerGalleryImageCard: React.FC<{
 const MarkerPreviewHero: React.FC<{
   photo?: string;
 }> = ({ photo }) => {
-  const [isLoading, setIsLoading] = useState(Boolean(photo));
+  const { hasFailed, isLoading, handleError, handleLoadSettled, handleLoadStart } =
+    useRemoteImageLoadingState(photo);
 
-  useEffect(() => {
-    setIsLoading(Boolean(photo));
-  }, [photo]);
-
-  if (!photo) {
+  if (!photo || hasFailed) {
     return (
       <View className="flex-1 items-center justify-center bg-[#E8ECEF] px-3">
         <Text className="text-center font-pmedium text-xs leading-5 text-slate-600">
-          No images yet
+          {hasFailed ? "Image unavailable" : "No images yet"}
         </Text>
       </View>
     );
@@ -64,11 +129,15 @@ const MarkerPreviewHero: React.FC<{
   return (
     <View className="relative h-full w-full">
       <Image
+        key={photo}
+        testID="marker-preview-hero-image"
         source={{ uri: photo }}
         resizeMode="cover"
         className="h-full w-full"
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
+        onLoadStart={handleLoadStart}
+        onLoad={handleLoadSettled}
+        onError={handleError}
+        onLoadEnd={handleLoadSettled}
       />
       {isLoading ? <ImageLoadingPlaceholder fill /> : null}
     </View>
@@ -293,20 +362,11 @@ const InfoWindow: React.FC<InfoWindowProps> = ({
                 This marker has no images yet
               </Text>
               <Text className="mt-2 font-pregular text-sm leading-6 text-slate-600">
-                You can still use the description below to decide whether this sitting
+                You can still use the description above to decide whether this sitting
                 place is worth checking out.
               </Text>
             </View>
           )}
-
-          <View className="mt-6 rounded-[28px] bg-white px-5 py-5">
-            <Text className="font-psemibold text-base text-slate-950">
-              About this place
-            </Text>
-            <Text className="mt-3 font-pregular text-sm leading-7 text-slate-700">
-              {selectedMarker?.description ?? ""}
-            </Text>
-          </View>
 
           <MarkerRatingCard
             averageRating={markerRating.averageRating}

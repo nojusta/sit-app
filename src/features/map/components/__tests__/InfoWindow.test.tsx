@@ -1,5 +1,6 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react-native";
+import { Image } from "react-native";
 
 import type { MarkerData } from "../../core";
 import InfoWindow from "../InfoWindow";
@@ -193,6 +194,26 @@ describe("InfoWindow", () => {
     const { getByText } = render(<InfoWindow selectedMarker={marker} />);
 
     expect(getByText("Marker tags: quiet, waterfront")).toBeTruthy();
+  });
+
+  it("does not duplicate the marker description in an about section", () => {
+    const { queryByText } = render(<InfoWindow selectedMarker={marker} />);
+
+    expect(queryByText("About this place")).toBeNull();
+  });
+
+  it("clears image placeholders when marker photos load", () => {
+    const { UNSAFE_getAllByType, queryAllByTestId } = render(
+      <InfoWindow selectedMarker={marker} />,
+    );
+
+    expect(queryAllByTestId("image-loading-placeholder").length).toBeGreaterThan(0);
+
+    UNSAFE_getAllByType(Image).forEach((image) => {
+      fireEvent(image, "load");
+    });
+
+    expect(queryAllByTestId("image-loading-placeholder")).toHaveLength(0);
   });
 
   it("disables the favorite action while favorite status is loading", () => {
