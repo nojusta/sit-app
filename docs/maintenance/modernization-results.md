@@ -35,11 +35,21 @@ Private admin credentials are no longer exposed in Expo `extra`; the bundled adm
 
 ## Remaining npm warnings and advisories
 
-Audit improved from 94 affected entries (2 critical, 66 high) to 76 (0 critical, 55 high, 20 moderate, 1 low). Counts include vulnerable parent dependency chains, not 76 independent flaws. Current leaf advisories include `braces`, `node-forge`, `postcss-selector-parser`, `decode-uri-component`, `sprintf-js`, `uuid` and `@tootallnate/once`.
+The initial migration reduced audit entries from 94 (2 critical, 66 high) to 76. A follow-up on 2026-10-14 reduced this to **66 affected entries: 0 critical, 55 high, 11 moderate, 0 low**. These are dependency-chain counts arising from five underlying advisories, not 66 independent flaws. Warning and vulnerability cleanup remains incomplete.
 
-Several are inherited from Expo CLI/config plugins, Router, Jest 29/jsdom, the optional ngrok tool and NativeWind/Tailwind. `braces`, `node-forge` and `sprintf-js` currently have no patched version in the reported advisory range. Others require parent upgrades or incompatible transitive majors; forcing them would exceed this migration's regression scope. Compatible fixes for XML parsing, tar extraction, shell quoting and other transitive packages are already applied. Keep development servers on trusted networks. Do not use `npm audit fix --force` to silence the report.
+The follow-up updates `@tootallnate/once` from 2.0.0 to its compatible patched 2.0.1 release and pins UUID 11.1.1 through an override. This removes the two UUID deprecation warnings. The two consumers, `xcode` and `@expo/ngrok`, only use `uuid.v4()`, which UUID 11 still exposes through CommonJS. Validation covered both consumers' UUID APIs, ngrok module loading, and parsing/identifier generation/serialization of the existing Xcode project. The complete lint/type/test gate passed: 36 suites, 150 tests, one snapshot. Both tracked patches still apply and the dependency graph is valid. No native/app source was changed or rebuilt for this follow-up.
 
-Upstream deprecation warnings for Jest/jsdom dependencies, legacy glob, ngrok/config-plugin UUID versions and the Expo-compatible ESLint 9 line remain. Engine, peer and invalid dependency warnings were addressed. A completely warning-free install is not claimed.
+Remaining deprecation warnings:
+
+| Warning                                   | Dependency path / constraint                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `inflight`, `glob@7`                      | Jest 29 and its coverage tooling. A global Glob major override changes APIs used by these tools. |
+| `abab`, `domexception`, `whatwg-encoding` | jsdom 20, required by Expo's Jest 29 environment.                                                |
+| `eslint@9`                                | ESLint 10 is published, but the current React and import plugins do not declare support for it.  |
+
+Remaining underlying advisories are `braces`, `node-forge`, `postcss-selector-parser`, `decode-uri-component` and `sprintf-js`. The [braces advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) and [node-forge advisory](https://github.com/advisories/GHSA-86w9-cpqp-85rv) list no patched release; neither does the reported sprintf-js advisory. The patched URI decoder switches to ESM, incompatible with its current CommonJS caller. The patched selector parser changes iteration behavior across a major version and requires a validated styling dependency upgrade.
+
+These findings are not all app-runtime issues: several concern build/test tools. Router's URI decoder is also affected, so the report must not be dismissed as entirely development-only. Compatible XML, tar and shell-quoting fixes remain applied. Do not use `npm audit fix --force`: the current report even proposes downgrading Expo to 44 for one chain, which would undo the SDK migration. Further cleanup needs compatible parent releases or deliberate test/styling/tooling migrations; a warning-free or vulnerability-free install is not claimed.
 
 ## Physical iPhone handoff
 
