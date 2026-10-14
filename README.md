@@ -79,14 +79,11 @@ npm run check
 
 ## AI Context
 
-These files are intentionally checked in so AI coding tools start with the same architectural context:
+[AGENTS.md](./AGENTS.md) contains the shared project instructions. Codex reads it directly; Claude Code v2.1.277+ supports it when no project `CLAUDE.md` or `CLAUDE.local.md` takes precedence. See [Claude's instruction discovery rules](https://code.claude.com/docs/en/memory#agentsmd). The [Copilot instructions](./.github/copilot-instructions.md) remain available for GitHub Copilot.
 
-- Codex: [AGENTS.md](./AGENTS.md)
-- GitHub Copilot: [.copilot-instructions.md](./.github/copilot-instructions.md)
-- Gemini: [GEMINI.md](./GEMINI.md)
-- Claude: [CLAUDE.md](./CLAUDE.md)
+The repo-local [sit-native-workflow skill](.agents/skills/sit-native-workflow/SKILL.md) covers Expo prebuild, Google wrapper patches and simulator/device diagnostics. Codex discovers it automatically; invoke it explicitly with `$sit-native-workflow`. Other agents can read the linked workflow when relevant.
 
-Keep them aligned whenever the stack, feature boundaries, or workflow expectations change.
+Existing Git hooks run `lint-staged` before commits and `npm run check` before pushes. No agent-specific executable hooks are required.
 
 ## Project Shape
 
