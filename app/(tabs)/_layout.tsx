@@ -1,7 +1,14 @@
 import React, { useRef, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
-import { Image, Text, View, ImageSourcePropType, Animated } from "react-native";
+import {
+  Image,
+  Text,
+  View,
+  ImageSourcePropType,
+  Animated,
+  ColorValue,
+} from "react-native";
 
 import { useAuthContext } from "@/features/auth";
 import { MarkerProvider, useMarkerContext } from "@/features/map";
@@ -10,7 +17,7 @@ import { Loader } from "@/shared/components";
 
 interface TabIconProps {
   icon: ImageSourcePropType;
-  color: string;
+  color: ColorValue;
   name: string;
   focused: boolean;
 }
@@ -122,7 +129,7 @@ const TabLayout: React.FC = () => {
       </Tabs>
 
       <Loader isLoading={loading} />
-      <StatusBar backgroundColor="#2D2D2D" style="light" />
+      <StatusBar style="light" />
     </>
   );
 };

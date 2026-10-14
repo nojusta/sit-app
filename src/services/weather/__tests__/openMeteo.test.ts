@@ -6,14 +6,14 @@ import {
 } from "@/services/weather";
 
 describe("Open-Meteo weather service", () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
-    global.fetch = jest.fn();
+    globalThis.fetch = jest.fn();
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     jest.clearAllMocks();
   });
 
@@ -132,7 +132,7 @@ describe("Open-Meteo weather service", () => {
   });
 
   it("uses one best-match request instead of serial model retries", async () => {
-    const mockedFetch = jest.mocked(global.fetch);
+    const mockedFetch = jest.mocked(globalThis.fetch);
 
     mockedFetch.mockResolvedValueOnce({
       ok: true,
@@ -170,7 +170,7 @@ describe("Open-Meteo weather service", () => {
   });
 
   it("throws a provider error when the best-match request fails", async () => {
-    const mockedFetch = jest.mocked(global.fetch);
+    const mockedFetch = jest.mocked(globalThis.fetch);
 
     mockedFetch.mockResolvedValueOnce({
       ok: false,

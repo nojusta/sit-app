@@ -40,7 +40,7 @@ const MarkerReviewsScreen: React.FC<MarkerReviewsScreenProps> = ({
   if (!markerId) {
     return (
       <SafeAreaView className="flex-1 bg-[#F6F5F1] px-5 py-6">
-        <StatusBar backgroundColor="#F6F5F1" style="dark" />
+        <StatusBar style="dark" />
         <Pressable
           onPress={() => router.back()}
           className="self-start rounded-full bg-slate-200 px-4 py-2.5"
@@ -61,7 +61,7 @@ const MarkerReviewsScreen: React.FC<MarkerReviewsScreenProps> = ({
 
   return (
     <SafeAreaView className="flex-1 bg-[#F6F5F1]">
-      <StatusBar backgroundColor="#F6F5F1" style="dark" />
+      <StatusBar style="dark" />
       <View className="px-5 pb-4 pt-3">
         <Pressable
           onPress={() => router.back()}

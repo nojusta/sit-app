@@ -292,7 +292,7 @@ describe("useMapInteractions", () => {
     const onMarkerSelectionChange = jest.fn();
 
     const { result, rerender } = renderHook(
-      ({ markers }) =>
+      ({ markers }: { markers: MarkerData[] }) =>
         useMapInteractions({
           mapControllerRef: mapController.mapControllerRef,
           location: null,

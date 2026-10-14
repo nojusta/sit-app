@@ -94,15 +94,3 @@ export async function signOut() {
     throw error instanceof Error ? error : new Error("Failed to sign out");
   }
 }
-
-export async function adminLogin(email: string, password: string) {
-  ensureReady();
-  const currentAccount = await getAccount();
-
-  if (currentAccount) {
-    await signOut();
-  }
-
-  await getAccountClient().createEmailPasswordSession(email, password);
-  return getCurrentUser();
-}

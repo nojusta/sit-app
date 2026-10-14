@@ -1,6 +1,5 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React from "react";
 
 import { icons } from "@/shared/constants";
 import InlineVideoPlayer from "./InlineVideoPlayer";

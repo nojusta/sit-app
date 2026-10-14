@@ -1,4 +1,4 @@
-# SIT App Codex Context
+# SIT App Agent Context
 
 ## Project shape
 
@@ -120,6 +120,8 @@ When adding new functionality:
 - `CircleButton` and `InfoWindow` stay in the map feature until there is real cross-feature reuse.
 
 ## Native workflow
+
+For native build/config changes, wrapper patches or device diagnostics, use the repo-local [sit-native-workflow skill](.agents/skills/sit-native-workflow/SKILL.md). Ordinary JS/TS changes do not need this workflow.
 
 - Development builds are the expected runtime for map and navigation work.
 - JS/TS-only changes usually need reloads.

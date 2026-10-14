@@ -1,0 +1,22 @@
+diff --git a/node_modules/@expo/cli/build/src/utils/nodeEnv.js b/node_modules/@expo/cli/build/src/utils/nodeEnv.js
+index 8440a38..c944bb8 100644
+--- a/node_modules/@expo/cli/build/src/utils/nodeEnv.js
++++ b/node_modules/@expo/cli/build/src/utils/nodeEnv.js
+@@ -122,7 +122,7 @@ function loadEnvFiles(projectRoot, options) {
+         event('load', {
+             mode: params.mode,
+             files: envInfo.files.map((file)=>event.path(file)),
+-            env: envOutput
++            env: Object.fromEntries(Object.keys(envOutput).map((key) => [key, "<redacted>"]))
+         });
+     }
+     if (!params.silent) {
+@@ -160,7 +160,7 @@ function reloadEnvFiles(projectRoot) {
+         event('load', {
+             mode: params.mode,
+             files: envInfo.files.map((file)=>event.path(file)),
+-            env: envOutput
++            env: Object.fromEntries(Object.keys(envOutput).map((key) => [key, "<redacted>"]))
+         });
+     }
+ }

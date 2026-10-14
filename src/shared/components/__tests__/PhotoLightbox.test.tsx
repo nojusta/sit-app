@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react-native";
+import { act, fireEvent, render } from "@testing-library/react-native";
 
 import PhotoLightbox from "../PhotoLightbox";
 
@@ -43,6 +43,11 @@ jest.mock("react-native-gesture-handler", () => {
 });
 
 describe("PhotoLightbox", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    act(() => jest.runOnlyPendingTimers());
+    jest.useRealTimers();
+  });
   it("renders visible photo viewer content without crashing", () => {
     const { getByText } = render(
       <PhotoLightbox

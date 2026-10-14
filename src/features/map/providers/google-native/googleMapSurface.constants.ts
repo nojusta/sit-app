@@ -25,7 +25,8 @@ export const STOP_BUTTON_BOTTOM_OFFSET = Platform.select({
   default: 117,
 });
 export const CUSTOM_MARKER_ASSET_MODULE = require("../../../../../assets/images/custom-marker.png");
-const resolvedCustomMarkerAsset = Image.resolveAssetSource(CUSTOM_MARKER_ASSET_MODULE);
+const resolvedCustomMarkerAsset =
+  Platform.OS === "web" ? null : Image.resolveAssetSource(CUSTOM_MARKER_ASSET_MODULE);
 // Native size knobs live in the Google SDK patch file:
 // iOS -> ObjectTranslationUtil.mm:kMarkerBaseWidth / kDraggableMarkerBaseWidth / kClusterMarkerBaseWidth
 // Android -> MapViewController.java:CUSTOM_MARKER_BASE_SCALE / CLUSTER_MARKER_SCALE

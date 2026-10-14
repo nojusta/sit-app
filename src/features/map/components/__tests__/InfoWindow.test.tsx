@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react-native";
+import { act, fireEvent, render } from "@testing-library/react-native";
 import { Image } from "react-native";
 
 import type { MarkerData } from "../../core";
@@ -122,6 +122,11 @@ const marker: MarkerData = {
 };
 
 describe("InfoWindow", () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => {
+    act(() => jest.runOnlyPendingTimers());
+    jest.useRealTimers();
+  });
   it("expands and collapses the header description", () => {
     const { getByLabelText, getAllByText, queryByText } = render(
       <InfoWindow selectedMarker={marker} />,

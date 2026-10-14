@@ -1,5 +1,5 @@
 import React from "react";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router";
 import { Linking } from "react-native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
@@ -19,13 +19,10 @@ const applyFilters = jest.fn();
 const clearFilters = jest.fn();
 
 jest.mock("expo-router", () => ({
+  useIsFocused: jest.fn(),
   useRouter: () => ({
     push: mockRouterPush,
   }),
-}));
-
-jest.mock("@react-navigation/native", () => ({
-  useIsFocused: jest.fn(),
 }));
 
 jest.mock("expo-image-picker", () => ({
