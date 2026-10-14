@@ -1,12 +1,5 @@
 export { appwriteConfig } from "./client";
-export {
-  adminLogin,
-  createUser,
-  getAccount,
-  getCurrentUser,
-  signIn,
-  signOut,
-} from "./auth";
+export { createUser, getAccount, getCurrentUser, signIn, signOut } from "./auth";
 export {
   assertCanCreateMarker,
   assertCanSubmitByDailyUploadLimit,

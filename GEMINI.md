@@ -2,8 +2,8 @@
 
 ## Current stack
 
-- Expo SDK 54
-- React Native 0.81 / React 19
+- Expo SDK 57
+- React Native 0.86.3 / React 19.2.3
 - Expo Router
 - TypeScript
 - NativeWind

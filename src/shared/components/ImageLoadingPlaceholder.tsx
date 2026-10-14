@@ -14,7 +14,7 @@ const ImageLoadingPlaceholder: React.FC<ImageLoadingPlaceholderProps> = ({
 }) => (
   <View
     className={className}
-    style={[styles.container, fill ? StyleSheet.absoluteFillObject : null, style]}
+    style={[styles.container, fill ? StyleSheet.absoluteFill : null, style]}
     accessibilityRole="progressbar"
   >
     <ActivityIndicator color="#64748B" size="small" />

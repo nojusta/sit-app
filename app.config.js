@@ -56,7 +56,7 @@ export default {
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/favicon.png",
+      favicon: "./assets/images/logo-small.png",
     },
     plugins: [
       "expo-router",
@@ -75,10 +75,16 @@ export default {
         "expo-build-properties",
         {
           ios: {
-            deploymentTarget: "16.0",
+            deploymentTarget: "16.4",
+            enableSceneSupport: true,
+          },
+          android: {
+            minSdkVersion: 24,
+            kotlinVersion: "2.2.10",
           },
         },
       ],
+      "./plugins/with-google-navigation",
     ],
     experiments: {
       typedRoutes: true,
@@ -95,8 +101,6 @@ export default {
       APPWRITE_FAVORITES_COLLECTION_ID: process.env.APPWRITE_FAVORITES_COLLECTION_ID,
       APPWRITE_MODERATION_WARNINGS_ID: process.env.APPWRITE_MODERATION_WARNINGS_ID,
       APPWRITE_STORAGE_ID: process.env.APPWRITE_STORAGE_ID,
-      ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-      ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
       WEATHER_TEST_SCENARIO: process.env.WEATHER_TEST_SCENARIO,
     },
   },

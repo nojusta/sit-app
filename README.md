@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  <img alt="Expo SDK 54" src="https://img.shields.io/badge/Expo%20SDK-54-111827?style=for-the-badge&logo=expo&logoColor=white" />
-  <img alt="React Native 0.81" src="https://img.shields.io/badge/React%20Native-0.81-0891B2?style=for-the-badge&logo=react&logoColor=white" />
+  <img alt="Expo SDK 57" src="https://img.shields.io/badge/Expo%20SDK-57-111827?style=for-the-badge&logo=expo&logoColor=white" />
+  <img alt="React Native 0.86" src="https://img.shields.io/badge/React%20Native-0.86-0891B2?style=for-the-badge&logo=react&logoColor=white" />
   <img alt="Google Maps" src="https://img.shields.io/badge/Google%20Maps-Native%20Navigation-16A34A?style=for-the-badge&logo=googlemaps&logoColor=white" />
   <img alt="Appwrite" src="https://img.shields.io/badge/Appwrite-Backend-F02E65?style=for-the-badge&logo=appwrite&logoColor=white" />
 </p>
@@ -17,8 +17,8 @@ SIT runs on Expo development builds, uses Appwrite for backend services, and rel
 
 ## Stack
 
-- Expo SDK 54
-- React Native 0.81 / React 19
+- Expo SDK 57
+- React Native 0.86 / React 19
 - Expo Router
 - TypeScript
 - NativeWind
@@ -28,10 +28,12 @@ SIT runs on Expo development builds, uses Appwrite for backend services, and rel
 
 ## Quick Start
 
+Use Node 22.23.3 (`nvm use`) and npm 11.21.0.
+
 1. Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 2. Create your local env:
@@ -45,15 +47,21 @@ cp .env.example .env
 4. Start Metro for a development build:
 
 ```bash
-npx expo start --dev-client
+npm run start -- --dev-client
 ```
 
 5. Install a native dev build:
 
 ```bash
-npx expo run:ios
-npx expo run:android
+npm run ios
+npm run android
 ```
+
+Use the latest Xcode at `/Applications/Xcode.app`. For a connected iPhone, run `npm run ios:device`; otherwise use `npm run ios` for a simulator.
+
+Native configuration is generated from `app.config.js` and `plugins/with-google-navigation.js`. iOS scene support is enabled and the minimum is iOS 16.4. Never keep fixes only inside ignored `ios/` or `android/` folders.
+
+See [modernization validation and remaining checks](docs/maintenance/modernization-results.md).
 
 ## Quality Gate
 

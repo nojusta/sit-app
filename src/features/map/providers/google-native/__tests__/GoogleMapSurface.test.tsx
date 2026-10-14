@@ -1,5 +1,11 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  renderAsync,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
 
 import type { MapInteractionController, MarkerData } from "../../../core";
 import GoogleMapSurface from "../GoogleMapSurface";
@@ -276,7 +282,7 @@ describe("GoogleMapSurface", () => {
     const onMarkerPress = jest.fn();
     const onMapPress = jest.fn();
 
-    render(
+    await renderAsync(
       <GoogleMapSurface
         mapControllerRef={{ current: null }}
         markers={MARKERS}
@@ -340,7 +346,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    const { rerender } = render(
+    const { rerenderAsync } = await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -356,7 +362,7 @@ describe("GoogleMapSurface", () => {
 
     await waitFor(() => expect(mapControllerRef.current).not.toBeNull());
 
-    rerender(
+    await rerenderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -403,7 +409,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    const { rerender } = render(
+    const { rerenderAsync } = await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -419,7 +425,7 @@ describe("GoogleMapSurface", () => {
 
     await waitFor(() => expect(mapControllerRef.current).not.toBeNull());
 
-    rerender(
+    await rerenderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -452,7 +458,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    render(
+    await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -487,7 +493,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    render(
+    await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -518,7 +524,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    const { rerender } = render(
+    const { rerenderAsync } = await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -536,7 +542,7 @@ describe("GoogleMapSurface", () => {
 
     mockInit.mockImplementation(() => new Promise(() => {}));
 
-    rerender(
+    await rerenderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -556,7 +562,7 @@ describe("GoogleMapSurface", () => {
 
     await waitFor(() => expect(onStopNavigation).toHaveBeenCalled());
 
-    rerender(
+    await rerenderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -585,7 +591,7 @@ describe("GoogleMapSurface", () => {
       current: null,
     };
 
-    const { rerender } = render(
+    const { rerenderAsync } = await renderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}
@@ -602,7 +608,7 @@ describe("GoogleMapSurface", () => {
     await waitFor(() => expect(mockSetDestination).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(mockStartGuidance).toHaveBeenCalledTimes(1));
 
-    rerender(
+    await rerenderAsync(
       <GoogleMapSurface
         mapControllerRef={mapControllerRef}
         markers={MARKERS}

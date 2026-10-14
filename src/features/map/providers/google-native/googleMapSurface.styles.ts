@@ -10,13 +10,13 @@ export const googleMapSurfaceStyles = StyleSheet.create({
     flex: 1,
   },
   navigationSurfaceOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   navigationSurfaceHidden: {
     opacity: 0,
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(17, 24, 39, 0.08)",

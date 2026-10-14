@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import * as Animatable from "react-native-animatable";
 import {
   FlatList,
@@ -10,7 +10,6 @@ import {
   TextStyle,
   ImageStyle,
 } from "react-native";
-import React from "react";
 
 import { icons } from "@/shared/constants";
 import InlineVideoPlayer from "./InlineVideoPlayer";

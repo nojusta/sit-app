@@ -1,7 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { router, usePathname, type Href } from "expo-router";
 import { View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import React from "react";
 
 import { icons } from "@/shared/constants";
 

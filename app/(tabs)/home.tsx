@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "expo-router";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useRouter } from "expo-router";
 import {
   AppState,
   BackHandler,
