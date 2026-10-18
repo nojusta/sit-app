@@ -16,6 +16,8 @@ module.exports = defineConfig([
       "build/**",
       ".turbo/**",
       "coverage/**",
+      "reports/**",
+      ".stryker-tmp/**",
       "*.config.js",
     ],
   },

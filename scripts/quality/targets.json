@@ -1,0 +1,50 @@
+[
+  {
+    "owner": "Nojus",
+    "issue": "SIT-42",
+    "file": "src/features/map/providers/google-native/googleMapSurface.utils.ts",
+    "name": "retryTransientNativeCommand"
+  },
+  {
+    "owner": "Nojus",
+    "issue": "SIT-48",
+    "file": "src/features/map/hooks/useUserLocation.ts",
+    "name": "syncLocationPermissionAndPosition"
+  },
+  {
+    "owner": "Ugnius",
+    "issue": "SIT-40",
+    "file": "src/services/weather/openMeteo.ts",
+    "name": "fetchOpenMeteoWeatherSnapshot"
+  },
+  {
+    "owner": "Ugnius",
+    "issue": "SIT-97",
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "name": "getWeatherChangeMessage"
+  },
+  {
+    "owner": "Matas",
+    "issue": "SIT-27",
+    "file": "src/services/appwrite/ratings.ts",
+    "name": "submitMarkerRating"
+  },
+  {
+    "owner": "Matas",
+    "issue": "SIT-93",
+    "file": "src/services/appwrite/ratings.ts",
+    "name": "listMarkerRatingsPage"
+  },
+  {
+    "owner": "Marius",
+    "issue": "SIT-104",
+    "file": "src/services/appwrite/markers.ts",
+    "name": "createMarker"
+  },
+  {
+    "owner": "Marius",
+    "issue": "SIT-110",
+    "file": "src/services/appwrite/markers.ts",
+    "name": "updateMarker"
+  }
+]

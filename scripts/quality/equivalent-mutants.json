@@ -1,0 +1,154 @@
+[
+  {
+    "file": "src/features/map/hooks/useUserLocation.ts",
+    "id": "0",
+    "sourceSha256": "77f624506f3f1f4746fefa947fa9c235b536557ff561f3ef6b7fd6d535560e1d",
+    "location": {
+      "end": {
+        "column": 50,
+        "line": 12
+      },
+      "start": {
+        "column": 22,
+        "line": 12
+      }
+    },
+    "replacement": "{}",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "Default options { requestPermission: false } -> {}: requestPermission is only read as a truthy condition/ternary. Both false and undefined choose getForegroundPermissionsAsync, skip loading and preserve state on permission-read errors. options is neither returned nor mutated. This holds for the declared default-call contract."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "78",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 29,
+        "line": 29
+      },
+      "start": {
+        "column": 5,
+        "line": 29
+      }
+    },
+    "replacement": "true",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "rainProbability is number|null. Removing the !== null guard is equivalent: null > 50 is false in JS. The second comparison preserves the final boolean for every value in the declared input domain."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "86",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 30,
+        "line": 31
+      },
+      "start": {
+        "column": 5,
+        "line": 31
+      }
+    },
+    "replacement": "true",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "temperatureDelta is a nonnegative number (or NaN/Infinity from numeric input) or null. Removing the null guard preserves the boolean because null > 5 is false. The remaining comparison determines hasTemperatureChange."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "91",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 68,
+        "line": 33
+      },
+      "start": {
+        "column": 5,
+        "line": 33
+      }
+    },
+    "replacement": "true",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "The temperatureChangeLabel can affect output only when hasTemperatureChange is true. That requires non-null current and next temperatures. If either is null, temperatureDelta is null, no temperature message is rendered and the label is unused. Calling the pure comparison helper instead does not throw or change state."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "93",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 68,
+        "line": 33
+      },
+      "start": {
+        "column": 5,
+        "line": 33
+      }
+    },
+    "replacement": "current.temperatureC !== null || nextHour.temperatureC !== null",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "Replacing both non-null checks with OR changes label calculation only when one temperature is null. temperatureDelta is then null and no returned message consumes the temperature label. The helper is pure and comparison with null does not throw."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "94",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 34,
+        "line": 33
+      },
+      "start": {
+        "column": 5,
+        "line": 33
+      }
+    },
+    "replacement": "true",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "Removing the current-temperature non-null guard can only affect an unused label when current temperature is null; temperatureDelta is then null and temperature change is false. When the label is rendered, both operands are non-null."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "96",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 68,
+        "line": 33
+      },
+      "start": {
+        "column": 38,
+        "line": 33
+      }
+    },
+    "replacement": "true",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "Removing the next-temperature non-null guard can only affect an unused label when next temperature is null; temperatureDelta is then null and temperature change is false. When the label is rendered, both operands are non-null."
+  },
+  {
+    "file": "src/features/weather/utils/weatherChanges.ts",
+    "id": "98",
+    "sourceSha256": "a39a052395e1c485f33c8900dc30b1c2616f97a26ed39351bcce86a7fe3021c1",
+    "location": {
+      "end": {
+        "column": 18,
+        "line": 35
+      },
+      "start": {
+        "column": 9,
+        "line": 35
+      }
+    },
+    "replacement": "\"\"",
+    "classification": "Equivalent",
+    "domain": "Declared TypeScript input types with ordinary data objects, without effectful getters/proxies.",
+    "reason": "The fallback string changes -> empty is never returned: it is selected only when at least one temperature is null, which forces temperatureDelta=null and hasTemperatureChange=false. Rain-only output does not consume that string."
+  }
+]

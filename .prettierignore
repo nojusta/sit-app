@@ -5,3 +5,5 @@ build
 .turbo
 coverage
 package-lock.json
+reports
+.stryker-tmp

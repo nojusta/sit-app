@@ -47,3 +47,8 @@ tsconfig.json
 tsconfig.json
 tsconfig.json
 tsconfig.json
+
+# Quality tool work directories
+.stryker-tmp/
+coverage/
+reports/

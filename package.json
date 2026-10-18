@@ -26,7 +26,13 @@
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "check": "npm run lint && npm run type-check && npm run test:ci",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "quality:metrics": "node scripts/quality/metrics.cjs",
+    "quality:lint": "eslint --config eslint.quality.config.js app src --format json --output-file reports/2ld/code-smells.json",
+    "quality:coverage": "jest --config jest.2ld.config.js --runInBand --watch=false --coverage && node scripts/quality/coverage.cjs",
+    "quality:mutation": "stryker run .stryker-mutator.conf.json && node scripts/quality/mutation.cjs",
+    "quality:mutation:report": "node scripts/quality/mutation.cjs",
+    "quality:2ld": "npm run quality:metrics && npm run quality:lint && npm run quality:coverage && npm run quality:mutation"
   },
   "lint-staged": {
     "{app,src,scripts}/**/*.{js,jsx,ts,tsx}": [
@@ -54,7 +60,11 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/android/",
-      "/ios/"
+      "/ios/",
+      "<rootDir>/.stryker-tmp/"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/.stryker-tmp/"
     ]
   },
   "dependencies": {
@@ -120,7 +130,11 @@
     "@react-native/jest-preset": "0.86.3",
     "globals": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^8.59.0",
-    "@typescript-eslint/parser": "^8.59.0"
+    "@typescript-eslint/parser": "^8.59.0",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/jest-runner": "^10.0.0",
+    "cloc": "^2.6.0-cloc",
+    "eslint-plugin-sonarjs": "^4.2.2"
   },
   "overrides": {
     "@xmldom/xmldom": "^0.8.15",

@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "jest",
+  "ignorePatterns": [
+    "**",
+    "!src/**/*.{ts,tsx}",
+    "!app/**/*.{ts,tsx}",
+    "!*config.js",
+    "!package.json",
+    "!tsconfig.json",
+    "!jest-setup.js",
+    "!scripts/quality/targets.json",
+    "!assets/**"
+  ],
+  "disableTypeChecks": false,
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.2ld.config.js",
+    "enableFindRelatedTests": false
+  },
+  "mutate": [
+    "src/features/map/providers/google-native/googleMapSurface.utils.ts:83:0-106:0",
+    "src/features/map/hooks/useUserLocation.ts:12:0-51:0",
+    "src/services/weather/openMeteo.ts:246:0-272:0",
+    "src/features/weather/utils/weatherChanges.ts:13:0-59:0",
+    "src/services/appwrite/ratings.ts:203:0-285:0",
+    "src/services/appwrite/ratings.ts:165:0-202:0",
+    "src/services/appwrite/markers.ts:240:0-306:0",
+    "src/services/appwrite/markers.ts:367:0-421:0"
+  ],
+  "coverageAnalysis": "perTest",
+  "concurrency": 2,
+  "timeoutMS": 10000,
+  "timeoutFactor": 2,
+  "reporters": ["clear-text", "progress", "html", "json"],
+  "htmlReporter": {
+    "fileName": "reports/2ld/mutation/index.html"
+  },
+  "jsonReporter": {
+    "fileName": "reports/2ld/mutation/mutation.json"
+  },
+  "tempDirName": ".stryker-tmp"
+}
