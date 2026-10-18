@@ -1,0 +1,10 @@
+{
+  "eslint.enable": true,
+  "eslint.run": "onType",
+  "eslint.quiet": false,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": ["."],
+  "eslint.options": {
+    "overrideConfigFile": "eslint.quality.config.js"
+  }
+}
