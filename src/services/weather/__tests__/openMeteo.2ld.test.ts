@@ -60,4 +60,20 @@ describe("SIT-40 weather transport AAA", () => {
     // Assert
     await expect(promise).rejects.toBe(error);
   });
+
+  it("preserves the HTTP status when the weather provider rejects a request", async () => {
+    // Arrange
+    jest.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: false,
+      status: 503,
+    } as Response);
+    // Act
+    const promise = fetchOpenMeteoWeatherSnapshot(input);
+    // Assert
+    await expect(promise).rejects.toMatchObject({
+      name: "WeatherProviderError",
+      message: "Weather forecast is temporarily unavailable.",
+      status: 503,
+    });
+  });
 });

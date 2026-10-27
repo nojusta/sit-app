@@ -22,18 +22,18 @@ Sugeneruok vykdomus vienetų testus, nekeisdamas produkcinės elgsenos.
    vienam būsenos ar laiko kontraktui patikrinti.
 2. Testuok normalų kelią, kiekvieną sprendimo baigtį, trūkstamus duomenis,
    ribas ties slenksčiu ir iš abiejų jo pusių, async atmetimus bei klaidų
-   propagavimą. Testų orakulą grįsk kontraktu, ne funkcijos kopija.
+   propagavimą. Laukiamą rezultatą nustatyk pagal funkcijos reikalavimus.
 3. Mockink išorinę IO ties paslaugos riba: Appwrite, fetch, Expo Location,
    native SDK. Nemockink tikslinės funkcijos ar logikos, kurią tikrini.
    Hook testams naudok renderHook ir act/waitFor.
 4. Venk Eager Test: viename teste netikrink nesusijusių funkcijų.
-   Venk Lazy Test: nekartok identiškų įėjimų ir identiško orakulo.
+   Venk Lazy Test: nekartok tų pačių įėjimų su tokia pačia rezultato patikra.
    Tą patį įėjimą skirtingiems nepriklausomiems kontraktams tikrinti galima,
    bet pagrįsk, kodėl jų nesujungei.
 5. Venk Assertion Roulette: assertion turi būti susietas su testo pavadinimu;
    naudok vieną toEqual/toMatchObject vienam rezultatui, o papildomus
    assertion tik jei jie būtini tai pačiai elgsenai (pvz., retry riba).
-   Nenaudok vien snapshot, toBeDefined ar pernelyg plataus any kaip orakulo.
+   Rezultato tikrinimui nepakanka vien snapshot, toBeDefined ar plataus any.
 6. Venk Silent Catch: klaidas tikrink await expect(...).rejects;
    negaudyk ir nenutylėk klaidų. Visus promise awaitink.
 7. Izoliuok mockus; atkurk spy, globalius objektus ir laikmačius.
@@ -46,7 +46,7 @@ Sugeneruok vykdomus vienetų testus, nekeisdamas produkcinės elgsenos.
    Atskirai pateik statement, branch ir decision outcomes; nevadink
    Istanbul binary-expr šakų MC/DC arba nepriklausomų sąlygų padengimu.
 10. Nenumanyk coverage ar mutation score. Pateik testų kodą, atvejų lentelę
-    (įėjimas → sprendimas → orakulas), vykdymo komandas ir tikėtinus mutantus,
+    (įėjimas → tikrinama sąlyga → laukiamas rezultatas), vykdymo komandas ir tikėtinus mutantus,
     kuriuos testai turėtų aptikti. Tikrus skaičius pateik tik po vykdymo.
 11. Išgyvenusiam mutantui pasiūlyk kontraktu paremtą testą. Equivalent
     statusą pagrįsk įėjimų srities ir elgsenos analize, ne procentų siekiu.
@@ -64,4 +64,4 @@ npm run quality:coverage
 npm run quality:mutation
 ```
 
-Šiame pakeitime `.2ld.test.*` testai parengti šio agento sesijoje ir pataisyti po tikro vykdymo. Šablonas skirtas pakartotiniams komandos eksperimentams; jis nėra teiginys, kad anksčiau esantys testai buvo generuoti tuo pačiu šablonu.
+2LD testai sugeneruoti naudojant OpenAI Codex ir `gpt-6.1-sol` modelį, tada patikrinti vykdant testavimo įrankius. Šabloną galima naudoti papildomiems šio projekto testams generuoti.

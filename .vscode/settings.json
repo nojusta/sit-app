@@ -6,5 +6,9 @@
   "eslint.workingDirectories": ["."],
   "eslint.options": {
     "overrideConfigFile": "eslint.quality.config.js"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "sit",
+    "projectKey": "nojusta_sit-app"
   }
 }

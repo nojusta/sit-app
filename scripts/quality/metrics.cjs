@@ -29,6 +29,7 @@ const round = (n) => Math.round(n * 100) / 100;
     (f) =>
       /\.(?:[cm]?js|jsx|tsx?|json|css|scss|html|sh|py|ya?ml)$/.test(f) &&
       !/^(?:reports|node_modules|ios|android|\.expo)\//.test(f) &&
+      !/^docs\/2ld\/confluence\//.test(f) &&
       !/(?:package-lock\.json|expo-env\.d\.ts)$/.test(f) &&
       fs.existsSync(f),
   );
