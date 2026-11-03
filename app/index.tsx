@@ -1,4 +1,5 @@
 import React from "react";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
@@ -9,6 +10,9 @@ import { CustomButton, Loader } from "@/shared/components";
 
 const MainApp = () => {
   const { isLogged, loading } = useAuthContext();
+
+  if (Constants.expoConfig?.extra?.SIT_3LD_ENABLED)
+    return <Redirect href="/quality-3ld" />;
 
   if (!loading && isLogged) return <Redirect href="/home" />;
 

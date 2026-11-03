@@ -1,0 +1,3600 @@
+[
+  {
+    "kind": "location",
+    "platform": "android",
+    "metric": "N1",
+    "scenario": "immediate",
+    "delayMs": 0,
+    "repeats": 20,
+    "id": "ld3_5562a91a650e50ede1c0",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 0.2260000000242144,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.24262499995529652,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.5882920000003651,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.22787499998230487,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.2640840000240132,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.1517089999979362,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.20799999998416752,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.17383300000801682,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.2177909999154508,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.2137089999159798,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.2088329999241978,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.18654100003186613,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.1641659999731928,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.33579200005624443,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.35770799999590963,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.18562500004190952,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.17450000008102506,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.17495799995958805,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.17441700003109872,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 0.212792000034824,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        }
+      ],
+      "source": "controlled LocationSource; actual production hook"
+    },
+    "measuredAt": "2026-11-02T20:09:07.671Z"
+  },
+  {
+    "kind": "location",
+    "platform": "android",
+    "metric": "N1",
+    "scenario": "delayed",
+    "delayMs": 2000,
+    "repeats": 20,
+    "id": "ld3_c5769df6398305234ec8",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 2012.3429590000305,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2016.9327930000145,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2022.118083999958,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2015.8323340000352,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2014.6380430000136,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2019.211459999904,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2016.1892509999452,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2018.978667999967,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2014.3917930000462,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2016.497376000043,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2020.2895419999259,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2016.9306670000078,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2017.451126000029,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2019.3757100000512,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2016.0830009999918,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2018.5421680000145,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2019.0206260000123,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2017.5485010000411,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2020.5039600000018,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        },
+        {
+          "durationMs": 2017.4716679999838,
+          "permission": "granted",
+          "hasPosition": true,
+          "passed": true
+        }
+      ],
+      "source": "controlled LocationSource; actual production hook"
+    },
+    "measuredAt": "2026-11-02T20:09:49.616Z"
+  },
+  {
+    "kind": "retry",
+    "platform": "android",
+    "metric": "N2",
+    "scenario": "transient",
+    "repeats": 20,
+    "id": "ld3_963c1d66147edb6c73f7",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 272.219875000068,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.0810000000056,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.2415419999743,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.3737919999985,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.4680010000011,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.34708300000057,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.8907080000499,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.5577920000069,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.14837499998976,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.87108399998397,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.25037500006147,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.6149170000572,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.89775100001134,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.6963339999784,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.02224999992177,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.9487080000108,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.7001249999739,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.0942919999361,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.6621670000022,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.314458000008,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        }
+      ],
+      "source": "production retry function; controlled native command errors"
+    },
+    "measuredAt": "2026-11-02T20:09:55.312Z"
+  },
+  {
+    "kind": "retry",
+    "platform": "android",
+    "metric": "N2",
+    "scenario": "permanent",
+    "repeats": 20,
+    "id": "ld3_781df5453b39e05bf8ad",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 803.4247500000056,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.8362080000807,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.463958999957,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 798.527751000016,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.827459000051,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.8128329999745,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.1079170000739,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.307625999907,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.1659170000348,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.0232090000063,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.8835010000039,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.4969999999739,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.6429589999607,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.1733340000501,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.2939590000315,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.0903339999495,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 798.9637919999659,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.6877089999616,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.8767499999376,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.2543750000186,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        }
+      ],
+      "source": "production retry function; controlled native command errors"
+    },
+    "measuredAt": "2026-11-02T20:10:12.505Z"
+  },
+  {
+    "kind": "location",
+    "platform": "android",
+    "metric": "N3",
+    "scenario": "denied",
+    "repeats": 10,
+    "id": "ld3_52a5d0d1ff55b9ffa143",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 1.0233329999027774,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.3307920000515878,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.14879199990537018,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.2501250000204891,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.18358300009276718,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.18524999998044223,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.18220899999141693,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.3244999999878928,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.14537500008009374,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 0.1769170000916347,
+          "permission": "denied",
+          "hasPosition": false,
+          "passed": true
+        }
+      ],
+      "source": "controlled LocationSource; actual production hook"
+    },
+    "measuredAt": "2026-11-02T20:10:14.280Z"
+  },
+  {
+    "kind": "location",
+    "platform": "android",
+    "metric": "N3",
+    "scenario": "gps-error",
+    "repeats": 10,
+    "id": "ld3_d45860cafc8a2f9d6892",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 69.99412499996834,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 3.131874999962747,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.3769580000080168,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 7.271999999997206,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.643125000060536,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.3516659999731928,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.6807499999413267,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 2.3353750000242144,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.631082999985665,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        },
+        {
+          "durationMs": 1.7292080000042915,
+          "permission": "granted",
+          "hasPosition": false,
+          "passed": true
+        }
+      ],
+      "source": "controlled LocationSource; actual production hook"
+    },
+    "measuredAt": "2026-11-02T20:10:16.029Z"
+  },
+  {
+    "kind": "retry",
+    "platform": "android",
+    "metric": "N4",
+    "scenario": "transient",
+    "repeats": 10,
+    "id": "ld3_8175958ccd3880ed4115",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 264.58950000000186,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 259.620375999948,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.9501669999445,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.0167909999145,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.29354199999943,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.6281660000095,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.3416669999715,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 266.591584000038,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 267.4270419999957,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        },
+        {
+          "durationMs": 265.20991700002924,
+          "attempts": 2,
+          "outcome": "success",
+          "passed": true
+        }
+      ],
+      "source": "production retry function; controlled native command errors"
+    },
+    "measuredAt": "2026-11-02T20:10:19.390Z"
+  },
+  {
+    "kind": "retry",
+    "platform": "android",
+    "metric": "N4",
+    "scenario": "permanent",
+    "repeats": 10,
+    "id": "ld3_cbadbbf9d3e326f3ea64",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "durationMs": 787.3382090000669,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.7002499999944,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.34045899997,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.0961670000106,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 802.4994590000715,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 797.6450830000686,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 800.0190420000581,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.4800839999225,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 801.4453330000397,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        },
+        {
+          "durationMs": 799.4607510000933,
+          "attempts": 4,
+          "outcome": "error",
+          "passed": true
+        }
+      ],
+      "source": "production retry function; controlled native command errors"
+    },
+    "measuredAt": "2026-11-02T20:10:28.340Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 1,
+    "trial": 0,
+    "id": "ld3_deacd57d241a494d3c6f",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_deacd57d241a494d3c6f-0",
+          "elapsedMs": 233.78029200003948,
+          "success": true
+        }
+      ],
+      "elapsedMs": 249.11616700002924,
+      "requested": 1
+    },
+    "measuredAt": "2026-11-02T20:10:32.043Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 1,
+    "trial": 1,
+    "id": "ld3_0b2ec4531c2f8c211247",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_0b2ec4531c2f8c211247-0",
+          "elapsedMs": 215.16070899995975,
+          "success": true
+        }
+      ],
+      "elapsedMs": 231.65983400004916,
+      "requested": 1
+    },
+    "measuredAt": "2026-11-02T20:10:37.129Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 1,
+    "trial": 2,
+    "id": "ld3_93f743acae7584a18cd3",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_93f743acae7584a18cd3-0",
+          "elapsedMs": 215.4886669999687,
+          "success": true
+        }
+      ],
+      "elapsedMs": 232.27266700007021,
+      "requested": 1
+    },
+    "measuredAt": "2026-11-02T20:10:42.631Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 20,
+    "trial": 0,
+    "id": "ld3_fa9c99661e4567058e5a",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_fa9c99661e4567058e5a-0",
+          "elapsedMs": 375.57212499994785,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-1",
+          "elapsedMs": 375.58170899993274,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-2",
+          "elapsedMs": 375.5842089999933,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-3",
+          "elapsedMs": 375.5875839999644,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-4",
+          "elapsedMs": 375.5897920000134,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-5",
+          "elapsedMs": 426.22970899997745,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-6",
+          "elapsedMs": 510.60624999995343,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-7",
+          "elapsedMs": 510.61645899992436,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-8",
+          "elapsedMs": 510.6207919999724,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-9",
+          "elapsedMs": 510.624749999959,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-10",
+          "elapsedMs": 541.9149589999579,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-11",
+          "elapsedMs": 607.6436250000261,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-12",
+          "elapsedMs": 624.3070000000298,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-13",
+          "elapsedMs": 624.3145419999491,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-14",
+          "elapsedMs": 624.3167090000352,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-15",
+          "elapsedMs": 658.3354169999948,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-16",
+          "elapsedMs": 783.5792920000385,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-17",
+          "elapsedMs": 783.59045899997,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-18",
+          "elapsedMs": 783.5927089999896,
+          "success": true
+        },
+        {
+          "id": "ld3_fa9c99661e4567058e5a-19",
+          "elapsedMs": 783.5945419999771,
+          "success": true
+        }
+      ],
+      "elapsedMs": 841.075084000011,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:10:49.396Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 20,
+    "trial": 1,
+    "id": "ld3_bd7a24ce21631fded42d",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_bd7a24ce21631fded42d-0",
+          "elapsedMs": 415.08145800000057,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-4",
+          "elapsedMs": 415.095708000008,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-1",
+          "elapsedMs": 433.32554200000595,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-2",
+          "elapsedMs": 433.3352919999743,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-3",
+          "elapsedMs": 433.3382079999428,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-5",
+          "elapsedMs": 489.7559170000022,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-6",
+          "elapsedMs": 489.764542000019,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-7",
+          "elapsedMs": 489.76787500001956,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-8",
+          "elapsedMs": 517.9003329999978,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-9",
+          "elapsedMs": 584.4637080000248,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-10",
+          "elapsedMs": 584.4753329999512,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-11",
+          "elapsedMs": 658.8374589999439,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-12",
+          "elapsedMs": 658.8495419999817,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-13",
+          "elapsedMs": 658.8523340000538,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-14",
+          "elapsedMs": 737.3952089999802,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-15",
+          "elapsedMs": 737.4037089999765,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-16",
+          "elapsedMs": 771.3377920000348,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-17",
+          "elapsedMs": 801.1122919999762,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-18",
+          "elapsedMs": 801.1219170000404,
+          "success": true
+        },
+        {
+          "id": "ld3_bd7a24ce21631fded42d-19",
+          "elapsedMs": 860.2977919999976,
+          "success": true
+        }
+      ],
+      "elapsedMs": 883.5037500000326,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:10:54.467Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U1",
+    "count": 20,
+    "trial": 2,
+    "id": "ld3_904f6a05b967fe945129",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_904f6a05b967fe945129-0",
+          "elapsedMs": 266.83929200004786,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-1",
+          "elapsedMs": 266.8510000000242,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-2",
+          "elapsedMs": 266.85291699995287,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-3",
+          "elapsedMs": 266.8548329999903,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-4",
+          "elapsedMs": 266.8559579999419,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-9",
+          "elapsedMs": 355.04845799994655,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-5",
+          "elapsedMs": 382.55595800001174,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-6",
+          "elapsedMs": 382.56233300000895,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-7",
+          "elapsedMs": 382.56487500004005,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-8",
+          "elapsedMs": 382.5676669999957,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-10",
+          "elapsedMs": 484.19358299998567,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-11",
+          "elapsedMs": 484.19979199999943,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-12",
+          "elapsedMs": 484.20175000000745,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-13",
+          "elapsedMs": 484.20349999994505,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-14",
+          "elapsedMs": 484.2061250000261,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-15",
+          "elapsedMs": 616.1045419999864,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-16",
+          "elapsedMs": 616.1116669999901,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-17",
+          "elapsedMs": 616.1148749999702,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-18",
+          "elapsedMs": 616.1172080000397,
+          "success": true
+        },
+        {
+          "id": "ld3_904f6a05b967fe945129-19",
+          "elapsedMs": 616.1192919999594,
+          "success": true
+        }
+      ],
+      "elapsedMs": 633.5843749999767,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:10:59.625Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 0,
+    "id": "ld3_c58db5250ec914d70730",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:03.876Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 1,
+    "id": "ld3_2230e42168a9c6ea3299",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:05.626Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 2,
+    "id": "ld3_1773fd8f06d25688cc12",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:07.496Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 3,
+    "id": "ld3_37825d3264d678b41483",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:09.230Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 4,
+    "id": "ld3_b1e529d64cdb915d8514",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:10.897Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 5,
+    "id": "ld3_08ef6dab1c55ac73531d",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:12.594Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 6,
+    "id": "ld3_58f0b67743d0a5e36532",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:14.263Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 7,
+    "id": "ld3_cfab7d6b0eecf036aced",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:15.927Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 8,
+    "id": "ld3_a540b8f5d8707b137113",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:17.691Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "fresh",
+    "trial": 9,
+    "id": "ld3_f16a091bbb1ada2ec59e",
+    "status": "done",
+    "result": {
+      "requests": 0,
+      "opens": 10,
+      "ageMinutes": 29
+    },
+    "measuredAt": "2026-11-02T20:11:19.418Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 0,
+    "id": "ld3_db7b2d19ec09d0e74d45",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:21.941Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 1,
+    "id": "ld3_d882bae46e1a094d2478",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:23.748Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 2,
+    "id": "ld3_99ba207ed75347fdef32",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:25.563Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 3,
+    "id": "ld3_171e8875e10757c37aa5",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:27.399Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 4,
+    "id": "ld3_9b92b9bc7c95fbc22e4e",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:29.314Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 5,
+    "id": "ld3_a3150276bfe31f2cd1ed",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:31.216Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 6,
+    "id": "ld3_05d080d18b4d19f2c03e",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:33.002Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 7,
+    "id": "ld3_9a2c04da10bba6f57dd3",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:34.874Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 8,
+    "id": "ld3_58e5742635e0432810b3",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:36.693Z"
+  },
+  {
+    "kind": "cache-network",
+    "platform": "android",
+    "metric": "U2",
+    "scenario": "expired",
+    "trial": 9,
+    "id": "ld3_4e573b7226048491e84d",
+    "status": "done",
+    "result": {
+      "requests": 1,
+      "opens": 10,
+      "ageMinutes": 31
+    },
+    "measuredAt": "2026-11-02T20:11:38.525Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 0,
+    "id": "ld3_e5501b11bc45e5c5efe1",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_e5501b11bc45e5c5efe1-0",
+          "elapsedMs": 263.36966600001324,
+          "success": true
+        },
+        {
+          "id": "ld3_e5501b11bc45e5c5efe1-1",
+          "elapsedMs": 263.378541000071,
+          "success": true
+        },
+        {
+          "id": "ld3_e5501b11bc45e5c5efe1-2",
+          "elapsedMs": 263.3800830000546,
+          "success": true
+        },
+        {
+          "id": "ld3_e5501b11bc45e5c5efe1-3",
+          "elapsedMs": 263.3828330000397,
+          "success": true
+        },
+        {
+          "id": "ld3_e5501b11bc45e5c5efe1-4",
+          "elapsedMs": 263.38495800003875,
+          "success": true
+        }
+      ],
+      "elapsedMs": 280.80737499997485,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:40.161Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 1,
+    "id": "ld3_aabe5d9b8658e3bb22d8",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_aabe5d9b8658e3bb22d8-0",
+          "elapsedMs": 162.32408399996348,
+          "success": true
+        },
+        {
+          "id": "ld3_aabe5d9b8658e3bb22d8-1",
+          "elapsedMs": 162.32983399997465,
+          "success": true
+        },
+        {
+          "id": "ld3_aabe5d9b8658e3bb22d8-2",
+          "elapsedMs": 162.3325419999892,
+          "success": true
+        },
+        {
+          "id": "ld3_aabe5d9b8658e3bb22d8-3",
+          "elapsedMs": 162.33508399990387,
+          "success": true
+        },
+        {
+          "id": "ld3_aabe5d9b8658e3bb22d8-4",
+          "elapsedMs": 162.33708399999887,
+          "success": true
+        }
+      ],
+      "elapsedMs": 179.09879199997522,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:40.774Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 2,
+    "id": "ld3_971e111be627386a2187",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_971e111be627386a2187-0",
+          "elapsedMs": 216.30087499995716,
+          "success": true
+        },
+        {
+          "id": "ld3_971e111be627386a2187-1",
+          "elapsedMs": 216.3125,
+          "success": true
+        },
+        {
+          "id": "ld3_971e111be627386a2187-2",
+          "elapsedMs": 216.3151249999646,
+          "success": true
+        },
+        {
+          "id": "ld3_971e111be627386a2187-3",
+          "elapsedMs": 216.31904199998826,
+          "success": true
+        },
+        {
+          "id": "ld3_971e111be627386a2187-4",
+          "elapsedMs": 216.32233299990185,
+          "success": true
+        }
+      ],
+      "elapsedMs": 233.27787499991246,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:41.429Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 3,
+    "id": "ld3_f91f45222a818c4e737c",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_f91f45222a818c4e737c-0",
+          "elapsedMs": 266.1012079999782,
+          "success": true
+        },
+        {
+          "id": "ld3_f91f45222a818c4e737c-1",
+          "elapsedMs": 266.1143330000341,
+          "success": true
+        },
+        {
+          "id": "ld3_f91f45222a818c4e737c-2",
+          "elapsedMs": 266.1187500000233,
+          "success": true
+        },
+        {
+          "id": "ld3_f91f45222a818c4e737c-3",
+          "elapsedMs": 266.1220410000533,
+          "success": true
+        },
+        {
+          "id": "ld3_f91f45222a818c4e737c-4",
+          "elapsedMs": 266.126958000008,
+          "success": true
+        }
+      ],
+      "elapsedMs": 282.1137909999816,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:42.144Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 4,
+    "id": "ld3_fcb725899ab58bbf4ed8",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_fcb725899ab58bbf4ed8-0",
+          "elapsedMs": 249.1535000000149,
+          "success": true
+        },
+        {
+          "id": "ld3_fcb725899ab58bbf4ed8-1",
+          "elapsedMs": 249.1641669999808,
+          "success": true
+        },
+        {
+          "id": "ld3_fcb725899ab58bbf4ed8-2",
+          "elapsedMs": 249.16720899997745,
+          "success": true
+        },
+        {
+          "id": "ld3_fcb725899ab58bbf4ed8-3",
+          "elapsedMs": 249.17191700008698,
+          "success": true
+        },
+        {
+          "id": "ld3_fcb725899ab58bbf4ed8-4",
+          "elapsedMs": 249.1742090000771,
+          "success": true
+        }
+      ],
+      "elapsedMs": 266.4912920000497,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:42.846Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 5,
+    "id": "ld3_0434c26c9a7dfe4a1736",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_0434c26c9a7dfe4a1736-0",
+          "elapsedMs": 184.9912089999998,
+          "success": true
+        },
+        {
+          "id": "ld3_0434c26c9a7dfe4a1736-1",
+          "elapsedMs": 185.00258400000166,
+          "success": true
+        },
+        {
+          "id": "ld3_0434c26c9a7dfe4a1736-2",
+          "elapsedMs": 185.00500000000466,
+          "success": true
+        },
+        {
+          "id": "ld3_0434c26c9a7dfe4a1736-3",
+          "elapsedMs": 185.00879200000782,
+          "success": true
+        },
+        {
+          "id": "ld3_0434c26c9a7dfe4a1736-4",
+          "elapsedMs": 185.01174999994691,
+          "success": true
+        }
+      ],
+      "elapsedMs": 201.04066699999385,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:43.528Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 6,
+    "id": "ld3_2dc6abdee3c129666ddb",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_2dc6abdee3c129666ddb-0",
+          "elapsedMs": 228.8572910000803,
+          "success": true
+        },
+        {
+          "id": "ld3_2dc6abdee3c129666ddb-1",
+          "elapsedMs": 228.8658750000177,
+          "success": true
+        },
+        {
+          "id": "ld3_2dc6abdee3c129666ddb-2",
+          "elapsedMs": 228.8676250000717,
+          "success": true
+        },
+        {
+          "id": "ld3_2dc6abdee3c129666ddb-3",
+          "elapsedMs": 228.8705830000108,
+          "success": true
+        },
+        {
+          "id": "ld3_2dc6abdee3c129666ddb-4",
+          "elapsedMs": 228.87220800004434,
+          "success": true
+        }
+      ],
+      "elapsedMs": 245.26262500009034,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:44.210Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 7,
+    "id": "ld3_e6eb9d9b6644f3cb88b7",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_e6eb9d9b6644f3cb88b7-0",
+          "elapsedMs": 170.87804199999664,
+          "success": true
+        },
+        {
+          "id": "ld3_e6eb9d9b6644f3cb88b7-1",
+          "elapsedMs": 170.88758400001097,
+          "success": true
+        },
+        {
+          "id": "ld3_e6eb9d9b6644f3cb88b7-3",
+          "elapsedMs": 170.89083400007803,
+          "success": true
+        },
+        {
+          "id": "ld3_e6eb9d9b6644f3cb88b7-4",
+          "elapsedMs": 170.89325000008103,
+          "success": true
+        },
+        {
+          "id": "ld3_e6eb9d9b6644f3cb88b7-2",
+          "elapsedMs": 185.8057090000948,
+          "success": true
+        }
+      ],
+      "elapsedMs": 202.5961670000106,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:44.896Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 8,
+    "id": "ld3_7b1316ed0c2e387a2db1",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_7b1316ed0c2e387a2db1-0",
+          "elapsedMs": 234.2470410000533,
+          "success": true
+        },
+        {
+          "id": "ld3_7b1316ed0c2e387a2db1-1",
+          "elapsedMs": 234.2622080000583,
+          "success": true
+        },
+        {
+          "id": "ld3_7b1316ed0c2e387a2db1-2",
+          "elapsedMs": 234.2657500000205,
+          "success": true
+        },
+        {
+          "id": "ld3_7b1316ed0c2e387a2db1-3",
+          "elapsedMs": 234.27187499997672,
+          "success": true
+        },
+        {
+          "id": "ld3_7b1316ed0c2e387a2db1-4",
+          "elapsedMs": 234.2748750000028,
+          "success": true
+        }
+      ],
+      "elapsedMs": 249.79008299997076,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:45.579Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 5,
+    "trial": 9,
+    "id": "ld3_8405e014c002bfa7f8f6",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_8405e014c002bfa7f8f6-0",
+          "elapsedMs": 250.9278339999728,
+          "success": true
+        },
+        {
+          "id": "ld3_8405e014c002bfa7f8f6-1",
+          "elapsedMs": 250.9403750000056,
+          "success": true
+        },
+        {
+          "id": "ld3_8405e014c002bfa7f8f6-2",
+          "elapsedMs": 250.94329199998174,
+          "success": true
+        },
+        {
+          "id": "ld3_8405e014c002bfa7f8f6-3",
+          "elapsedMs": 250.9470839999849,
+          "success": true
+        },
+        {
+          "id": "ld3_8405e014c002bfa7f8f6-4",
+          "elapsedMs": 250.9503750000149,
+          "success": true
+        }
+      ],
+      "elapsedMs": 266.85216700006276,
+      "requested": 5
+    },
+    "measuredAt": "2026-11-02T20:11:46.278Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 0,
+    "id": "ld3_b6e3c81e1f46ae35b264",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-0",
+          "elapsedMs": 305.6007080000127,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-1",
+          "elapsedMs": 305.60933300002944,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-2",
+          "elapsedMs": 333.5862500000512,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-3",
+          "elapsedMs": 333.59995800000615,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-4",
+          "elapsedMs": 333.6020000000717,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-6",
+          "elapsedMs": 407.03441700001713,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-5",
+          "elapsedMs": 432.8173330000136,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-7",
+          "elapsedMs": 432.82579200004693,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-8",
+          "elapsedMs": 432.8286670000525,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-9",
+          "elapsedMs": 432.8316670000786,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-10",
+          "elapsedMs": 520.1331670000218,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-11",
+          "elapsedMs": 534.6192920000758,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-12",
+          "elapsedMs": 534.6273340000771,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-13",
+          "elapsedMs": 534.6295839999802,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-14",
+          "elapsedMs": 550.0873340000398,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-15",
+          "elapsedMs": 633.5677500000456,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-16",
+          "elapsedMs": 633.5771670000395,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-17",
+          "elapsedMs": 649.780584000051,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-18",
+          "elapsedMs": 666.2693750000326,
+          "success": true
+        },
+        {
+          "id": "ld3_b6e3c81e1f46ae35b264-19",
+          "elapsedMs": 666.2751670000143,
+          "success": true
+        }
+      ],
+      "elapsedMs": 682.3954590000212,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:48.144Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 1,
+    "id": "ld3_d52001fbd5178953dab3",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_d52001fbd5178953dab3-0",
+          "elapsedMs": 265.6015419999603,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-1",
+          "elapsedMs": 265.61558400001377,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-2",
+          "elapsedMs": 265.6182920000283,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-3",
+          "elapsedMs": 265.6222510000225,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-4",
+          "elapsedMs": 265.6257919999771,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-5",
+          "elapsedMs": 382.590876000002,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-6",
+          "elapsedMs": 382.60175100003835,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-7",
+          "elapsedMs": 382.6044590000529,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-8",
+          "elapsedMs": 382.6086260000011,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-9",
+          "elapsedMs": 382.6125839999877,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-10",
+          "elapsedMs": 498.74687599996105,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-11",
+          "elapsedMs": 498.7555009999778,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-12",
+          "elapsedMs": 498.75808399997186,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-13",
+          "elapsedMs": 498.76108399999794,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-14",
+          "elapsedMs": 498.7631259999471,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-15",
+          "elapsedMs": 601.5762510000495,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-16",
+          "elapsedMs": 601.5848339999793,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-17",
+          "elapsedMs": 615.2197510000551,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-18",
+          "elapsedMs": 615.2280839999439,
+          "success": true
+        },
+        {
+          "id": "ld3_d52001fbd5178953dab3-19",
+          "elapsedMs": 615.2292919999454,
+          "success": true
+        }
+      ],
+      "elapsedMs": 631.8687089999439,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:49.228Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 2,
+    "id": "ld3_315283797236e3ab801e",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_315283797236e3ab801e-0",
+          "elapsedMs": 296.63045799999963,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-1",
+          "elapsedMs": 296.64033299998846,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-2",
+          "elapsedMs": 296.64241600001696,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-3",
+          "elapsedMs": 296.64474999997765,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-4",
+          "elapsedMs": 296.64708300004713,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-5",
+          "elapsedMs": 430.17708299995866,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-6",
+          "elapsedMs": 430.18658300000243,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-7",
+          "elapsedMs": 430.189458000008,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-8",
+          "elapsedMs": 430.1927920000162,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-9",
+          "elapsedMs": 430.1956250000512,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-10",
+          "elapsedMs": 563.9169169999659,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-11",
+          "elapsedMs": 563.9258749999572,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-12",
+          "elapsedMs": 563.9295419999398,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-13",
+          "elapsedMs": 563.9321670000209,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-14",
+          "elapsedMs": 563.9346249999944,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-15",
+          "elapsedMs": 680.1483330000192,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-16",
+          "elapsedMs": 680.158832999994,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-17",
+          "elapsedMs": 680.1633750000037,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-18",
+          "elapsedMs": 680.1656669999938,
+          "success": true
+        },
+        {
+          "id": "ld3_315283797236e3ab801e-19",
+          "elapsedMs": 680.169292000006,
+          "success": true
+        }
+      ],
+      "elapsedMs": 698.4451669999398,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:50.362Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 3,
+    "id": "ld3_aacf2634b1e52607880c",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_aacf2634b1e52607880c-0",
+          "elapsedMs": 231.10887500003446,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-1",
+          "elapsedMs": 231.12274999998044,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-2",
+          "elapsedMs": 231.12716699996963,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-3",
+          "elapsedMs": 231.1337080000667,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-4",
+          "elapsedMs": 231.13825000007637,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-5",
+          "elapsedMs": 348.42887499998324,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-6",
+          "elapsedMs": 348.4395830000285,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-7",
+          "elapsedMs": 348.44229200005066,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-8",
+          "elapsedMs": 348.4464170000283,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-9",
+          "elapsedMs": 348.45079200004693,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-10",
+          "elapsedMs": 463.8028330000816,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-11",
+          "elapsedMs": 463.81099999998696,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-12",
+          "elapsedMs": 463.81320800003596,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-13",
+          "elapsedMs": 463.8152920000721,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-14",
+          "elapsedMs": 463.81741700007115,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-15",
+          "elapsedMs": 598.2875420000637,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-16",
+          "elapsedMs": 598.3011669999687,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-17",
+          "elapsedMs": 598.3054580000462,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-18",
+          "elapsedMs": 598.3081670000684,
+          "success": true
+        },
+        {
+          "id": "ld3_aacf2634b1e52607880c-19",
+          "elapsedMs": 598.310792000033,
+          "success": true
+        }
+      ],
+      "elapsedMs": 614.5897090000799,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:51.480Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 4,
+    "id": "ld3_8420d3175593d6eae6c2",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_8420d3175593d6eae6c2-0",
+          "elapsedMs": 216.4880000000121,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-1",
+          "elapsedMs": 216.49404200003482,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-2",
+          "elapsedMs": 216.49629199993797,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-3",
+          "elapsedMs": 216.4989999999525,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-4",
+          "elapsedMs": 216.50104200001806,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-5",
+          "elapsedMs": 333.3445419999771,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-6",
+          "elapsedMs": 333.3477509999648,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-7",
+          "elapsedMs": 333.3487919999752,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-8",
+          "elapsedMs": 333.3503760000458,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-9",
+          "elapsedMs": 333.35195899999235,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-10",
+          "elapsedMs": 468.3282510000281,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-11",
+          "elapsedMs": 468.3368339999579,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-12",
+          "elapsedMs": 468.339583999943,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-13",
+          "elapsedMs": 468.34104199998546,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-14",
+          "elapsedMs": 468.3431260000216,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-16",
+          "elapsedMs": 570.5238759999629,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-18",
+          "elapsedMs": 570.5311259999871,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-15",
+          "elapsedMs": 584.0002920000115,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-17",
+          "elapsedMs": 584.0081259999424,
+          "success": true
+        },
+        {
+          "id": "ld3_8420d3175593d6eae6c2-19",
+          "elapsedMs": 584.0101260000374,
+          "success": true
+        }
+      ],
+      "elapsedMs": 600.3181259999983,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:52.527Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 5,
+    "id": "ld3_ca3470e8e3c33194fbda",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-0",
+          "elapsedMs": 243.88316699990537,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-1",
+          "elapsedMs": 243.8973329999717,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-2",
+          "elapsedMs": 243.90145799994934,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-3",
+          "elapsedMs": 243.90587499993853,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-4",
+          "elapsedMs": 243.90995799994562,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-5",
+          "elapsedMs": 378.1890419999836,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-6",
+          "elapsedMs": 378.200499999919,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-7",
+          "elapsedMs": 378.2037919999566,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-8",
+          "elapsedMs": 378.2083749999292,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-9",
+          "elapsedMs": 378.2131249998929,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-10",
+          "elapsedMs": 494.1309579999652,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-11",
+          "elapsedMs": 494.13691699993797,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-12",
+          "elapsedMs": 494.138874999946,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-13",
+          "elapsedMs": 494.141082999995,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-14",
+          "elapsedMs": 494.1432919999352,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-15",
+          "elapsedMs": 594.3812089998974,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-16",
+          "elapsedMs": 594.3882919999305,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-17",
+          "elapsedMs": 594.390999999945,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-18",
+          "elapsedMs": 594.3932919999352,
+          "success": true
+        },
+        {
+          "id": "ld3_ca3470e8e3c33194fbda-19",
+          "elapsedMs": 594.3951669998933,
+          "success": true
+        }
+      ],
+      "elapsedMs": 610.4590839999728,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:53.592Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 6,
+    "id": "ld3_0c4cdd64f812dbf6bf24",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-0",
+          "elapsedMs": 279.67949999996927,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-1",
+          "elapsedMs": 279.6899999999441,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-2",
+          "elapsedMs": 279.69250000000466,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-3",
+          "elapsedMs": 279.6946669999743,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-4",
+          "elapsedMs": 279.69604199996684,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-5",
+          "elapsedMs": 396.39883299998473,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-6",
+          "elapsedMs": 396.4096669999417,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-7",
+          "elapsedMs": 396.4128329999512,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-8",
+          "elapsedMs": 396.41708299994934,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-9",
+          "elapsedMs": 396.42137499991804,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-10",
+          "elapsedMs": 513.1045419999864,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-11",
+          "elapsedMs": 513.1158750000177,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-12",
+          "elapsedMs": 513.1183749999618,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-13",
+          "elapsedMs": 513.1211669999175,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-14",
+          "elapsedMs": 513.1230829999549,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-15",
+          "elapsedMs": 613.4135419999948,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-16",
+          "elapsedMs": 613.4208329999819,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-17",
+          "elapsedMs": 629.5817500000121,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-18",
+          "elapsedMs": 629.5880419999594,
+          "success": true
+        },
+        {
+          "id": "ld3_0c4cdd64f812dbf6bf24-19",
+          "elapsedMs": 629.6025829999708,
+          "success": true
+        }
+      ],
+      "elapsedMs": 645.6262919999426,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:54.677Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 7,
+    "id": "ld3_9b4587ccfed9a7dff077",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-0",
+          "elapsedMs": 282.5103329999838,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-1",
+          "elapsedMs": 282.52083299995866,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-2",
+          "elapsedMs": 282.5239579998888,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-3",
+          "elapsedMs": 282.52808299998287,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-4",
+          "elapsedMs": 282.53083299996797,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-5",
+          "elapsedMs": 382.8472919999622,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-6",
+          "elapsedMs": 382.8545419999864,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-7",
+          "elapsedMs": 382.8569579999894,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-8",
+          "elapsedMs": 382.8606669999426,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-9",
+          "elapsedMs": 382.86391699989326,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-10",
+          "elapsedMs": 515.4897499999497,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-11",
+          "elapsedMs": 515.4974579999689,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-12",
+          "elapsedMs": 515.4994579999475,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-13",
+          "elapsedMs": 515.5018749999581,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-14",
+          "elapsedMs": 515.5042079999112,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-16",
+          "elapsedMs": 617.3314999999711,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-17",
+          "elapsedMs": 617.3384999999544,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-15",
+          "elapsedMs": 633.0849589999998,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-18",
+          "elapsedMs": 633.0925419999985,
+          "success": true
+        },
+        {
+          "id": "ld3_9b4587ccfed9a7dff077-19",
+          "elapsedMs": 633.0950419999426,
+          "success": true
+        }
+      ],
+      "elapsedMs": 649.2680419998942,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:55.778Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 8,
+    "id": "ld3_6b01b84a85a785c616f1",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_6b01b84a85a785c616f1-0",
+          "elapsedMs": 249.6970839999849,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-1",
+          "elapsedMs": 249.70958399993833,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-2",
+          "elapsedMs": 249.7118339999579,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-3",
+          "elapsedMs": 249.71529199997894,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-4",
+          "elapsedMs": 249.71950000000652,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-5",
+          "elapsedMs": 382.70945899991784,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-6",
+          "elapsedMs": 382.71945899992716,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-7",
+          "elapsedMs": 382.7209589999402,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-8",
+          "elapsedMs": 382.7235840000212,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-9",
+          "elapsedMs": 382.7269999999553,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-10",
+          "elapsedMs": 481.40233399998397,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-11",
+          "elapsedMs": 481.40608400001656,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-12",
+          "elapsedMs": 481.407125000027,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-13",
+          "elapsedMs": 481.4080420000246,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-14",
+          "elapsedMs": 481.40895900002215,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-15",
+          "elapsedMs": 628.6346249999478,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-16",
+          "elapsedMs": 628.6499589999439,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-19",
+          "elapsedMs": 628.65295899997,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-17",
+          "elapsedMs": 649.0179169999901,
+          "success": true
+        },
+        {
+          "id": "ld3_6b01b84a85a785c616f1-18",
+          "elapsedMs": 649.0280420000199,
+          "success": true
+        }
+      ],
+      "elapsedMs": 667.2432089999784,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:56.882Z"
+  },
+  {
+    "kind": "weather",
+    "platform": "android",
+    "metric": "U3",
+    "count": 20,
+    "trial": 9,
+    "id": "ld3_b9d9ee02fff6ffa9cf46",
+    "status": "done",
+    "result": {
+      "completions": [
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-0",
+          "elapsedMs": 264.6854170000879,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-1",
+          "elapsedMs": 264.6969590000808,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-2",
+          "elapsedMs": 264.70012500009034,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-3",
+          "elapsedMs": 264.70508400001563,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-4",
+          "elapsedMs": 264.70783400000073,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-5",
+          "elapsedMs": 397.97200000006706,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-6",
+          "elapsedMs": 397.9883339999942,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-7",
+          "elapsedMs": 397.99458400008734,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-8",
+          "elapsedMs": 397.9983340000035,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-9",
+          "elapsedMs": 398.00250000006054,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-11",
+          "elapsedMs": 500.23883400007617,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-10",
+          "elapsedMs": 514.8625420000171,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-12",
+          "elapsedMs": 514.8711670000339,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-13",
+          "elapsedMs": 514.873459000024,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-14",
+          "elapsedMs": 514.8760010000551,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-15",
+          "elapsedMs": 631.1037920000963,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-19",
+          "elapsedMs": 631.1187510000309,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-16",
+          "elapsedMs": 647.57720900001,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-17",
+          "elapsedMs": 647.5839590000687,
+          "success": true
+        },
+        {
+          "id": "ld3_b9d9ee02fff6ffa9cf46-18",
+          "elapsedMs": 647.5864170000423,
+          "success": true
+        }
+      ],
+      "elapsedMs": 664.778459000052,
+      "requested": 20
+    },
+    "measuredAt": "2026-11-02T20:11:57.977Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 0,
+    "id": "ld3_588b140e677dc8ab6e89",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:11:59.166Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 1,
+    "id": "ld3_37777ebc8165569781c0",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:11:59.585Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 2,
+    "id": "ld3_dfa7190db0dced267479",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:11:59.987Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 3,
+    "id": "ld3_ac35b8feb5ec35390170",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:00.346Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 4,
+    "id": "ld3_d8b0c1459f43b54d8891",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:00.716Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 5,
+    "id": "ld3_f7252caa59d48b79d968",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:01.069Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 6,
+    "id": "ld3_310c520bcc8ed8f8fac7",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:01.424Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 7,
+    "id": "ld3_6625f6c4fc0f38661450",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:01.799Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 8,
+    "id": "ld3_87e41d45daf18355c800",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:02.165Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 1,
+    "trial": 9,
+    "id": "ld3_ba521dc80c780904b6c1",
+    "status": "done",
+    "result": {
+      "inserted": 1,
+      "retained": 1
+    },
+    "measuredAt": "2026-11-02T20:12:02.528Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 0,
+    "id": "ld3_ae077a01ed51f79964a4",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:03.566Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 1,
+    "id": "ld3_415473437836d92ccbf6",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:03.977Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 2,
+    "id": "ld3_3a920cb12fdf9fb83d83",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:04.352Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 3,
+    "id": "ld3_d9e446c1cf49473f9173",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:04.721Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 4,
+    "id": "ld3_109432b2ed91e43fd9d2",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:05.082Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 5,
+    "id": "ld3_2cc1f15df08f5b49bc98",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:05.455Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 6,
+    "id": "ld3_de58278458b0471390f9",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:05.816Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 7,
+    "id": "ld3_3c9e51444494e211c5fd",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:06.182Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 8,
+    "id": "ld3_30ba5a43e5c6f69096a9",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:06.549Z"
+  },
+  {
+    "kind": "cache-capacity",
+    "platform": "android",
+    "metric": "U4",
+    "count": 200,
+    "trial": 9,
+    "id": "ld3_01e97adf8ea27635d132",
+    "status": "done",
+    "result": {
+      "inserted": 200,
+      "retained": 200
+    },
+    "measuredAt": "2026-11-02T20:12:06.912Z"
+  },
+  {
+    "kind": "invalid-rating",
+    "platform": "android",
+    "metric": "M3",
+    "scenario": "0",
+    "count": 0,
+    "repeats": 10,
+    "id": "ld3_62024dc1a46c26653fab",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 0,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        }
+      ]
+    },
+    "measuredAt": "2026-11-02T20:12:08.106Z"
+  },
+  {
+    "kind": "invalid-rating",
+    "platform": "android",
+    "metric": "M3",
+    "scenario": "6",
+    "count": 6,
+    "repeats": 10,
+    "id": "ld3_a795c2d382c15dd1d29f",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        },
+        {
+          "score": 6,
+          "message": "Rating must be an integer between 1 and 5.",
+          "passed": true
+        }
+      ]
+    },
+    "measuredAt": "2026-11-02T20:12:09.169Z"
+  },
+  {
+    "kind": "create-marker",
+    "platform": "android",
+    "metric": "R1",
+    "scenario": "pending",
+    "repeats": 10,
+    "id": "ld3_31a5782f5b61304bb318",
+    "status": "done",
+    "result": {
+      "samples": [
+        {
+          "id": "6ae8ee9b0020191766fa",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8ee9d00082bee0499",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8ee9e001f0a1b9c16",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8ee9f003e39debcb7",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea10019b837c4b0",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea20039eae15cda",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea4001d55ce5e33",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea500355b0a166e",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea70014b584d966",
+          "status": "pending_approval",
+          "passed": true
+        },
+        {
+          "id": "6ae8eea80032408c8ca1",
+          "status": "pending_approval",
+          "passed": true
+        }
+      ],
+      "source": "production createMarker with isolated Appwrite collection"
+    },
+    "measuredAt": "2026-11-02T20:12:25.864Z"
+  }
+]

@@ -1,4 +1,13 @@
 import "dotenv/config";
+import fs from "node:fs";
+
+const quality3ldEnabled = process.env.SIT_3LD === "1";
+const quality3ld = quality3ldEnabled
+  ? JSON.parse(fs.readFileSync("reports/3ld/private/state.json", "utf8"))
+  : null;
+if (quality3ldEnabled && (!quality3ld?.ready || quality3ld.cleaned)) {
+  throw new Error("3LD environment is not ready. Run quality:3ld:setup.");
+}
 
 const googleMapsAndroidApiKey =
   process.env.GOOGLE_MAPS_ANDROID_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
@@ -96,12 +105,19 @@ export default {
       APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
       APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID,
       APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID,
-      APPWRITE_MARKERS_COLLECTION_ID: process.env.APPWRITE_MARKERS_COLLECTION_ID,
-      APPWRITE_RATINGS_COLLECTION_ID: process.env.APPWRITE_RATINGS_COLLECTION_ID,
+      APPWRITE_MARKERS_COLLECTION_ID:
+        quality3ld?.collections.markers ?? process.env.APPWRITE_MARKERS_COLLECTION_ID,
+      APPWRITE_RATINGS_COLLECTION_ID:
+        quality3ld?.collections.ratings ?? process.env.APPWRITE_RATINGS_COLLECTION_ID,
       APPWRITE_FAVORITES_COLLECTION_ID: process.env.APPWRITE_FAVORITES_COLLECTION_ID,
       APPWRITE_MODERATION_WARNINGS_ID: process.env.APPWRITE_MODERATION_WARNINGS_ID,
-      APPWRITE_STORAGE_ID: process.env.APPWRITE_STORAGE_ID,
-      WEATHER_TEST_SCENARIO: process.env.WEATHER_TEST_SCENARIO,
+      APPWRITE_STORAGE_ID: quality3ld?.bucket ?? process.env.APPWRITE_STORAGE_ID,
+      WEATHER_TEST_SCENARIO: quality3ldEnabled
+        ? undefined
+        : process.env.WEATHER_TEST_SCENARIO,
+      SIT_3LD_ENABLED: quality3ldEnabled,
+      SIT_3LD_URL: quality3ldEnabled ? "http://127.0.0.1:4313" : undefined,
+      SIT_3LD_TOKEN: quality3ld?.token,
     },
   },
 };

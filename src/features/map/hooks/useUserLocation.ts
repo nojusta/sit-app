@@ -4,7 +4,14 @@ import * as Location from "expo-location";
 
 export type LocationPermissionState = "idle" | "loading" | "granted" | "denied";
 
-const useUserLocation = () => {
+export type LocationSource = Pick<
+  typeof Location,
+  | "requestForegroundPermissionsAsync"
+  | "getForegroundPermissionsAsync"
+  | "getCurrentPositionAsync"
+>;
+
+const useUserLocation = (locationSource: LocationSource = Location) => {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [permissionState, setPermissionState] = useState<LocationPermissionState>("idle");
 
@@ -16,8 +23,8 @@ const useUserLocation = () => {
         }
 
         const permissionResult = options.requestPermission
-          ? await Location.requestForegroundPermissionsAsync()
-          : await Location.getForegroundPermissionsAsync();
+          ? await locationSource.requestForegroundPermissionsAsync()
+          : await locationSource.getForegroundPermissionsAsync();
         const isGranted = String(permissionResult.status) === "granted";
 
         if (!isGranted) {
@@ -29,7 +36,7 @@ const useUserLocation = () => {
         setPermissionState("granted");
 
         try {
-          const currentLocation = await Location.getCurrentPositionAsync({});
+          const currentLocation = await locationSource.getCurrentPositionAsync({});
           setLocation(currentLocation);
         } catch (error) {
           if (__DEV__) {
@@ -48,7 +55,7 @@ const useUserLocation = () => {
         }
       }
     },
-    [],
+    [locationSource],
   );
 
   useEffect(() => {

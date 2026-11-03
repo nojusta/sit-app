@@ -1,0 +1,12 @@
+{
+  "model": "sdk_gphone64_arm64",
+  "api": "36",
+  "resolution": "Physical size: 1080x2400",
+  "density": "Physical density: 420",
+  "host": "25.6.0",
+  "hostArch": "arm64",
+  "measuredAt": "2026-11-02T20:09:06.683Z",
+  "androidVersion": "16",
+  "appVersion": "1.0.0",
+  "development": true
+}

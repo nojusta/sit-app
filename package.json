@@ -32,7 +32,15 @@
     "quality:coverage": "jest --config jest.2ld.config.js --runInBand --watch=false --coverage && node scripts/quality/coverage.cjs",
     "quality:mutation": "stryker run .stryker-mutator.conf.json && node scripts/quality/mutation.cjs",
     "quality:mutation:report": "node scripts/quality/mutation.cjs",
-    "quality:2ld": "npm run quality:metrics && npm run quality:lint && npm run quality:coverage && npm run quality:mutation"
+    "quality:2ld": "npm run quality:metrics && npm run quality:lint && npm run quality:coverage && npm run quality:mutation",
+    "quality:3ld:setup": "node scripts/quality3ld/setup.cjs",
+    "quality:3ld:start": "node scripts/quality3ld/start.cjs",
+    "quality:3ld:measure": "node scripts/quality3ld/measure.cjs",
+    "quality:3ld:backend": "node scripts/quality3ld/backend.cjs",
+    "quality:3ld:ui": "node scripts/quality3ld/ui.cjs",
+    "quality:3ld:ios": "node scripts/quality3ld/ios-smoke.cjs --ios",
+    "quality:3ld:report": "node scripts/quality3ld/report.cjs",
+    "quality:3ld:clean": "node scripts/quality3ld/clean.cjs"
   },
   "lint-staged": {
     "{app,src,scripts}/**/*.{js,jsx,ts,tsx}": [

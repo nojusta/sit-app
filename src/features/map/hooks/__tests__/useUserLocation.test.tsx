@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { AppState, type AppStateStatus } from "react-native";
 
-import useUserLocation from "../useUserLocation";
+import useUserLocation, { type LocationSource } from "../useUserLocation";
 import * as Location from "expo-location";
 
 jest.mock("expo-location", () => ({
@@ -40,6 +40,29 @@ describe("useUserLocation", () => {
       expires: "never",
       granted: true,
     });
+  });
+
+  it("uses an explicitly supplied location source without calling the OS permission API", async () => {
+    // Arrange
+    const denied = {
+      status: Location.PermissionStatus.DENIED,
+      granted: false,
+      canAskAgain: true,
+      expires: "never" as const,
+    };
+    const source: LocationSource = {
+      requestForegroundPermissionsAsync: jest.fn(async () => denied),
+      getForegroundPermissionsAsync: jest.fn(async () => denied),
+      getCurrentPositionAsync: jest.fn(async () => {
+        throw new Error("Position must not be requested");
+      }),
+    };
+    // Act
+    const { result } = renderHook(() => useUserLocation(source));
+    // Assert
+    await waitFor(() => expect(result.current.permissionState).toBe("denied"));
+    expect(mockedLocation.requestForegroundPermissionsAsync).not.toHaveBeenCalled();
+    expect(source.getCurrentPositionAsync).not.toHaveBeenCalled();
   });
 
   it("requests permission on mount and exposes the current location when granted", async () => {

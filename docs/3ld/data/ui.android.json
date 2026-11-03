@@ -1,0 +1,919 @@
+[
+  {
+    "metric": "R3",
+    "scenario": "create",
+    "platform": "android",
+    "expected": [
+      "Quiet tag",
+      "Loud tag",
+      "Shaded tag",
+      "Clean tag",
+      "Nature tag",
+      "Urban tag",
+      "Waterfront tag",
+      "Scenic tag",
+      "Work-friendly tag",
+      "Title",
+      "Description",
+      "Back to placement",
+      "Take photo",
+      "Choose photo",
+      "Submit marker",
+      "Discard draft"
+    ],
+    "present": [
+      "Quiet tag",
+      "Loud tag",
+      "Shaded tag",
+      "Clean tag",
+      "Nature tag",
+      "Urban tag",
+      "Waterfront tag",
+      "Scenic tag",
+      "Work-friendly tag",
+      "Back to placement",
+      "Take photo",
+      "Choose photo",
+      "Submit marker",
+      "Discard draft"
+    ],
+    "missing": ["Title", "Description"],
+    "percent": 87.5
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 0,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 1,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 2,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 3,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 4,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 5,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 6,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 7,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 8,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "create",
+    "platform": "android",
+    "trial": 9,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Choose photo",
+        "callback": "choose-photo",
+        "passed": true
+      },
+      {
+        "label": "Submit marker",
+        "callback": "submit",
+        "passed": true
+      },
+      {
+        "label": "Discard draft",
+        "callback": "discard",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R3",
+    "scenario": "edit",
+    "platform": "android",
+    "expected": [
+      "Quiet tag",
+      "Loud tag",
+      "Shaded tag",
+      "Clean tag",
+      "Nature tag",
+      "Urban tag",
+      "Waterfront tag",
+      "Scenic tag",
+      "Work-friendly tag",
+      "Description",
+      "Add photos",
+      "Submit edits",
+      "Close"
+    ],
+    "present": [
+      "Quiet tag",
+      "Loud tag",
+      "Shaded tag",
+      "Clean tag",
+      "Nature tag",
+      "Urban tag",
+      "Waterfront tag",
+      "Scenic tag",
+      "Work-friendly tag",
+      "Add photos",
+      "Submit edits",
+      "Close"
+    ],
+    "missing": ["Description"],
+    "percent": 92.3076923076923
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 0,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 1,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 2,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 3,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 4,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 5,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 6,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 7,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 8,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "R4",
+    "scenario": "edit",
+    "platform": "android",
+    "trial": 9,
+    "flowPassed": true,
+    "attempts": [
+      {
+        "label": "Add photos",
+        "callback": "add-photos",
+        "passed": true
+      },
+      {
+        "label": "Submit edits",
+        "callback": "submit-edits",
+        "passed": true
+      },
+      {
+        "label": "Close",
+        "callback": "close",
+        "passed": true
+      }
+    ],
+    "percent": 100
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 0,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652048266,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 1,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652074433,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 2,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652099635,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 3,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652123654,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 4,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652150127,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 5,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652176254,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 6,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652202077,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 7,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652225211,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 8,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652251892,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "1",
+    "platform": "android",
+    "trial": 9,
+    "taps": 1,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652276578,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 0,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652301854,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 1,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652327114,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 2,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652351430,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 3,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652375057,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 4,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652400777,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 5,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652427318,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 6,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652451939,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 7,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652478116,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 8,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652503402,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  },
+  {
+    "metric": "M4",
+    "scenario": "5",
+    "platform": "android",
+    "trial": 9,
+    "taps": 5,
+    "count": 1,
+    "writes": [
+      {
+        "atMs": 1793652529547,
+        "method": "POST",
+        "status": 201
+      }
+    ],
+    "flowPassed": true,
+    "passed": true
+  }
+]

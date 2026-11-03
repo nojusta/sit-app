@@ -1,0 +1,722 @@
+[
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:26.184Z",
+    "durationMs": 90.96233399999994,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:26.283Z",
+    "durationMs": 96.75858300000004,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:26.519Z",
+    "durationMs": 236.01970800000004,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:26.793Z",
+    "durationMs": 273.83425,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:27.554Z",
+    "durationMs": 505.839166,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:28.364Z",
+    "durationMs": 809.60475,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 0,
+    "measuredAt": "2026-11-02T20:06:29.003Z",
+    "durationMs": 639.5447920000001,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:29.113Z",
+    "durationMs": 109.77704099999983,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:29.192Z",
+    "durationMs": 78.65908299999955,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:29.508Z",
+    "durationMs": 315.5414999999998,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:29.753Z",
+    "durationMs": 244.7375830000001,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:30.465Z",
+    "durationMs": 463.70700000000033,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:31.223Z",
+    "durationMs": 758.0412079999996,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 1,
+    "measuredAt": "2026-11-02T20:06:31.813Z",
+    "durationMs": 590.1440410000005,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:31.914Z",
+    "durationMs": 99.98850000000039,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:32.014Z",
+    "durationMs": 100.05579200000011,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:32.293Z",
+    "durationMs": 278.92774999999983,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:32.594Z",
+    "durationMs": 301.2333329999992,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:33.353Z",
+    "durationMs": 509.5282499999994,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:33.966Z",
+    "durationMs": 612.9838339999997,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 2,
+    "measuredAt": "2026-11-02T20:06:34.567Z",
+    "durationMs": 601.0579589999998,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:34.649Z",
+    "durationMs": 80.85258299999987,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:34.739Z",
+    "durationMs": 90.53804200000013,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:34.992Z",
+    "durationMs": 252.22712499999943,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:35.206Z",
+    "durationMs": 213.9696669999994,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:35.951Z",
+    "durationMs": 487.6637499999997,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:36.579Z",
+    "durationMs": 627.3340829999997,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 3,
+    "measuredAt": "2026-11-02T20:06:37.127Z",
+    "durationMs": 548.2242920000008,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:37.223Z",
+    "durationMs": 95.79874999999993,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:37.323Z",
+    "durationMs": 100.02720799999952,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:37.638Z",
+    "durationMs": 314.5573339999992,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:37.907Z",
+    "durationMs": 268.205833,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:38.668Z",
+    "durationMs": 504.09020899999996,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:39.274Z",
+    "durationMs": 605.054583000001,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 4,
+    "measuredAt": "2026-11-02T20:06:39.926Z",
+    "durationMs": 651.8542500000003,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:40.023Z",
+    "durationMs": 97.51962500000081,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:40.103Z",
+    "durationMs": 79.41608400000041,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:40.413Z",
+    "durationMs": 309.80312499999854,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:40.663Z",
+    "durationMs": 249.83474999999999,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:41.366Z",
+    "durationMs": 452.8078750000004,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:41.964Z",
+    "durationMs": 598.0627919999988,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 5,
+    "measuredAt": "2026-11-02T20:06:42.606Z",
+    "durationMs": 641.976125000001,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:42.693Z",
+    "durationMs": 86.85037499999817,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:42.779Z",
+    "durationMs": 85.49275000000125,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:43.013Z",
+    "durationMs": 234.12333299999955,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:43.414Z",
+    "durationMs": 400.3512499999997,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:44.207Z",
+    "durationMs": 523.3171670000011,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:44.981Z",
+    "durationMs": 773.8760419999999,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 6,
+    "measuredAt": "2026-11-02T20:06:45.605Z",
+    "durationMs": 624.0367910000023,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:45.691Z",
+    "durationMs": 86.04054199999882,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:45.794Z",
+    "durationMs": 102.5671250000014,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:46.023Z",
+    "durationMs": 228.77704099999755,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:46.273Z",
+    "durationMs": 249.97100000000137,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:47.023Z",
+    "durationMs": 489.5951669999995,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:47.674Z",
+    "durationMs": 650.515166000001,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 7,
+    "measuredAt": "2026-11-02T20:06:48.380Z",
+    "durationMs": 706.8156249999993,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:48.487Z",
+    "durationMs": 106.34141699999964,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:48.587Z",
+    "durationMs": 100.02391699999862,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:48.832Z",
+    "durationMs": 244.91483300000255,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:49.090Z",
+    "durationMs": 258.04741699999795,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:49.863Z",
+    "durationMs": 529.8258749999986,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:50.543Z",
+    "durationMs": 679.9360420000012,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 8,
+    "measuredAt": "2026-11-02T20:06:51.193Z",
+    "durationMs": 650.0523329999996,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  },
+  {
+    "metric": "M1",
+    "scenario": "valid",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:51.285Z",
+    "durationMs": 91.74124999999913,
+    "status": 200,
+    "expected": 200,
+    "passed": true
+  },
+  {
+    "metric": "M1",
+    "scenario": "invalid",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:51.385Z",
+    "durationMs": 99.65170800000124,
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "own",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:51.779Z",
+    "durationMs": 393.9781249999978,
+    "status": 201,
+    "passed": true,
+    "storedAuthorMatchesSession": true
+  },
+  {
+    "metric": "M2",
+    "scenario": "spoofed",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:52.095Z",
+    "durationMs": 315.9307919999992,
+    "status": 201,
+    "passed": false,
+    "storedAuthorMatchesSession": false
+  },
+  {
+    "metric": "R1",
+    "scenario": "self-approve",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:52.843Z",
+    "durationMs": 493.8127920000006,
+    "status": 200,
+    "storedStatus": "approved",
+    "passed": false
+  },
+  {
+    "metric": "R2",
+    "scenario": "jpeg",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:53.519Z",
+    "durationMs": 676.2178750000021,
+    "status": 201,
+    "bytes": 96500,
+    "fileType": "real PNG",
+    "passed": true
+  },
+  {
+    "metric": "R2",
+    "scenario": "disguised",
+    "trial": 9,
+    "measuredAt": "2026-11-02T20:06:54.147Z",
+    "durationMs": 627.3709580000032,
+    "status": 201,
+    "bytes": 42,
+    "fileType": "text disguised as JPEG",
+    "passed": false
+  }
+]

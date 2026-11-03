@@ -1,0 +1,307 @@
+{
+  "measuredAt": "2026-11-02T20:58:12.464Z",
+  "environmentRun": "ld3_ca567a599a2df2a37dd3",
+  "cases": 32,
+  "green": 26,
+  "red": 6,
+  "results": [
+    {
+      "metric": "N1",
+      "scenario": "immediate",
+      "circumstance": "Vietos atsakymas iškart",
+      "value": "p50 0,21 ms; p95 0,36 ms",
+      "threshold": "p95 ≤ 1500 ms",
+      "passed": true,
+      "sampleSize": 20,
+      "p50": 0.2108124999795109,
+      "p95": 0.35770799999590963
+    },
+    {
+      "metric": "N1",
+      "scenario": "delayed",
+      "circumstance": "Pridėtas 2000 ms vietos atsako vėlinimas",
+      "value": "p50 2017,46 ms; p95 2020,50 ms",
+      "threshold": "p95 ≤ 1500 ms",
+      "passed": false,
+      "sampleSize": 20,
+      "p50": 2017.4613970000064,
+      "p95": 2020.5039600000018
+    },
+    {
+      "metric": "N2",
+      "scenario": "transient",
+      "circumstance": "Viena laikina klaida; sėkmingas 2-as bandymas",
+      "value": "p95 267,87 ms",
+      "threshold": "p95 ≤ 500 ms",
+      "passed": true,
+      "sampleSize": 20,
+      "p95": 267.87108399998397
+    },
+    {
+      "metric": "N2",
+      "scenario": "permanent",
+      "circumstance": "Nuolatinė klaida; sustojimas po 4 bandymų",
+      "value": "p95 800,88 ms",
+      "threshold": "p95 ≤ 1500 ms",
+      "passed": true,
+      "sampleSize": 20,
+      "p95": 800.8835010000039
+    },
+    {
+      "metric": "N3",
+      "scenario": "denied",
+      "circumstance": "Vietos leidimas atmestas",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "N3",
+      "scenario": "gps-error",
+      "circumstance": "Vietos gavimo API grąžina klaidą",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "N4",
+      "scenario": "transient",
+      "circumstance": "Laikina klaida: sėkmė po pakartojimo",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "N4",
+      "scenario": "permanent",
+      "circumstance": "Nuolatinė klaida: aiški klaida ir 4 bandymų riba",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U1",
+      "scenario": "1",
+      "circumstance": "Vieno markerio orų užkrovimas",
+      "value": "0,00 MiB",
+      "threshold": "≤ 20 MiB",
+      "passed": true,
+      "sampleSize": 3,
+      "deltaMiB": 0
+    },
+    {
+      "metric": "U1",
+      "scenario": "20",
+      "circumstance": "20 skirtingų markerių orų užkrovimas",
+      "value": "2,27 MiB",
+      "threshold": "≤ 50 MiB",
+      "passed": true,
+      "sampleSize": 3,
+      "deltaMiB": 2.265625
+    },
+    {
+      "metric": "U2",
+      "scenario": "fresh",
+      "circumstance": "Cache amžius 29 min; 10 atidarymų",
+      "value": "0 API užkl.",
+      "threshold": "0 API užkl.",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U2",
+      "scenario": "expired",
+      "circumstance": "Cache amžius 31 min; 10 atidarymų",
+      "value": "1 API užkl.",
+      "threshold": "1 API užkl.",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U3",
+      "scenario": "5",
+      "circumstance": "Lygiagrečių užklausų skaičius: 5; testinis serveris",
+      "value": "50/50 per 5 s (100,0 %)",
+      "threshold": "≥ 95 % per 5 s",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U3",
+      "scenario": "20",
+      "circumstance": "Lygiagrečių užklausų skaičius: 20; testinis serveris",
+      "value": "200/200 per 5 s (100,0 %)",
+      "threshold": "≥ 95 % per 5 s",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U4",
+      "scenario": "1",
+      "circumstance": "Cache įrašų skaičius: 1",
+      "value": "1 iš 1, 10/10 band.",
+      "threshold": "Išlaikyti visi galiojantys įrašai",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "U4",
+      "scenario": "200",
+      "circumstance": "Cache įrašų skaičius: 200",
+      "value": "200 iš 200, 10/10 band.",
+      "threshold": "Išlaikyti visi galiojantys įrašai",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M1",
+      "scenario": "valid",
+      "circumstance": "Galiojanti testinė sesija",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M1",
+      "scenario": "invalid",
+      "circumstance": "Netinkamas JWT",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M2",
+      "scenario": "own",
+      "circumstance": "A pateikia savo įvertinimą",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M2",
+      "scenario": "spoofed",
+      "circumstance": "A pateikia įvertinimą B vardu",
+      "value": "0/10 (0,0 %)",
+      "threshold": "100 %",
+      "passed": false,
+      "sampleSize": 10
+    },
+    {
+      "metric": "R2",
+      "scenario": "jpeg",
+      "circumstance": "Tikras PNG paveikslėlis",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "R2",
+      "scenario": "disguised",
+      "circumstance": "Tekstas su JPG pavadinimu ir MIME tipu",
+      "value": "0/10 (0,0 %)",
+      "threshold": "100 %",
+      "passed": false,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M3",
+      "scenario": "0",
+      "circumstance": "Reitingo balas 0",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M3",
+      "scenario": "6",
+      "circumstance": "Reitingo balas 6",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M4",
+      "scenario": "1",
+      "circumstance": "Vienas pateikimo paspaudimas",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "M4",
+      "scenario": "5",
+      "circumstance": "Penki greiti pateikimo paspaudimai",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "R1",
+      "scenario": "pending",
+      "circumstance": "Naują markerį sukuria produkcinė createMarker funkcija",
+      "value": "10/10 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 10
+    },
+    {
+      "metric": "R1",
+      "scenario": "self-approve",
+      "circumstance": "Autorius tiesiogiai per API keičia būseną į approved",
+      "value": "0/10 (0,0 %)",
+      "threshold": "100 %",
+      "passed": false,
+      "sampleSize": 10
+    },
+    {
+      "metric": "R3",
+      "scenario": "create",
+      "circumstance": "Markerio kūrimo forma",
+      "value": "14/16 (87,5 %)",
+      "threshold": "100 % įvardytų pasirinktų valdiklių",
+      "passed": false,
+      "sampleSize": 1,
+      "missing": ["Title", "Description"]
+    },
+    {
+      "metric": "R4",
+      "scenario": "create",
+      "circumstance": "Kūrimo formos 3 veiksmai pagal pavadinimą",
+      "value": "30/30 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 30
+    },
+    {
+      "metric": "R3",
+      "scenario": "edit",
+      "circumstance": "Markerio redagavimo forma",
+      "value": "12/13 (92,3 %)",
+      "threshold": "100 % įvardytų pasirinktų valdiklių",
+      "passed": false,
+      "sampleSize": 1,
+      "missing": ["Description"]
+    },
+    {
+      "metric": "R4",
+      "scenario": "edit",
+      "circumstance": "Redagavimo formos 3 veiksmai pagal pavadinimą",
+      "value": "30/30 (100,0 %)",
+      "threshold": "100 %",
+      "passed": true,
+      "sampleSize": 30
+    }
+  ]
+}

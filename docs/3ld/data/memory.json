@@ -1,0 +1,68 @@
+[
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "1",
+    "trial": 0,
+    "baselineKiB": 555340,
+    "samplesKiB": [551697, 549032, 549636, 549419, 549434, 549347, 549374, 549451],
+    "peakKiB": 551697,
+    "deltaMiB": 0,
+    "jobId": "ld3_deacd57d241a494d3c6f"
+  },
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "1",
+    "trial": 1,
+    "baselineKiB": 549744,
+    "samplesKiB": [549124, 549403, 549532, 549336, 549452, 549352, 549368, 549369],
+    "peakKiB": 549532,
+    "deltaMiB": 0,
+    "jobId": "ld3_0b2ec4531c2f8c211247"
+  },
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "1",
+    "trial": 2,
+    "baselineKiB": 550327,
+    "samplesKiB": [549639, 549796, 550064, 550004, 550016, 549988, 549999, 550024],
+    "peakKiB": 550064,
+    "deltaMiB": 0,
+    "jobId": "ld3_93f743acae7584a18cd3"
+  },
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "20",
+    "trial": 0,
+    "baselineKiB": 551144,
+    "samplesKiB": [550276, 550578, 553464, 552345, 551712, 551669, 551651, 551675],
+    "peakKiB": 553464,
+    "deltaMiB": 2.265625,
+    "jobId": "ld3_fa9c99661e4567058e5a"
+  },
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "20",
+    "trial": 1,
+    "baselineKiB": 552691,
+    "samplesKiB": [552075, 552390, 554638, 553870, 553350, 553262, 553270, 553294],
+    "peakKiB": 554638,
+    "deltaMiB": 1.9013671875,
+    "jobId": "ld3_bd7a24ce21631fded42d"
+  },
+  {
+    "platform": "android",
+    "metric": "U1",
+    "scenario": "20",
+    "trial": 2,
+    "baselineKiB": 554226,
+    "samplesKiB": [553560, 553649, 555486, 556030, 554919, 554836, 554828, 554876],
+    "peakKiB": 556030,
+    "deltaMiB": 1.76171875,
+    "jobId": "ld3_904f6a05b967fe945129"
+  }
+]
